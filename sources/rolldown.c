@@ -29,7 +29,6 @@ void rk4(double *y, double *dydx, int n, double x, double h, double *yout,
          
 void RollDerivs(double , double *p, double *dpdz);
 
-
 /* a simple runge-kutta routine */
 void rk4(double *y, double *dydx, int n, double x, double h, double *yout,
          void (*derivs)(double, double *, double *))
@@ -105,7 +104,7 @@ void RollDownHill(TOKAMAK *td, double r0, double z0,
 * We use a simple bilinear interpolation.
 *
 ***************************************************************/
-double        interpolate(PSIGRID * pg, double **A, double x, double z)
+double        binterpolate(PSIGRID * pg, double **A, double x, double z)
 {
     int           ix, iz;
     double        xm, zm;
@@ -125,12 +124,15 @@ double        interpolate(PSIGRID * pg, double **A, double x, double z)
             t * u * A[ix + 1][iz + 1] + (1.0 - t) * u * A[ix][iz + 1]);
 }
 
-#define GETPSI(x,z) interpolate(pg, pg->Psi, x, z)
+#define GETPSI(x,z) binterpolate(pg, pg->Psi, x, z)
 
+#if 0
 void RollOutToPsi(TOKAMAK *td, double *x, double *z, double psiNew)
 {
     // this rolls out to major radius until it reaches new psi value
 
+	int    i, ix, iz;
+	int    nmax;
     double psiOld;
     double tx = *x;
     double tz = *z;
@@ -141,6 +143,8 @@ void RollOutToPsi(TOKAMAK *td, double *x, double *z, double psiNew)
     ix = PT_FLOOR(*x, pg->Xmin, pg->dx);
     iz = PT_FLOOR(*z, pg->Zmin, pg->dz);
 
+	nmax = pg->Nsize;
+	
     // now lets set up the next contour
     for (tx=*x; tx<pg->Xmax, <nmax-1; i++) {
         if (pg->Psi[i+1] > psiNew) break;
@@ -157,9 +161,11 @@ void RollOutToPsi(TOKAMAK *td, double *x, double *z, double psiNew)
     
 }
 
+#endif
+
 
 static double gV, gRmax, gZrmax;
-void	RmaxVStep(double x, double z, double, int flag);
+void	RmaxVStep(double x, double z, double y, int flag);
 
 void	RmaxVStep(double x, double z, double, int flag)
 {	
@@ -244,7 +250,8 @@ void GetRandV(TOKAMAK *td, double r0, double z0,
 	}
 }
 
-void GetRmidPsi(TOKAMAK *td, int n, double *psi, double *xx, double *zz)
+#if 0
+void GetRmidPsi(TOKAMAK *td, int npts, double *psi, double *xx, double *zz)
 {
     // determine rr and zz of midplane, starting at center and working way from
     // inner to out using contouring technique
@@ -273,7 +280,7 @@ void GetRmidPsi(TOKAMAK *td, int n, double *psi, double *xx, double *zz)
     {
         psi[i] = i*(pg->PsiLim-pg->PsiAxis)/(npts-1.d)+pg->PsiAxis;
         
-        newX = 
+        newX = 1;
 
         contour_point(pg->X, pg->Z, pg->Psi, 1, nmax, 1, nmax,
                   rr[i], zz[i], CONTOUR_MIDPOINT, RmaxVStep);
@@ -313,7 +320,6 @@ void GetRmidPsi(TOKAMAK *td, int n, double *psi, double *xx, double *zz)
     
 
 }
-
-                  
+#endif
                   
                   
