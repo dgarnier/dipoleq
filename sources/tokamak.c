@@ -144,11 +144,11 @@ void          init_Tokamak(TOKAMAK * td)
 	for (i = 0; i < td->NumSeps; i++)
 		td->Seps[i] = NULL;
 
-//	td->Measures = (MEAS **) malloc((unsigned) td->NumMeasures * sizeof(MEAS *));
-//	if (!td->Measures)
-//		nrerror("ERROR: Allocation error in init_Tokamak.");
-//	for (i = 0; i < td->NumMeasures; i++)
-//		td->Measures[i] = NULL;
+	td->Measures = (MEAS **) malloc((unsigned) td->NumMeasures * sizeof(MEAS *));
+	if (!td->Measures)
+		nrerror("ERROR: Allocation error in init_Tokamak.");
+	for (i = 0; i < td->NumMeasures; i++)
+		td->Measures[i] = NULL;
 }
 
 void          free_Tokamak(TOKAMAK * td)
@@ -185,13 +185,11 @@ void          free_Tokamak(TOKAMAK * td)
 			if (td->Seps[i])
 				free_Separatrix(td->Seps[i]);
 
-//	if (td->Measures)
-//		for (i = 0; i < td->NumMeasures; i++)
-//			if (td->Measures[i])
-//				free_Measure(td->Measures[i], nmax, ncoils, num_subshells);
+	if (td->Measures)
+		for (i = 0; i < td->NumMeasures; i++)
+			if (td->Measures[i])
+				free_Measure(td->Measures[i], nmax, ncoils, num_subshells);
 
-        CMeasurement::FreeAll(td->Measures);
-        
 	if (td->LHPlasmaGreen)
 		free_LHary(td->LHPlasmaGreen, nmax);
 

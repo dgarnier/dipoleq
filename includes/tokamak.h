@@ -38,8 +38,7 @@
 #include "green.h"
 #include "limiter.h"
 #include "separatrix.h"
-//#include "measurement.h"
-#include "CMeasurement.h"
+#include "measurement.h"
 #include "plasma.h"
 #include "psigrid.h"
 #include "tokgreen.h"
@@ -123,8 +122,7 @@
       SHELL **Shells;		/* the perfectly conducting shells */
       LIMITER **Limiters;	/* the limiters */
       SEPARATRIX **Seps;	/* the separatricies */
-//      MEAS **Measures;		/* pointer to an array of measurements */
-      CMeasurementList Measures; /* vector of pointers to measuremnts */
+      MEAS **Measures;		/* pointer to an array of measurements */
       LHARY *LHPlasmaGreen;	/* the LH Green funcs for plasma current */
 
   } TOKAMAK;

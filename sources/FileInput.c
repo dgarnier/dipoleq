@@ -28,8 +28,7 @@
 #include "shell.h"
 #include "limiter.h"
 #include "separatrix.h"
-//#include "measurement.h"
-#include "CMeasurement.h"
+#include "measurement.h"
 #include "plasma.h"
 #include "psigrid.h"
 #include "tokamak.h"
@@ -524,22 +523,6 @@ void          AssignSeparatrixVar(TOKAMAK * td, int c, int isNew, char *word, ch
 
 void          AssignMeasureVar(TOKAMAK * td, int c, int isNew, char *word, char *value)
 {
-    CMeasurement *m;
-    if (isNew) {
-        if (strcmp(word,"mType")) { 
-            m = CMeasurement::CreateWithType(value);
-            td->Measures.push_back(m);
-        } else 
-            nrerror("Input file error!  mType not first in Measure input record.\n");
-    } else {
-        m=td->Measures[c];
-        m->SetParameter(word, value);
-    }
-}
-
-#if old_measurements
-void          AssignMeasureVar(TOKAMAK * td, int c, int isNew, char *word, char *value)
-{
 	int           i, mt;
 	MEAS         *m;
 
@@ -629,8 +612,6 @@ void          AssignMeasureVar(TOKAMAK * td, int c, int isNew, char *word, char 
 			}
 		}
 }
-
-#endif
 
 /*
 **
