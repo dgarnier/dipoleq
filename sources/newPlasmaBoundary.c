@@ -713,7 +713,8 @@ static void BucketFillToSep(double sep, int **IsPlasma, PSIGRID *pg, int ix, int
 {
     if (IsPlasma[ix][iz]) return; // catch repeat business
 
-    if (pg->Psi[ix][iz] > sep
+    if (pg->Psi[ix][iz] > sep) {
+        (IsPlasma[ix][iz])
     BucketFillToSep(sepP, IsPlasma, pg, ix+1, iz);
     BucketFillToSep(sepP, IsPlasma, pg, ix-1, iz);
     BucketFillToSep(sepP, IsPlasma, pg, ix, iz+1);

@@ -46,7 +46,8 @@
 #include "shell.h"
 #include "limiter.h"
 #include "separatrix.h"
-#include "measurement.h"
+//#include "measurement.h"
+#include "CMeasurement.h"
 #include "plasma.h"
 #include "psigrid.h"
 #include "tokamak.h"
@@ -80,8 +81,9 @@ void          InValuesOutput(TOKAMAK * td)
 	SUBCOIL      *sc;
 	SHELL        *s;
 	SUBSHELL     *ss;
-	MEAS         *m;
-	int           i, isc;
+//	MEAS         *m;
+        CMeasurement *m;
+        int           i, isc;
 	char          fname[32] = "";
 
 	pl = td->Plasma;
