@@ -1,0 +1,438 @@
+// Test for DipolEq 
+// 
+
+K_CodeControl
+	MaxIterFixed = 0
+	MaxIterFree = 1
+	NumCoils = 4
+	NumLimiters = 9
+	NumSeps = 2
+	NumMeasures = 31
+	Name = Fit
+	Info = Newest Vacuum Vessel
+	Oname = Fit
+	MGname = junk_MG.bin
+	LHname = junk_LHGreens.bin
+	RSname = Fit_Restart.bin
+	RestartStatus = 0
+	RestartUnkns = 0
+	LHGreenStatus = 0
+	MGreenStatus = 0
+	NumEqualEq = 0
+	VacuumOnly = 0
+
+K_PsiGrid
+	Nsize = 256
+	Xmax = 2.6
+	Xmin = 1e-6
+	Zmin = -1.5
+	Zmax = 1.6
+	Symmetric = 0
+	BoundThreshold = 2.5e-6
+	ResThreshold = 1.0e-9
+	UnderRelax1 = .2
+	UnderRelax2 = 0.99
+
+K_Plasma
+	B0 = 0.00001
+	R0 = 0.0001
+	a0 = 2.5
+	Ip0 = .001
+	NumPsiPts = 76
+	PsiXmax = 0.9995
+	Jedge = 0.00
+// this is the plasma model
+	ModelType = 1
+	PpTerms = 10
+	G2pTerms = 0
+	
+K_Limiter
+	Name = Outer                
+	X1 = 2.49                 
+	Z1 = 0.52        
+	X2 = 2.49       
+	Z2 = -0.52
+	Enabled = 1
+	
+K_Limiter
+	Name = Top1                
+	X1 = 2.49                 
+	Z1 = 0.52        
+	X2 = 2.37       
+	Z2 = 0.81
+	Enabled = 1
+	
+K_Limiter
+	Name = Top2                
+	X1 = 2.37       
+	Z1 = 0.81
+	X2 = 2.0      
+	Z2 = 1.0
+	Enabled = 1
+	
+K_Limiter
+	Name = Top3                
+	X1 = 2.0      
+	Z1 = 1.0
+	X2 = 1.56       
+	Z2 = 1.195
+	Enabled = 1
+
+K_Limiter
+	Name = Top4                
+	X1 = 1.56      
+	Z1 = 1.195
+	X2 = 1.0       
+	Z2 = 1.35
+	Enabled = 1
+
+K_Limiter
+	Name = Top5                
+	X1 = 1.0      
+	Z1 = 1.35
+	X2 = 0.63       
+	Z2 = 1.41
+	Enabled = 1
+	
+K_Limiter
+	Name = Top6                
+	X1 = 0.63       
+	Z1 = 1.41
+	X2 = 0.01       
+	Z2 = 1.41
+	Enabled = 1
+
+K_Limiter
+	Name = Floating_Coil                
+	X1 = 0.2235                   
+	Z1 = 0.000        
+	X2 = 0.24        
+	Z2 = 0.000
+	Enabled = -1
+
+K_Limiter
+	Name = Floating_Coil                
+	X1 = 0.585                   
+	Z1 = 0.000        
+	X2 = 0.5        
+	Z2 = 0.000
+	Enabled = -1  
+	
+K_Separatrix
+	Name = Upper_Sep
+	X1 = 1.4
+	Z1 = 1.4
+	X2 = 0.6
+	Z2 = 0.05
+	XC = 1.0
+	ZC = 0.05
+	Enabled = 1
+	
+K_Separatrix
+	Name = Extra_Sep
+	X1 = 1.5
+	Z1 = 1.0
+	X2 = 2.5
+	Z2 = 0.0
+	XC = 0.65
+	ZC = 0.05
+	Enabled = 0
+
+K_Coil
+	Name = F1_Coil
+	Enabled = 1
+	InitialCurrent = 57132
+	X  = 0.2717
+	dX = 0.0116
+	Z  = 0.0
+	dZ = 0.0695
+
+K_Coil
+	Name = F2_Coil
+	Enabled = 1
+	InitialCurrent = 169119
+	X  = 0.28504
+	dX = 0.01508
+	Z  = 0.0
+	dZ = 0.125
+
+K_Coil
+	Name = F3_Coil
+	Enabled = 1
+	InitialCurrent = 1257939
+	X  = 0.33734
+	dX = 0.08936
+	Z  = 0.0
+	dZ = 0.1615
+
+K_Coil
+	Name = L_Coil
+	Enabled = 1
+	InitialCurrent = 206000
+	X  = 0.483
+	dX = 0.322
+	Z  = 1.5633
+	dZ = 0.00661
+
+K_Measure
+	mType = 1
+	Name = BR1
+	Angle = 12.53
+	X = 0.9445     
+	Z = 1.3775
+	Value = -0.0066     
+	StdDev = 0.0003
+
+K_Measure
+	mType = 1
+	Name = BZ1
+	Angle = 102.53
+	X = 0.9445     
+	Z = 1.3775
+	Value = -0.00084     
+	StdDev = 0.00005
+
+K_Measure
+	mType = 1
+	Name = BR2
+	Angle = 18.94
+	X = 1.2418     
+	Z = 1.3026 
+	Value = 0.0017    
+	StdDev = 0.0001
+
+K_Measure
+	mType = 1
+	Name = BZ2
+	Angle = 108.94
+	X = 1.2418     
+	Z = 1.3026 
+	Value = 0.008     
+	StdDev = 0.0004
+
+K_Measure
+	mType = 1
+	Name = BR3
+	Angle = 18.94
+	X = 1.5612     
+	Z = 1.1989 
+	Value = 0.00099     
+	StdDev = 0.00005
+
+K_Measure
+	mType = 1
+	Name = BZ3
+	Angle = 108.94
+	X = 1.5612     
+	Z = 1.1989 
+	Value = 0.0084	     
+	StdDev = 0.0004
+
+K_Measure
+	mType = 1
+	Name = BR4
+	Angle = 0
+	X = 2.4920     
+	Z = 0.4975 
+	Value = -0.0038    
+	StdDev = 0.0002
+
+K_Measure
+	mType = 1
+	Name = BZ4
+	Angle = 90
+	X = 2.4920     
+	Z = 0.4975 
+	Value = 0.0014     
+	StdDev = 0.0001
+
+K_Measure
+	mType = 1
+	Name = BR5
+	Angle = 0
+	X = 2.4952     
+	Z = -0.3518 
+	Value = -0.0035   
+	StdDev = 0.0002
+
+K_Measure
+	mType = 1
+	Name = BZ5
+	Angle = 90
+	X = 2.4952     
+	Z = -0.3518 
+	Value = -0.0025     
+	StdDev = 0.0001
+
+K_Measure
+	mType = 1
+	Name = BR6
+	Angle = 0
+	X = 2.4953     
+	Z = -0.5827 
+	Value = -0.0028  
+	StdDev = 0.0001
+
+K_Measure
+	mType = 1
+	Name = BZ6
+	Angle = 90
+	X = 2.4953     
+	Z = -0.5827 
+	Value = -0.0032     
+	StdDev = 0.0002
+
+K_Measure
+	mType = 1
+	Name = BR7
+	Angle = 344.1
+	X = 1.3474     
+	Z = -1.2672 
+	Value = 0.0089     
+	StdDev = 0.0004
+
+K_Measure
+	mType = 1
+	Name = BZ7
+	Angle = 74.1
+	X = 1.3474     
+	Z = -1.2672 
+	Value = -0.012     
+	StdDev = 0.0005
+
+K_Measure
+	mType = 1
+	Name = BR8
+	Angle = 344.1
+	X = 1.0845     
+	Z = -1.3400 
+	Value = 0.015     
+	StdDev = 0.001
+
+K_Measure
+	mType = 1
+	Name = BZ8
+	Angle = 74.1
+	X = 1.0845     
+	Z = -1.3400 
+	Value = -0.012     
+	StdDev = 0.0005
+
+K_Measure
+	mType = 1
+	Name = BR9
+	Angle = 350.96
+	X = 0.8388     
+	Z = -1.4007 
+	Value = 0.019     
+	StdDev = 0.001
+
+K_Measure
+	mType = 1
+	Name = BZ9
+	Angle = 80.96
+	X = 0.8388     
+	Z = -1.4007 
+	Value = -0.013   
+	StdDev = 0.0005
+
+K_Measure
+	mType = 5
+	Name = F1
+	X = 0.9445     
+	Z = 1.3775
+	Value = -0.17     
+	StdDev = 0.01
+
+K_Measure
+	mType = 5
+	Name = F2
+	X = 1.2418     
+	Z = 1.3026 
+	Value = -0.17     
+	StdDev = 0.01
+
+K_Measure
+	mType = 5
+	Name = F3
+	X = 1.5612     
+	Z = 1.1989 
+	Value = -0.18     
+	StdDev = 0.01
+
+K_Measure
+	mType = 5
+	Name = F4
+	X = 2.4920     
+	Z = 0.4975 
+	Value = -0.17     
+	StdDev = 0.01
+
+K_Measure
+	mType = 5
+	Name = F5
+	X = 2.4952     
+	Z = -0.3518 
+	Value = -0.17    
+	StdDev = 0.01
+
+K_Measure
+	mType = 5
+	Name = F6
+	X = 2.4953     
+	Z = -0.5827 
+	Value = -0.16     
+	StdDev = 0.01
+
+K_Measure
+	mType = 5
+	Name = F7
+	X = 1.3474     
+	Z = -1.2672 
+	Value = -0.11     
+	StdDev = 0.005
+
+K_Measure
+	mType = 5
+	Name = F8
+	X = 1.0845     
+	Z = -1.3400 
+	Value = -0.082     
+	StdDev = 0.004
+
+K_Measure
+	mType = 5
+	Name = F9
+	X = 0.8388     
+	Z = -1.4007 
+	Value = -0.057    
+	StdDev = 0.003
+
+K_Measure
+	mType = 8
+	Name = F1_Coil_Current
+	Value = 57132
+	StdDev = 1000
+	CoilNum = 1
+
+K_Measure
+	mType = 8
+	Name = F2_Coil_Current
+	Value = 169119
+	StdDev = 3000
+	CoilNum = 2
+
+K_Measure
+	mType = 8
+	Name = F3_Coil_Current
+	Value = 1257939
+	StdDev = 25000
+	CoilNum = 3
+
+K_Measure
+	mType = 8
+	Name = L_Coil_Current
+	Value = 206000
+	StdDev = 4000
+	CoilNum = 4
+        

@@ -1,0 +1,13 @@
+TokaMac Meas Output. From Input FileName: beta35.in
+    RunName: High. Info: Newest
+    Run started at Wednesday, Feb 06, 2002 04:19:37 PM
+    Run was retarted from file beta35_Restart.bin.
+    The final value of chisq = 1; BoundError = 4.50775e-07
+    The chi-square probability, Q = 0.317311.
+    Run ended at   Wednesday, Feb 06, 2002 04:20:07 PM
+
+Measurements         mType     Value    StdDev       Fit     |Chi|
+                  -      6      0.95     0.024    -0.092    43.782
+                                                         ---------
+Sum                                                       1916.874
+

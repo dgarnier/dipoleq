@@ -1,0 +1,11 @@
+TokaMac Meas Output. From Input FileName: ldx4b.in
+    RunName: Vacuum. Info: Newest
+    Run started at Friday, Apr 04, 2003 01:55:33 PM
+    Run was initialized internally.
+    The final value of chisq = 1; BoundError = 7.44179e-07
+    Run ended at   Friday, Apr 04, 2003 01:56:02 PM
+
+Measurements         mType     Value    StdDev       Fit     |Chi|
+                                                         ---------
+Sum                                                          0.000
+

@@ -1,0 +1,7 @@
+
+SimDipEq Build Jan  7 2002 11:05:53
+SimDipEq:	Starting new equilibrium model using input from DipIn.dat.
+
+Fatal error: 
+ERROR:	Could not open file in FileInput.
+        ...now exiting to system.

@@ -1,0 +1,33 @@
+TokaMac Values Output. From Input FileName: dipin.in
+    RunName: DT004c. Info: Marginal
+    Run started at Wednesday, Jun 26, 2002 04:16:33 PM
+    Run was initialized internally.
+
+Input Values for run:
+    Fixed, Free Iterations = 0, 1
+    Number of Coils, Shells, Limiters, Seps, Meas = 1, 0, 3, 0, 0
+    LHGreens functions placed in DT004c_LHGreens.bin
+    MeasGreens functions placed in DT004c_MGreen.bin
+    ShellGreens functions placed in TokShellGreens.bin
+    Shell inductance matrix placed in TokShellInduct.bin
+    Restart file placed in DT004c_Restart.bin
+    Initial Plasma Current = 0.001 (A), B0 = 0.000 (T)
+    Initial Current Geometry R0 = 1.200 Z0 = 0.000 a0 = 0.100 (m)
+    Plasma_DipoleIntStable with RPeak, ZPeak, PEdge, fCrit, PsiFlat, G2Pow, NPts = 
+    2.200000 0.000000 20.000000 1.000000 0.999000 0.000000 100
+    Approximate edge current density = 0 (A/m2)
+    PsiGrid 256 x 256  (0.000 < X < 8.000) (-3.000 < Z < 3.000)
+    PsiGrid is not up-down symmetric.
+    Thresholds for boundary = 1e-05, residual = 1e-09
+    The under relaxation parameters are 0.9, 0.9
+
+Limiter                     X1        Z1        X2        Z2   On/Off
+               Outer     7.000     2.500     7.000    -2.500   1
+                Top1     1.000     2.500     7.000     2.500   1
+       Floating_Coil     1.000     0.000     0.950     0.000   -1
+
+Coil Set F_Coil On/Off = 1 Coil Current = 1.5e+07 (A)
+    SubCoil                  X         Z          Fract
+
+Measurements         mType     Value    StdDev         X        Z
+

@@ -1,0 +1,1 @@
+#define DIPOLE 1#define HasNoToroidalField 1#define MAKEFIT 1

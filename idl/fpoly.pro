@@ -1,0 +1,1 @@
+function fpoly,x,terms	result = poly(x,terms)	result = result - (total(terms)-terms[0])*x^(n_elements(terms)-1)	return, resultendfunction real_end,terms	return,terms[n_elements(terms)-1]-(total(terms)-terms[0])endfunction trial,x	return, (1-x)^7endpro plot_trials,x,terms	dx = deriv(x,trial(x))		plot,x,dx,lines=1	oplot,x,fpoly(x,terms)end

@@ -1,0 +1,16 @@
+TokaMac Boundary Moments Output. From Input FileName: Fit.in
+    RunName: Fit. Info: Newest
+    Run started at Tuesday, May 28, 2002 02:30:03 PM
+    Run was initialized internally.
+    Run ended at   Tuesday, May 28, 2002 02:30:23 PM
+
+First 5 moments of the 0.9995 flux surface:
+
+m           Xm          Zm  
+00       1.266      0.1644
+01       1.018      0.9784
+02     -0.0103     0.01081
+03     0.03822    0.001316
+04    -0.01845   -0.002679
+05     0.01565     0.02121
+

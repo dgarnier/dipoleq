@@ -1,0 +1,11 @@
+TokaMac Meas Output. From Input FileName: beta1.in
+    RunName: Vacuum. Info: Newest
+    Run started at Tuesday, Jun 25, 2002 06:16:38 PM
+    Run was initialized internally.
+    The final value of chisq = 1; BoundError = 7.6096e-07
+    Run ended at   Tuesday, Jun 25, 2002 06:19:34 PM
+
+Measurements         mType     Value    StdDev       Fit     |Chi|
+                                                         ---------
+Sum                                                          0.000
+
