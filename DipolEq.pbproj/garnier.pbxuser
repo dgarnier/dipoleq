@@ -40,6 +40,20 @@
 			/Users/garnier/sb/dipoleq/Testing,
 		);
 	};
+	021DE76E00CC036B7F000001 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {734, 8959}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {734, 74}}";
+		};
+	};
+	021DE79E00CC036B7F000001 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {794, 2352}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 1639}, {689, 488}}";
+		};
+	};
 	021DE7A900CC036B7F000001 = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {711, 1217}}";
@@ -56,9 +70,37 @@
 			sepNavWindowFrame = "{{61, 397}, {750, 558}}";
 		};
 	};
+	021DE7BF00CC036B7F000001 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {689, 2044}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {689, 488}}";
+		};
+	};
+	021DE7C500CC036B7F000001 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {689, 2029}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {689, 488}}";
+		};
+	};
 	021DE7CD00CC036B7F000001 = {
 		uiCtxt = {
 			sepNavWindowFrame = "{{15, 239}, {750, 502}}";
+		};
+	};
+	021DE7DB00CC036B7F000001 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {689, 2519}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 2031}, {689, 488}}";
+		};
+	};
+	021DE7E100CC036B7F000001 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {689, 2211}}";
+			sepNavSelRange = "{591, 2706}";
+			sepNavVisRect = "{{0, 379}, {689, 488}}";
 		};
 	};
 	021DE7F500CC036B7F000001 = {
@@ -67,6 +109,20 @@
 			sepNavSelRange = "{7944, 0}";
 			sepNavVisRect = "{{0, 4068}, {621, 482}}";
 			sepNavWindowFrame = "{{71, 0}, {954, 821}}";
+		};
+	};
+	021DE7FA00CC036B7F000001 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {689, 3289}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {689, 488}}";
+		};
+	};
+	021DE88E00CD57617F000001 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {734, 12109}}";
+			sepNavSelRange = "{14178, 0}";
+			sepNavVisRect = "{{0, 8737}, {734, 153}}";
 		};
 	};
 	084C514E04436EEB007DB2B3 = {
@@ -82,29 +138,9 @@
 		lineNumber = 171;
 		state = 1;
 	};
-	0880E44507459EB700E1BD30 = {
-		fRef = 021DE7F500CC036B7F000001;
-		isa = PBXTextBookmark;
-		name = "    for(i=0; i<npts; i++)\n";
-		rLen = 26;
-		rLoc = 6576;
-		rType = 0;
-		vrLen = 287;
-		vrLoc = 6476;
-	};
-	0880E4480745E2FE00E1BD30 = {
-		fRef = 021DE7F500CC036B7F000001;
-		isa = PBXTextBookmark;
-		name = "rolldown.c: 323";
-		rLen = 0;
-		rLoc = 7944;
-		rType = 0;
-		vrLen = 1043;
-		vrLoc = 6939;
-	};
 	088CF0C30614ED1A00F10F15 = {
 		fallbackIsa = XCSourceControlManager;
-		isSCMEnabled = 0;
+		isSCMEnabled = 1;
 		isa = PBXSourceControlManager;
 		scmConfiguration = {
 		};
@@ -123,6 +159,383 @@
 		wantsCodeCompletionPlaceholdersInserted = 1;
 		wantsCodeCompletionTabCompletes = 1;
 		wantsIndex = 1;
+	};
+	08BBA42007FD0AA800DF9349 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {689, 1050}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {689, 488}}";
+		};
+	};
+	08E1B459080B62B200F1AD92 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {689, 488}}";
+			sepNavSelRange = "{348, 0}";
+			sepNavVisRect = "{{0, 0}, {689, 488}}";
+		};
+	};
+	08E1B45A080B62B200F1AD92 = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {689, 1903}}";
+			sepNavSelRange = "{693, 0}";
+			sepNavVisRect = "{{0, 239}, {689, 488}}";
+		};
+	};
+	08E1B460080B674200F1AD92 = {
+		fRef = 021DE7FA00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "tokamak.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 793;
+		vrLoc = 0;
+	};
+	08E1B461080B674200F1AD92 = {
+		fRef = 021DE7C500CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "Find_dJdy.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 686;
+		vrLoc = 671;
+	};
+	08E1B462080B674200F1AD92 = {
+		isa = PBXTargetBookmark;
+		trg = 08FB779FFE84155DC02AAC07;
+		uiCtxt = {
+			TOCViewDetailVisibleRect = "{{0, 0}, {498, 233}}";
+			TOCViewExpandedItems = (
+				"com.apple.target-editor-pane.settings",
+				"com.apple.target-editor-pane.settings.simple",
+				"com.apple.target-editor-pane.buildphases",
+			);
+			TOCViewMasterVisibleRect = "{{0, 0}, {197, 471}}";
+			TOCViewSelectedItems = (
+				PBXTargetSummarySettingsModule,
+			);
+		};
+	};
+	08E1B463080B674200F1AD92 = {
+		fRef = 08BBA42007FD0AA800DF9349;
+		isa = PBXTextBookmark;
+		name = "CMeasurement.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 552;
+		vrLoc = 0;
+	};
+	08E1B464080B674200F1AD92 = {
+		fRef = 021DE7DB00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "meas_bp.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 393;
+		vrLoc = 3048;
+	};
+	08E1B465080B674200F1AD92 = {
+		fRef = 021DE7E100CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "#define PI          3.14159265358979323\n#define MU0\t\t\t1.25663706e-06\n#define TWOPI\t\t6.283185307\n#define DEG_RAD\t\t1.74532925e-2\n\n#define TRUE\t\t1\n#define FALSE\t\t0\n\nextern double ***meas_dJdy;\t\t/* common pointer to storage */\n\n/*\n**\tmeas_mag_Fit\n**\n*/\nvoid          meas_mag_Fit(TOKAMAK * td, MEAS * m)\n{\n\tdouble        sum = 0.0;\n\tint           nmax;\n\tint           ix, iz, i, is, **ip;\n\tdouble      **PlGrn, *CGrn, *SGrn, **J;\n\tSHELL        *shell;\n\tCOIL\t\t*c;\n\n\tnmax = td->PsiGrid->Nsize;\n\tJ = td->PsiGrid->Current;\n\tip = td->PsiGrid->IsPlasma;\n\tPlGrn = m->PlasmaGreen;\n\tSGrn = m->ShellGreen;\n\tCGrn = m->CoilGreen;\n\n\tfor (ix = 1; ix < nmax; ix++)\n\t\tfor (iz = 1; iz < nmax; iz++)\n\t\t\tif (ip[ix][iz])\n\t\t\t\tsum += J[ix][iz] * PlGrn[ix][iz];\n\tsum = sum * td->PsiGrid->dx * td->PsiGrid->dz;\n\n\tfor (i = 0; i < td->NumCoils; i++) {\n\t\tc = td->Coils[i];\n\t\tif (c->Enabled) \n\t\t\tsum += CGrn[i] * c->CoilCurrent;\n\t}\n\n\tfor (i = 0; i < td->NumShells; i++) {\n\t\tshell = td->Shells[i];\n\t\tfor (is = 0; is < shell->NumSubShells; is++)\n\t\t\tsum += SGrn[i] * shell->SubShells[i]->Current;\n\t}\n\n\tm->Fit = sum;\n}\n\n/*\n**\tmeas_mag_Now\n**\n*/\nvoid          meas_mag_Now(TOKAMAK * td, MEAS * m)\n{\n\tdouble        sum = 0.0;\n\tint           nmax;\n\tint           ix, iz, i, is, **ip;\n\tdouble      **PlGrn, *CGrn, *SGrn;\n\tSHELL        *shell;\n\tCOIL\t\t*c;\n\n\tnmax = td->PsiGrid->Nsize;\n\tip = td->PsiGrid->IsPlasma;\n\tPlGrn = m->PlasmaGreen;\n\tSGrn = m->ShellGreen;\n\tCGrn = m->CoilGreen;\n\n\tfor (ix = 1; ix < nmax; ix++)\n\t\tfor (iz = 1; iz < nmax; iz++)\n\t\t\tif (ip[ix][iz])\n\t\t\t\tsum += FindJ_Loc(td, ix, iz) * PlGrn[ix][iz];\n\tsum = sum * td->PsiGrid->dx * td->PsiGrid->dz;\n\n\tfor (i = 0; i < td->NumCoils; i++) {\n\t\tc = td->Coils[i];\n\t\tif (c->Enabled) \n\t\t\tsum += CGrn[i] * c->CoilCurrent;\n\t}\n\n\tfor (i = 0; i < td->NumShells; i++) {\n\t\tshell = td->Shells[i];\n\t\tfor (is = 0; is < shell->NumSubShells; is++)\n\t\t\tsum += SGrn[i] * shell->SubShells[i]->Current;\n\t}\n\n\tm->Now = sum;\n}\n\n/*\n**\tmeas_mag_L\n**\n**\tNote:\tThe L array has dimensions [1..NumUnkns].\n**\n*/\nvoid          meas_mag_L(TOKAMAK * td, MEAS * m, double *L)\n{\n\tint           iu, iup;\n\tint           ix, iz, nmax;\n\tdouble      **PlGrn, *CGrn;\n\n\tnmax = td->PsiGrid->Nsize;\n\tiup = td->NumUnkns - td->NumCoils;\t/* iup is the number of plasma unknowns */\n\n\tPlGrn = m->PlasmaGreen;\n\tCGrn = m->CoilGreen;\n\n\tfor (iu = 1; iu <= td->NumUnkns; iu++)\n\t\tL[iu] = 0.0;\n\n\t/* P L A S M A   U N K N O W N S */\n\tfor (iu = 1; iu <= iup; iu++) {\n\t\tfor (ix = 1; ix < nmax; ix++)\n\t\t\tfor (iz = 1; iz < nmax; iz++)\n\t\t\t\tL[iu] += PlGrn[ix][iz] * meas_dJdy[iu][ix][iz];\n\t\tL[iu] *= td->PsiGrid->dx * td->PsiGrid->dz;\n\t}\n\n\t/* C O I L   U N K N O W N S */\n\tfor (iu = iup + 1; iu <= td->NumUnkns; iu++)\n\t\tL[iu] = CGrn[iu - iup - 1];\n}\n";
+		rLen = 2706;
+		rLoc = 591;
+		rType = 0;
+		vrLen = 721;
+		vrLoc = 484;
+	};
+	08E1B467080B674200F1AD92 = {
+		fRef = 021DE79E00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "measurement.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1148;
+		vrLoc = 3146;
+	};
+	08E1B469080B674200F1AD92 = {
+		fRef = 021DE7FA00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "tokamak.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 793;
+		vrLoc = 0;
+	};
+	08E1B46A080B674200F1AD92 = {
+		fRef = 021DE7C500CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "Find_dJdy.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 686;
+		vrLoc = 671;
+	};
+	08E1B46B080B674200F1AD92 = {
+		isa = PBXTargetBookmark;
+		trg = 08FB779FFE84155DC02AAC07;
+		uiCtxt = {
+			TOCViewDetailVisibleRect = "{{0, 0}, {498, 233}}";
+			TOCViewExpandedItems = (
+				"com.apple.target-editor-pane.settings",
+				"com.apple.target-editor-pane.settings.simple",
+				"com.apple.target-editor-pane.buildphases",
+			);
+			TOCViewMasterVisibleRect = "{{0, 0}, {197, 471}}";
+			TOCViewSelectedItems = (
+				PBXTargetSummarySettingsModule,
+			);
+		};
+	};
+	08E1B46C080B674200F1AD92 = {
+		fRef = 08BBA42007FD0AA800DF9349;
+		isa = PBXTextBookmark;
+		name = "CMeasurement.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 552;
+		vrLoc = 0;
+	};
+	08E1B46D080B674200F1AD92 = {
+		fRef = 08E1B459080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 182;
+		vrLoc = 0;
+	};
+	08E1B46E080B674200F1AD92 = {
+		fRef = 08BBA42007FD0AA800DF9349;
+		isa = PBXTextBookmark;
+		name = "CMeasurement.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 552;
+		vrLoc = 0;
+	};
+	08E1B46F080B674200F1AD92 = {
+		fRef = 08E1B459080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.h: 10";
+		rLen = 0;
+		rLoc = 157;
+		rType = 0;
+		vrLen = 159;
+		vrLoc = 0;
+	};
+	08E1B470080B674200F1AD92 = {
+		fRef = 021DE7E100CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "meas_mag_Xxx.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 742;
+		vrLoc = 814;
+	};
+	08E1B471080B674200F1AD92 = {
+		fRef = 021DE7DB00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "meas_bp.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 393;
+		vrLoc = 3048;
+	};
+	08E1B472080B674200F1AD92 = {
+		fRef = 021DE7E100CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "#define PI          3.14159265358979323\n#define MU0\t\t\t1.25663706e-06\n#define TWOPI\t\t6.283185307\n#define DEG_RAD\t\t1.74532925e-2\n\n#define TRUE\t\t1\n#define FALSE\t\t0\n\nextern double ***meas_dJdy;\t\t/* common pointer to storage */\n\n/*\n**\tmeas_mag_Fit\n**\n*/\nvoid          meas_mag_Fit(TOKAMAK * td, MEAS * m)\n{\n\tdouble        sum = 0.0;\n\tint           nmax;\n\tint           ix, iz, i, is, **ip;\n\tdouble      **PlGrn, *CGrn, *SGrn, **J;\n\tSHELL        *shell;\n\tCOIL\t\t*c;\n\n\tnmax = td->PsiGrid->Nsize;\n\tJ = td->PsiGrid->Current;\n\tip = td->PsiGrid->IsPlasma;\n\tPlGrn = m->PlasmaGreen;\n\tSGrn = m->ShellGreen;\n\tCGrn = m->CoilGreen;\n\n\tfor (ix = 1; ix < nmax; ix++)\n\t\tfor (iz = 1; iz < nmax; iz++)\n\t\t\tif (ip[ix][iz])\n\t\t\t\tsum += J[ix][iz] * PlGrn[ix][iz];\n\tsum = sum * td->PsiGrid->dx * td->PsiGrid->dz;\n\n\tfor (i = 0; i < td->NumCoils; i++) {\n\t\tc = td->Coils[i];\n\t\tif (c->Enabled) \n\t\t\tsum += CGrn[i] * c->CoilCurrent;\n\t}\n\n\tfor (i = 0; i < td->NumShells; i++) {\n\t\tshell = td->Shells[i];\n\t\tfor (is = 0; is < shell->NumSubShells; is++)\n\t\t\tsum += SGrn[i] * shell->SubShells[i]->Current;\n\t}\n\n\tm->Fit = sum;\n}\n\n/*\n**\tmeas_mag_Now\n**\n*/\nvoid          meas_mag_Now(TOKAMAK * td, MEAS * m)\n{\n\tdouble        sum = 0.0;\n\tint           nmax;\n\tint           ix, iz, i, is, **ip;\n\tdouble      **PlGrn, *CGrn, *SGrn;\n\tSHELL        *shell;\n\tCOIL\t\t*c;\n\n\tnmax = td->PsiGrid->Nsize;\n\tip = td->PsiGrid->IsPlasma;\n\tPlGrn = m->PlasmaGreen;\n\tSGrn = m->ShellGreen;\n\tCGrn = m->CoilGreen;\n\n\tfor (ix = 1; ix < nmax; ix++)\n\t\tfor (iz = 1; iz < nmax; iz++)\n\t\t\tif (ip[ix][iz])\n\t\t\t\tsum += FindJ_Loc(td, ix, iz) * PlGrn[ix][iz];\n\tsum = sum * td->PsiGrid->dx * td->PsiGrid->dz;\n\n\tfor (i = 0; i < td->NumCoils; i++) {\n\t\tc = td->Coils[i];\n\t\tif (c->Enabled) \n\t\t\tsum += CGrn[i] * c->CoilCurrent;\n\t}\n\n\tfor (i = 0; i < td->NumShells; i++) {\n\t\tshell = td->Shells[i];\n\t\tfor (is = 0; is < shell->NumSubShells; is++)\n\t\t\tsum += SGrn[i] * shell->SubShells[i]->Current;\n\t}\n\n\tm->Now = sum;\n}\n\n/*\n**\tmeas_mag_L\n**\n**\tNote:\tThe L array has dimensions [1..NumUnkns].\n**\n*/\nvoid          meas_mag_L(TOKAMAK * td, MEAS * m, double *L)\n{\n\tint           iu, iup;\n\tint           ix, iz, nmax;\n\tdouble      **PlGrn, *CGrn;\n\n\tnmax = td->PsiGrid->Nsize;\n\tiup = td->NumUnkns - td->NumCoils;\t/* iup is the number of plasma unknowns */\n\n\tPlGrn = m->PlasmaGreen;\n\tCGrn = m->CoilGreen;\n\n\tfor (iu = 1; iu <= td->NumUnkns; iu++)\n\t\tL[iu] = 0.0;\n\n\t/* P L A S M A   U N K N O W N S */\n\tfor (iu = 1; iu <= iup; iu++) {\n\t\tfor (ix = 1; ix < nmax; ix++)\n\t\t\tfor (iz = 1; iz < nmax; iz++)\n\t\t\t\tL[iu] += PlGrn[ix][iz] * meas_dJdy[iu][ix][iz];\n\t\tL[iu] *= td->PsiGrid->dx * td->PsiGrid->dz;\n\t}\n\n\t/* C O I L   U N K N O W N S */\n\tfor (iu = iup + 1; iu <= td->NumUnkns; iu++)\n\t\tL[iu] = CGrn[iu - iup - 1];\n}\n";
+		rLen = 2706;
+		rLoc = 591;
+		rType = 0;
+		vrLen = 721;
+		vrLoc = 484;
+	};
+	08E1B473080B674200F1AD92 = {
+		fRef = 08E1B45A080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.cpp: 35";
+		rLen = 0;
+		rLoc = 693;
+		rType = 0;
+		vrLen = 867;
+		vrLoc = 340;
+	};
+	08E1B474080B674200F1AD92 = {
+		fRef = 08E1B459080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.h: 14";
+		rLen = 0;
+		rLoc = 284;
+		rType = 0;
+		vrLen = 267;
+		vrLoc = 0;
+	};
+	08E1B475080B674200F1AD92 = {
+		fRef = 021DE79E00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "measurement.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1148;
+		vrLoc = 3146;
+	};
+	08E1B477080B674200F1AD92 = {
+		fRef = 021DE88E00CD57617F000001;
+		isa = PBXTextBookmark;
+		rLen = 1;
+		rLoc = 630;
+		rType = 1;
+	};
+	08E1B479080B674200F1AD92 = {
+		fRef = 021DE76E00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "DipEq.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 71;
+		vrLoc = 0;
+	};
+	08E1B47A080B674200F1AD92 = {
+		fRef = 021DE88E00CD57617F000001;
+		isa = PBXTextBookmark;
+		rLen = 11;
+		rLoc = 13995;
+		rType = 0;
+	};
+	08E1B47B080B674200F1AD92 = {
+		fRef = 021DE76E00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "DipEq.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 71;
+		vrLoc = 0;
+	};
+	08E1B493080BE62400F1AD92 = {
+		fRef = 08E1B459080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.h: 17";
+		rLen = 0;
+		rLoc = 348;
+		rType = 0;
+		vrLen = 354;
+		vrLoc = 0;
+	};
+	08E1B494080BE62400F1AD92 = {
+		fRef = 021DE7BF00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "CPlasmaModel.cc: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 705;
+		vrLoc = 0;
+	};
+	08E1B495080BE62400F1AD92 = {
+		fRef = 08E1B45A080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.cpp: 35";
+		rLen = 0;
+		rLoc = 693;
+		rType = 0;
+		vrLen = 867;
+		vrLoc = 340;
+	};
+	08E1B496080BE62400F1AD92 = {
+		fRef = 08E1B459080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.h: 17";
+		rLen = 0;
+		rLoc = 348;
+		rType = 0;
+		vrLen = 354;
+		vrLoc = 0;
+	};
+	08E1B497080BE62400F1AD92 = {
+		fRef = 021DE7BF00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "CPlasmaModel.cc: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 705;
+		vrLoc = 0;
+	};
+	08E1B498080BE62400F1AD92 = {
+		fRef = 08E1B45A080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.cpp: 35";
+		rLen = 0;
+		rLoc = 693;
+		rType = 0;
+		vrLen = 867;
+		vrLoc = 340;
+	};
+	08E1B499080BE62400F1AD92 = {
+		fRef = 08E1B459080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.h: 17";
+		rLen = 0;
+		rLoc = 348;
+		rType = 0;
+		vrLen = 354;
+		vrLoc = 0;
+	};
+	08E1B49A080BE62400F1AD92 = {
+		fRef = 021DE7BF00CC036B7F000001;
+		isa = PBXTextBookmark;
+		name = "CPlasmaModel.cc: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 705;
+		vrLoc = 0;
+	};
+	08E1B4A0080BE67E00F1AD92 = {
+		fRef = 08E1B45A080B62B200F1AD92;
+		isa = PBXTextBookmark;
+		name = "CMagneticMeasurement.cpp: 35";
+		rLen = 0;
+		rLoc = 693;
+		rType = 0;
+		vrLen = 867;
+		vrLoc = 340;
+	};
+	08E1B4A1080BE67E00F1AD92 = {
+		fRef = 021DE88E00CD57617F000001;
+		isa = PBXTextBookmark;
+		name = "                CMeasurement::FindAllFit(td);\n";
+		rLen = 46;
+		rLoc = 14087;
+		rType = 0;
+		vrLen = 672;
+		vrLoc = 13812;
+	};
+	08E1B4A2080BE67E00F1AD92 = {
+		fRef = 021DE88E00CD57617F000001;
+		isa = PBXTextBookmark;
+		name = "SimDipEq.c: 632";
+		rLen = 0;
+		rLoc = 14178;
+		rType = 0;
+		vrLen = 316;
+		vrLoc = 13935;
 	};
 	08FB7793FE84155DC02AAC07 = {
 		activeBuildStyle = 014CEA460018CE2711CA2923;
@@ -147,9 +560,9 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					242,
+					460,
 					20,
-					48,
+					85,
 					43,
 					43,
 					20,
@@ -164,7 +577,53 @@
 					PBXFileDataSource_Target_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 122001841;
+			PBXConfiguration.PBXFileTableDataSource3.XCSCMDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					449,
+					20,
+					72,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_SCM_ColumnID,
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					393,
+					86,
+					20,
+					86,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 134962217;
 			PBXPrepackagedSmartGroups_v2 = (
 				{
 					PBXTransientLocationAtTop = bottom;
@@ -1018,11 +1477,44 @@
 				PBXModuleWindowStatusBarHidden = YES;
 				RubberWindowFrame = "291 243 750 502 0 0 1280 1002 ";
 			};
-			PBXWorkspaceStateSaveDate = 122001841;
+			PBXWorkspaceStateSaveDate = 134962217;
 		};
 		perUserProjectItems = {
-			0880E44507459EB700E1BD30 = 0880E44507459EB700E1BD30;
-			0880E4480745E2FE00E1BD30 = 0880E4480745E2FE00E1BD30;
+			08E1B460080B674200F1AD92 = 08E1B460080B674200F1AD92;
+			08E1B461080B674200F1AD92 = 08E1B461080B674200F1AD92;
+			08E1B462080B674200F1AD92 = 08E1B462080B674200F1AD92;
+			08E1B463080B674200F1AD92 = 08E1B463080B674200F1AD92;
+			08E1B464080B674200F1AD92 = 08E1B464080B674200F1AD92;
+			08E1B465080B674200F1AD92 = 08E1B465080B674200F1AD92;
+			08E1B467080B674200F1AD92 = 08E1B467080B674200F1AD92;
+			08E1B469080B674200F1AD92 = 08E1B469080B674200F1AD92;
+			08E1B46A080B674200F1AD92 = 08E1B46A080B674200F1AD92;
+			08E1B46B080B674200F1AD92 = 08E1B46B080B674200F1AD92;
+			08E1B46C080B674200F1AD92 = 08E1B46C080B674200F1AD92;
+			08E1B46D080B674200F1AD92 = 08E1B46D080B674200F1AD92;
+			08E1B46E080B674200F1AD92 = 08E1B46E080B674200F1AD92;
+			08E1B46F080B674200F1AD92 = 08E1B46F080B674200F1AD92;
+			08E1B470080B674200F1AD92 = 08E1B470080B674200F1AD92;
+			08E1B471080B674200F1AD92 = 08E1B471080B674200F1AD92;
+			08E1B472080B674200F1AD92 = 08E1B472080B674200F1AD92;
+			08E1B473080B674200F1AD92 = 08E1B473080B674200F1AD92;
+			08E1B474080B674200F1AD92 = 08E1B474080B674200F1AD92;
+			08E1B475080B674200F1AD92 = 08E1B475080B674200F1AD92;
+			08E1B477080B674200F1AD92 = 08E1B477080B674200F1AD92;
+			08E1B479080B674200F1AD92 = 08E1B479080B674200F1AD92;
+			08E1B47A080B674200F1AD92 = 08E1B47A080B674200F1AD92;
+			08E1B47B080B674200F1AD92 = 08E1B47B080B674200F1AD92;
+			08E1B493080BE62400F1AD92 = 08E1B493080BE62400F1AD92;
+			08E1B494080BE62400F1AD92 = 08E1B494080BE62400F1AD92;
+			08E1B495080BE62400F1AD92 = 08E1B495080BE62400F1AD92;
+			08E1B496080BE62400F1AD92 = 08E1B496080BE62400F1AD92;
+			08E1B497080BE62400F1AD92 = 08E1B497080BE62400F1AD92;
+			08E1B498080BE62400F1AD92 = 08E1B498080BE62400F1AD92;
+			08E1B499080BE62400F1AD92 = 08E1B499080BE62400F1AD92;
+			08E1B49A080BE62400F1AD92 = 08E1B49A080BE62400F1AD92;
+			08E1B4A0080BE67E00F1AD92 = 08E1B4A0080BE67E00F1AD92;
+			08E1B4A1080BE67E00F1AD92 = 08E1B4A1080BE67E00F1AD92;
+			08E1B4A2080BE67E00F1AD92 = 08E1B4A2080BE67E00F1AD92;
 		};
 		sourceControlManager = 088CF0C30614ED1A00F10F15;
 		userBuildSettings = {
