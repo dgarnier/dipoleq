@@ -172,7 +172,7 @@ int main(int argc, char **argv)
 	
 	for (i=0;i<ipts;i++) {
 		for (j=0;j<jpts;j++) {
-			fprintf(fi,"%12g\t%12g\t%12g\t%12g\t%12g\t%12g\t%12g\n",R[i],Z[j],
+			fprintf(fi,"%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\n",R[i],Z[j],
 			    Psi[i][j], 
 			    dPr[i][j],  dPz[i][j],
 			    P[i][j], J[i][j]/MU0);
