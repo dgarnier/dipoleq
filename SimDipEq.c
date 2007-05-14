@@ -296,6 +296,13 @@ int main(int argc, char **argv)
 	fprintf(LogFile, "     	done\n");
 #endif
 
+#if NIMRODOUTPUT
+	printf("     	[NimrodOutput]\n");
+	fprintf(LogFile, "     	[NimrodOutput]\n");
+	NimrodOutput(td);
+
+#endif
+
 #if __profile__
 	ProfilerSetStatus(0);
 	ProfilerDump("\pDipProfile");  

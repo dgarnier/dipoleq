@@ -26,6 +26,7 @@ vpath %.cc sources
 
 PDFOBJS = plot_contour.o PDFOutput.o
 HDFOBJS = HDFOutput.o
+NIMRODOBJS = NimrodOutput.o
 
 ROOTOBJS = AddCoilJ.o AddShellJ.o CDipoleIntStable.o CDipoleStd.o \
     CPlasmaModel.o DelChiSqr.o FileInput.o \
@@ -62,6 +63,13 @@ DEFINES += -DPDFOUTPUT
 LIBS    += -lcpdfm
 OBJS	+= $(PDFOBJS)
 endif
+
+#for Nimrod output
+ifdef USENIMROD
+DEFINES += -DNIMROD_OUTPUT
+OBJS	+= $(NIMRODOBJS)
+endif
+
 
 CFLAGS += -O2 -g -Iincludes $(DEFINES)
 
