@@ -34,6 +34,12 @@ void DCONOutput(TOKAMAK * td);
 void EQGRUMOutput(TOKAMAK *);
 void GS2Output(TOKAMAK * td);
 
+#if NIMRODOUTPUT
+
+void NimrodOutput(TOKAMAK *td);
+
+#endif
+
 #ifdef __cplusplus
 }
 #endif

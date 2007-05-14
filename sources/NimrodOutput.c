@@ -5,6 +5,7 @@
 #include "psigrid.h"
 #include "plasma.h"
 #include "tokamak.h"
+#include "FileOutput.h"
 
 #define TRUE	1
 #define FALSE	0

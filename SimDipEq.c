@@ -288,19 +288,19 @@ int main(int argc, char **argv)
 	fprintf(LogFile, "     	[GS2Output]\n");
 	GS2Output(td);
 
+#if NIMRODOUTPUT
+	printf("     	[NimrodOutput]\n");
+	fprintf(LogFile, "     	[NimrodOutput]\n");
+	NimrodOutput(td);
+
+#endif
+
 #if PDFOUTPUT
 	printf("     	[PDFOutput]\n");
 	fprintf(LogFile, "     	[PDFOutput]\n");
 	PDFOutput(td);
 	printf("     	done\n");
 	fprintf(LogFile, "     	done\n");
-#endif
-
-#if NIMRODOUTPUT
-	printf("     	[NimrodOutput]\n");
-	fprintf(LogFile, "     	[NimrodOutput]\n");
-	NimrodOutput(td);
-
 #endif
 
 #if __profile__

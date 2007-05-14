@@ -66,7 +66,7 @@ endif
 
 #for Nimrod output
 ifdef USENIMROD
-DEFINES += -DNIMROD_OUTPUT
+DEFINES += -DNIMRODOUTPUT
 OBJS	+= $(NIMRODOBJS)
 endif
 
@@ -79,11 +79,18 @@ CFLAGS += -O2 -g -Iincludes $(DEFINES)
 dipoleq: $(OBJS) SimDipEq.o
 	$(CC) -o $@ $^ $(LIBS)
 
-install: dipoleq
+install_home: dipoleq
 	if [ ! -d $(HOME)/bin ]; then \
 		mkdir $(HOME)/bin ; \
 	fi; 
 	install -m 755 dipoleq $(HOME)/bin
+
+install: dipoleq
+	if [ ! -d /usr/local/bin ]; then \
+		mkdir /usr/local/bin ; \
+	fi; 
+	install -m 755 dipoleq /usr/local/bin
+
 
 .PHONY : clean
 clean:
