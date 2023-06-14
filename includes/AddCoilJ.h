@@ -25,8 +25,15 @@
 #include "coil.h"
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void AddSubCoilJ(PSIGRID * , COIL * );
 void AddCoilJ(TOKAMAK *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

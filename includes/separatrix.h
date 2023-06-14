@@ -42,6 +42,10 @@ typedef struct separatrix {
 	double			Xs,Zs;		/* the location of the separatrix */
 	} SEPARATRIX;
 		
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 SEPARATRIX *new_Separatrix(void);
 void free_Separatrix(SEPARATRIX *);
 
@@ -49,4 +53,7 @@ int	IsValidSeparatrix(SEPARATRIX *, double, double);
 
 int IsPtDivertor(SEPARATRIX *, double , double , double , double );
 
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -13,6 +13,12 @@
 **
 */
 
+#ifndef _ROLLDOWN_
+#define _ROLLDOWN_ 1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void RollDownHill(TOKAMAK *td, double r0, double z0, 
                   int n, double *psi, double *rr, double *zz);
@@ -23,3 +29,9 @@ void GetRandV(TOKAMAK *td, double r0, double z0,
                   int n, double *psi, double *rr, double *zz, double *vv);
 /* psi, r, and z should be vectors that are already set up going from 0 - n-1 */
 /* r0 and z0 are the initial positions */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

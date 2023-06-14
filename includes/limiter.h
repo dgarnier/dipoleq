@@ -33,7 +33,15 @@ typedef struct limiter {
 	double				Xmin,Zmin;	/* the coordinates of the min of Psi along limiter */
 	} LIMITER;
 	
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIMITER *new_Limiter();
 void free_Limiter(LIMITER *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

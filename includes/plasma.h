@@ -21,7 +21,7 @@
 
 #define _PLASMA_ 1
 
-class CPlasmaModel;
+struct CPlasmaModel;
 
 #define MaxPolyTerms		7
 
@@ -44,7 +44,7 @@ class CPlasmaModel;
 typedef struct plasma {		         
 	int					Nsize;				/* The arrays are Nsize x Nsize */
 	int					ModelType;			/* profile type */ 
-	CPlasmaModel	    *Model;
+	struct CPlasmaModel	*Model;
 	int 				G2pTerms;
 	int					HTerms;
 	int 				PpTerms;			/* number of terms in poly. expansion */
@@ -71,9 +71,9 @@ typedef struct plasma {
 	***/
 	
 	double				**B2;				/* Square of the total field strength */
-	double				**GradPsiX;			/* ¶Psi/¶x                 */
-	double				**GradPsiZ;			/* ¶Psi/dz                 */
-	double				**GradPsi2;			/* |¶Psi/¶x|2 + |¶Psi/dz|2 */
+	double				**GradPsiX;			/* ï¿½Psi/ï¿½x                 */
+	double				**GradPsiZ;			/* ï¿½Psi/dz                 */
+	double				**GradPsi2;			/* |ï¿½Psi/ï¿½x|2 + |ï¿½Psi/dz|2 */
 	double              **Bt;               /* toroidal magnetic field */
 	double              **G;                /* G = SQRT(G2) is RELATED to the toroidal flux */
 	double				**Rho;				/* mass density */

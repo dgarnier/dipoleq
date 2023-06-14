@@ -18,7 +18,14 @@
 
 #define _DELCHISQR_	1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 double  gammq(double , double );
 double	DelChiSqr(double , int );
 
+#ifdef __cplusplus
+}
+#endif
 #endif

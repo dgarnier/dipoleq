@@ -133,6 +133,10 @@
 **
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 TOKAMAK *new_Tokamak();
 void init_Tokamak(TOKAMAK *);
 void free_Tokamak(TOKAMAK *);
@@ -140,4 +144,7 @@ void free_Tokamak(TOKAMAK *);
 void SetStartTime(TOKAMAK *);
 void SetStopTime(TOKAMAK *);
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 #endif

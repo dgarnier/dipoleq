@@ -19,7 +19,14 @@
 
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void	GetGradPsi(TOKAMAK *);
 void	GetPlasmaParameters(TOKAMAK *);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

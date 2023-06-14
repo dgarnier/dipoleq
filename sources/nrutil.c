@@ -55,7 +55,7 @@ void          nrinfo(char error_text[])
 	IDL_Message(IDL_M_GENERIC, IDL_MSG_INFO, error_text);
 }
 #else
-void          nrerror(char error_text[])
+void          nrerror(const char error_text[])
 {
 /*	void          exit(int); */
 
@@ -70,7 +70,7 @@ void          nrerror(char error_text[])
 
 }
 
-void          nrinfo(char error_text[])
+void          nrinfo(const char error_text[])
 {
 	fprintf(stderr, "%s\n", error_text);
 	fprintf(LogFile, "%s\n", error_text);

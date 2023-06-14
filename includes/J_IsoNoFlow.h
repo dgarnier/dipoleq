@@ -20,8 +20,16 @@
 
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void J_IsoNoFlow(TOKAMAK *,double **, double *, double *);
 double J_IsoNoFlow_Loc(TOKAMAK * , int , int , double *, double *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

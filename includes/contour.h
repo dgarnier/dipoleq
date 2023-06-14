@@ -1,13 +1,18 @@
 /***
  * Public Interfaces for Contour.c
  *
- * © M. E. Mauel -- Dept. of Applied Physics, Columbia University
+ * ï¿½ M. E. Mauel -- Dept. of Applied Physics, Columbia University
  *               -- March 20, 1992
  ***/
  
 #ifndef _CONTOUR_
  
 #define _CONTOUR_				1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
  
 #define CONTOUR_START			1
 #define CONTOUR_STOP			2
@@ -49,5 +54,7 @@
  						int,				/* CONTOUR_MIDPOINT */
  						void (*)(double,double,double,int)		/* a procedure */
  					);
-
+#ifdef __cplusplus
+}    /* extern "C" */
+#endif
 #endif

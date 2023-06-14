@@ -19,7 +19,15 @@
 
 #define _FPOLY_	1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 double  fpoly(double *,double ,int );
 double  fpoly_int(double *, double , int , double , double );
+
+#ifdef __cplusplus
+}    /* extern "C" */
+#endif
 
 #endif

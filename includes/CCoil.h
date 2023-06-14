@@ -82,6 +82,10 @@ typedef struct coil {
 **
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 COILGREEN *new_CoilGreen(int );
 void free_CoilGreen(COILGREEN *,int );
 
@@ -90,5 +94,9 @@ SUBCOIL *new_SubCoil(void);
 COIL *new_Coil(int );
 void free_Coil(COIL *,int );
 void add_SubCoil(COIL *,SUBCOIL *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

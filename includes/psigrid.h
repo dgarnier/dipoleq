@@ -70,6 +70,11 @@ typedef	struct psigrid { 	/* the poloidal flux and the toroidal current */
 **
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
  PSIGRID *new_PsiGrid();
  void init_PsiGrid(PSIGRID *);
  void free_PsiGrid(PSIGRID *);
@@ -82,5 +87,9 @@ typedef	struct psigrid { 	/* the poloidal flux and the toroidal current */
  
  double GetPsi(PSIGRID *,double ,double );
  double GetIsPlasma(PSIGRID *,double ,double );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

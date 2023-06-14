@@ -528,7 +528,7 @@ void          AssignMeasureVar(TOKAMAK * td, int c, int isNew, char *word, char 
 
 	/* The first value of a Measure input record must be the mType */
 
-	if ((i = getMeasureVar(word))!=0)
+	if ((i = getMeasureVar(word))!=0) {
 		if (isNew) {
 			if (i != M_mType) nrerror("Input file error!  mType not first in Measure input record.\n");
 			sscanf(value, "%d", &mt);	/* read mType */
@@ -611,6 +611,7 @@ void          AssignMeasureVar(TOKAMAK * td, int c, int isNew, char *word, char 
 				  break;
 			}
 		}
+	}
 }
 
 /*

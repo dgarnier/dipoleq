@@ -18,11 +18,19 @@
 
 #define _GETFLUXMOMENTS_	1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "psigrid.h"
 
 void Trace_Count(double , double , double , int );
 void FindTheta(void);
 void GetFluxContour(PSIGRID *, double , double **, double **, int *);
 void GetFluxMoments(PSIGRID * , double , double *, double *, int );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

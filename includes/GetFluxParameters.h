@@ -17,8 +17,14 @@
 
 #define _GETFLUXPARAMETERS_	1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "tokamak.h"
 
 void	GetFluxParameters(TOKAMAK *td);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

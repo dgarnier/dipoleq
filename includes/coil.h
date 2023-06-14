@@ -83,6 +83,10 @@ typedef struct coil {
 **
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 COILGREEN *new_CoilGreen(int );
 void free_CoilGreen(COILGREEN *,int );
 
@@ -96,6 +100,10 @@ void add_SubCoil(COIL *,SUBCOIL *);
 struct psigrid;
 #endif
 
-void compute_SubCoils(COIL *coil, psigrid *pg);
+void compute_SubCoils(COIL *coil, struct psigrid *pg);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

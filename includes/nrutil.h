@@ -56,8 +56,8 @@ static int    iarg1 __attribute__ ((unused)), iarg2 __attribute__ ((unused));
 **	P R O T O T Y P E S
 */
 
-void nrerror(char *error_text);
-void nrinfo(char *error_text);
+void nrerror(const char *error_text);
+void nrinfo(const char *error_text);
 
 float *vector(long nl, long nh);
 int *ivector(long nl, long nh);

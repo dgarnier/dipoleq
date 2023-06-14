@@ -22,9 +22,17 @@
 
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void ZeroJ(TOKAMAK *);
 void FindJ(TOKAMAK *);
 double  FindJ_Loc(TOKAMAK * , int , int );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

@@ -19,10 +19,17 @@
 
 #define _J_STD_		1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "tokamak.h"
 
 void J_Std(TOKAMAK *,double **, double , double );
 double J_Std_Loc(TOKAMAK * , int , int , double , double );
+#ifdef __cplusplus
+}    /* extern "C" */
+#endif
 
 #endif
 

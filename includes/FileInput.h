@@ -21,6 +21,10 @@
 
 #define _FILEINPUT_ 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define TRUE	1
 #define FALSE	0
 
@@ -30,7 +34,7 @@
 **
 */
 
-static char *KeyWords[] =
+static const char *KeyWords[] =
 {
     "NoKey",
     "CodeControl",
@@ -66,7 +70,7 @@ static char *KeyWords[] =
 **
 */
 
-static char *ControlWords[] =
+static const char *ControlWords[] =
 {
     "NoWord",
     "MaxIterFixed",
@@ -134,7 +138,7 @@ static char *ControlWords[] =
 **
 */
 
-static char *PsiGridWords[] =
+static const char *PsiGridWords[] =
 {
     "NoWord",
     "Nsize",
@@ -167,7 +171,7 @@ static char *PsiGridWords[] =
 **
 */
 
-static char *PlasmaWords[] =
+static const char *PlasmaWords[] =
 {
     "NoWord",
     "ModelType",
@@ -218,7 +222,7 @@ static char *PlasmaWords[] =
 **
 */
 
-static char *LimiterWords[] =
+static const char *LimiterWords[] =
 {
     "NoWord",
     "X1",
@@ -245,7 +249,7 @@ static char *LimiterWords[] =
 **
 */
 
-static char *SeparatrixWords[] =
+static const char *SeparatrixWords[] =
 {
     "NoWord",
     "X1",
@@ -265,7 +269,7 @@ static char *SeparatrixWords[] =
 **
 */
 
-static char *CoilWords[] =
+static const char *CoilWords[] =
 {
     "NoWord",
     "NoWord",
@@ -291,7 +295,7 @@ static char *CoilWords[] =
 **
 */
 
-static char *SubCoilWords[] =
+static const char *SubCoilWords[] =
 {
     "NoWord",
     "X",
@@ -312,7 +316,7 @@ static char *SubCoilWords[] =
 **
 */
 
-static char *ShellWords[] =
+static const char *ShellWords[] =
 {
     "NoWord",
     "NoWord",
@@ -331,7 +335,7 @@ static char *ShellWords[] =
 **
 */
 
-static char *SubShellWords[] =
+static const char *SubShellWords[] =
 {
     "NoWord",
     "X",
@@ -352,7 +356,7 @@ static char *SubShellWords[] =
 **
 */
 
-static char *MeasureWords[] =
+static const char *MeasureWords[] =
 {
     "NoWord",
     "X1",
@@ -396,5 +400,9 @@ static char *MeasureWords[] =
 */
 
 TOKAMAK *FileInput(const char *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
