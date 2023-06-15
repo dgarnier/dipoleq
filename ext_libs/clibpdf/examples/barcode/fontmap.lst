@@ -1,0 +1,46 @@
+# Font Map File example (Azalea Software C39 fonts) for ClibPDF PDF generation library
+% a comment line
+# a comment line
+
+# Font directory paths specified by $Font_Directories will be
+# prepended to each entry within (), UNLESS the entry starts with
+# strings noted by $Abs_Path_Prefix.  These two must appear BEFORE all
+# font map specifications.  Do not include the last '\' in the directory spec.
+# These two $* specs must occur together.  Having only one spec is not allowed.
+# Specifying no $* at all IS allowed, in which case the spec in () is used as is.
+# Upto 10 items of each less than 8 chars are allowed for $Abs_Path_Prefix.
+# In this way, most entries may be specified by filenames alone when they
+# are located in a common font directory.  Yet, non-standard font locations
+# are also allowed by specifying absolute paths explicitly.
+
+
+# --- Example for Windows: These two lines must come BEFORE actual font mapping spec. --
+# $Font_Directories	(-- Directory path for PFM --)	(-- Directory path for PFB --)
+# $Font_Directories	(\Library\Resources\Fonts\gs)	(\Library\Resources\Fonts\gs\pfb)
+# $Abs_Path_Prefix	(\)	(c:\)	(e:\)
+
+# --- Example for Unix: These two lines must come BEFORE actual font mapping spec. --
+# $Font_Directories	(/usr/local/lib/ghostscript/fonts)	(/usr/local/lib/ghostscript/fonts)
+$Font_Directories	(.)					(.)
+$Abs_Path_Prefix	(/)
+
+# Font Name is the name passed to cpdf_setFont().  Only if you use fontmap file,
+# Name for cpdf_setFont() may differ from the actual filenames (basename).
+# Font Name does NOT have to be the real name of the font as defined within
+# PFM/PFB files.
+
+# These font names are for C39 Type-1 fonts from Azalea Software (www.azalea.com).
+# These are commercial fonts, and you must purchase font licenses from them.
+# FastIO Systems does not distribute any commercial fonts.
+
+# Font Name			PFM File			PFB File
+C39ONE__			(C39ONE__.PFM)			(C39ONE__.PFB)
+C39HALF_			(C39HALF_.PFM)			(C39HALF_.PFB)
+C39QRTR_			(C39QRTR_.PFM)			(C39QRTR_.PFB)
+C39SHIGH			(C39SHIGH.PFM)			(C39SHIGH.PFB)
+C39SLIM_			(C39SLIM_.PFM)			(C39SLIM_.PFB)
+C39SLOW_			(C39SLOW_.PFM)			(C39SLOW_.PFB)
+C39SMED_			(C39SMED_.PFM)			(C39SMED_.PFB)
+C39WIDE_			(C39WIDE_.PFM)			(C39WIDE_.PFB)
+Ocrbcr__			(Ocrbcr__.pfm)			(Ocrbcr__.pfb)
+

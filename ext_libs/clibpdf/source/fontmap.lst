@@ -1,0 +1,40 @@
+# Font Map File example for ClibPDF PDF generation library
+% a comment line
+# a comment line
+
+# Font directory paths specified by $Font_Directories will be
+# prepended to each entry within (), UNLESS the entry starts with
+# strings noted by $Abs_Path_Prefix.  These two must appear BEFORE all
+# font map specifications.  Do not include the last '\' in the directory spec.
+# These two $* specs must occur together.  Having only one spec is not allowed.
+# Specifying no $* at all IS allowed, in which case the spec in () is used as is.
+# Upto 10 items of each less than 8 chars are allowed for $Abs_Path_Prefix.
+# In this way, most entries may be specified by filenames alone when they
+# are located in a common font directory.  Yet, non-standard font locations
+# are also allowed by specifying absolute paths explicitly.
+
+
+# --- Example for Windows: These two lines must come BEFORE actual font mapping spec. --
+# $Font_Directories	(-- Directory path for PFM --)	(-- Directory path for PFB --)
+# $Font_Directories	(\Library\Resources\Fonts\gs)	(\Library\Resources\Fonts\gs\pfb)
+# $Abs_Path_Prefix	(\)	(c:\)	(e:\)
+
+# --- Example for Unix: These two lines must come BEFORE actual font mapping spec. --
+# $Font_Directories	(/usr/local/lib/ghostscript/fonts)	(/usr/local/lib/ghostscript/fonts)
+$Font_Directories	(.)					(.)
+$Abs_Path_Prefix	(/)
+
+# Font Name is the name passed to cpdf_setFont().  Only if you use fontmap file,
+# Name for cpdf_setFont() may differ from the actual filenames (basename).
+# Font Name does NOT have to be the real name of the font as defined within
+# PFM/PFB files.  For example, the real name of "AA-UtopiaMedium" is "UtopiaMedium"
+
+# Font Name			PFM File			PFB File
+AA-UtopiaMedium			(UtopiaMedium.pfm)		(UtopiaMedium.pfb)
+UtopiaMedium			(UtopiaMedium.pfm)		(UtopiaMedium.pfb)
+UtopiaBold			(UtopiaBold.pfm)		(UtopiaBold.pfb)
+UtopiaMediumItalic		(UtopiaMediumItalic.pfm)	(UtopiaMediumItalic.pfb)
+UtopiaBoldItalic		(UtopiaBoldItalic.pfm)		(UtopiaBoldItalic.pfb)
+
+URWGothicL-Book			(a010013l.pfm)			(a010013l.pfb)
+URWBookmanL-DemiBold		(b018015l.pfm)			(b018015l.pfb)

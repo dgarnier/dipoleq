@@ -1,0 +1,76 @@
+README.win32 -- Windows specific notes
+First, please read README, which describes non-platform specific information.
+
+[Based on WindowsNT 4.0, VC++ 6.0; variations are possible for different versions]
+
+You must be familiar with Windows and VisualC++ developement environment.
+----------------------------------------------------------------------------------
+
+[1] First, install Acrobat Reader.
+	http://www.adobe.com/prodindex/acrobat/readstep.html
+
+[2] Unpack the distribution into a directory.
+	The source files should be in ClibPDF\source.
+
+[3] Creating the library file.
+
+a) Start up Visual C++ Workspace
+
+b) File -> New, and click on "Projects" tab.
+	Select "Win32 Static Library"
+	Project name: cpdf
+	Location: ClibPDF
+
+c) Project -> Add To Project -> Files...
+	In the open panel, go to the source directory.
+	Select all files (*.h, *.c). OK.
+	In "FileView" table of Workspace, delete testpdf.c from the list.
+	    (testpdf.c contains main(), and should NOT be in the library.)
+
+d) File -> Save All
+
+e) Build -> Build cpdf.lib
+	The library file should be created as ClibPDF\cpdf\Debug\cpdf.lib
+
+[4] Building a test program "testpdf.exe" using the library.
+
+a) Start up Visual C++ Workspace, if not already.
+
+b) File -> New, and click on "Projects" tab.
+	Select "Win32 Console Application"
+	Project name: testpdf
+	Location: ClibPDF
+
+c) Project -> Add To Project -> Files...
+	In the open panel, go to the source directory.
+	Add, testpdf.c and cpdflib.h
+   (Again) Project -> Add To Project -> Files...
+	Set Files of type: Library Files (.lib)
+	Select and add cpdf/Debug/cpdf.lib
+
+d) File -> Save All
+
+e) Using Windows Explorer, copy source\testimg.jpg into 
+	"testpdf" directory.
+   Do the same for font files *.pfb, *.pfm and fontmap.lst
+
+f) Build -> Build testpdf.exe
+
+g) Build -> Execute testpdf.exe
+
+h) Watch Adobe Acrobat Reader to be launched (if not already), and
+    the PDF file atest.pdf to be opened automatically.
+
+
+[Note that the current directory for programs executed in step g) is that
+of the VC++ Workspace file, not the Debug/Release subdirectory in which
+the actual *.exe file resides.  Testpdf.exe expects testimg.jpg file to
+be in the current directory, and will create the output PDF file there.]
+
+
+[5] Building Examples
+
+Follow similar steps to build programs in the "examples"
+directory.
+
+

@@ -1,0 +1,49 @@
+Copyright (C) 1998, 1999 FastIO Systems,  All Rights Reserved.
+
+FastIO Systems
+http://www.fastio.com/
+clibpdf@fastio.com
+
+This publication and the information herein are furnished AS IS.
+We at FastIO Systems have tried to make the information contained
+in this manual as accurate and reliable as possible.  However,
+FastIO Systems disclaim any warranty of any kind, whether express
+or implied, as to any matter relating to this document, including
+the merchantability or fitness for any particular purpose.  FastIO
+Systems will, from time to time, revise the software described in
+this manual and reserves the right to make such changes without the
+obligation to notify anyone.  In no event, shall FastIO Systems be
+liable for any indirect, special, incidental, or consequential
+damages arising out of use of this manual or the information contained
+herein.
+
+Restricted Rights Legend:  Use, duplication, or disclosure by the
+Government is subject to restrictions as set forth in subparagraph
+(c)(1)(ii) of the Rights in Technical Data and Computer Software
+clause at DFARS 252.227-7013 (or, if applicable, similar clauses
+at FAR 52.227-19 or NASA FAR Supp. 52.227-86).
+
+
+FastIO, ClibPDF and JlibPDF are trademarks of FastIO Systems.
+
+PostScript, Acrobat, Adobe Illustrator, Distiller are trademarks
+of Adobe Systems Incorporated.  Apple, Macintosh, and Mac are
+registered trademarks of Apple Computer, Inc.  FrameMaker is a
+registered trademark of Adobe Systems, Inc.  ITC Zapf Dingbats
+is a registered trademark of International Typeface Corp.  Helvetica
+and Times are trademarks of Linotype-Hell AG and/or its subsidiaries.
+Windows is a trademark and Microsoft is a registered trademark of
+Microsoft Corp.  NEXTSTEP, OPENSTEP, and NeXT are trademarks of
+Apple Computer, Inc.  UNIX is a registered trademark of UNIX Systems
+Laboratories.  All other brand or product names are the trademarks
+or registered trademarks of their respective holder.
+
+
+All figures including the cover of this manual have been generated
+entirely by programs that make use of the ClibPDF library.  No
+drawing or illustration program has been used to create included
+figrues.  In some cases, the figure PDF files have been converted
+into the EPS format using Tailor by FirstClass NV for importing
+them into FrameMaker.  This manual has been set by using FrameMaker.
+
+Version 2.00, August 24, 1999.

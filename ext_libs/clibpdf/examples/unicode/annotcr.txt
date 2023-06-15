@@ -1,0 +1,1 @@
+ClibPDFバージョン2.02より日本語の注釈やしおりがサポートされます。ClibPDFで注釈(annotation)やしおり(outline/bookmark)を付けるためには、Hexadecimal形式のUnicodeのテキストを使います。cpdf_hexStringMode(YES); を使ってテキストAPIをHexモードにしてから、通常のAPIを使って下さい。Hexadecimal形式への変換のための関数、cpdf_convertBinaryToHex(), cpdf_convertHexToBinary()等が新たに付け加えられました。

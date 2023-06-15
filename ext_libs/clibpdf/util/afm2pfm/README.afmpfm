@@ -1,0 +1,54 @@
+README for afm2pfm
+
+This ZIP file contains two programs: 
+   pfm2afm - Convert Windows .pfm files to .afm files
+   afm2pfm - convert Adobe .afm file to MS-Windows binary .pfm file
+They have been compiled with EMX/GCC 0.9a.
+To run under OS/2 or MS-DOS, you need 
+  ftp://hobbes.nmsu.edu/os2/unix/emx09a/emxrt.zip
+
+1. pfm2afm was written by
+   Author: Ken Borgendale   10/9/91  Version 1.0
+   but slightly modified by myself to compile with EMX/GCC and
+   to be more compatible with actual PFM files and afm2pfm.
+   pfm2afm is copyrighted by Ken Borgendale.
+
+
+2. afm2pfm was written by myself so that I could create a PFM file
+   for use with the MS-Windows ATM.
+
+   afm2pfm is copyright by Russell Lang, and covered by the FSF Licence.
+   See the file COPYING for details.
+
+   Syntax:
+     afm2pfm  [-w] [-?] infile [outfile]
+
+     -? displays a short help message.
+     -w suppresses warnings.
+     The extension .afm is added to the infile if it has none.
+     If unspecified, the outfile is defaulted from the input file name.
+
+   Limitations:
+     afm2pfm was written to produce a PFM file for a simple Type 1 font 
+     that I had created.  More complex AFM files may expose limitations 
+     in this program.  Warning messages are produced for AFM lines or 
+     sections that are ignored.  Ligatures are silently ignored.  Track 
+     kerning and Composites are ignored.  Unencoded characters are ignored.
+
+   Background:
+     I wrote this to create a PFM file for a small Type 1 font that 
+     I had created by hand and converted to PFB format with 
+     ftp://hobbes.nmsu.edu/os2/printer/fontutls.zip
+     I created the AFM file by hand which allowed the font to be used
+     with the OS/2 PM Adobe Type Manager.
+     afm2pfm allows me to use the font with MS-Windows ATM.
+     AFM documentation is available from ftp.adobe.com.
+     PFM docuemntation is available in the Windows 3.1 DDK.
+     Since writing afm2pfm, I found that a similar program AFM.EXE 
+     exists in the Windows 3.1 DDK.  AFM.EXE is likely to have less
+     problems thatn afm2pfm, but afm2pfm is free.
+
+
+Russell Lang <rjl@eng.monash.edu.au>
+1995-03-10
+

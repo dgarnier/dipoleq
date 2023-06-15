@@ -1,0 +1,51 @@
+# Ghostscript PostScript fonts fontmap file
+# Font directory path specified by $Font_Directories will be
+# prepended to each entry within (), UNLESS the entry starts with
+# strings noted by $Abs_Path_Prefix.
+
+# Ghostscripts fonts themselves are not included here.  Please find them
+# by going to: http://www.cs.wisc.edu/~ghost/.
+
+# $Font_Directories	(\System\Library\Fonts\gs)		(\System\Library\Fonts\gs\pfb)
+# $Abs_Path_Prefix	(\)	(c:\)	(e:\)
+
+$Font_Directories	(/usr/local/lib/ghostscript/fonts)	(/usr/local/lib/ghostscript/fonts)
+$Abs_Path_Prefix	(/)
+
+URWGothicL-Book			(a010013l.pfm)     (a010013l.pfb)   
+URWGothicL-Demi 		(a010015l.pfm)     (a010015l.pfb)   
+URWGothicL-BookObli 		(a010033l.pfm)     (a010033l.pfb)   
+# The following two lines are equivalent in this case.
+# URWGothicL-DemiObli (/usr/local/lib/ghostscript/fonts/a010035l.pfm) (/usr/local/lib/ghostscript/fonts/a010035l.pfb)   
+URWGothicL-DemiObli		(a010035l.pfm)     (a010035l.pfb)   
+URWBookmanL-Ligh		(b018012l.pfm)     (b018012l.pfb)   
+URWBookmanL-DemiBold		(b018015l.pfm)     (b018015l.pfb)   
+URWBookmanL-LighItal		(b018032l.pfm)     (b018032l.pfb)   
+URWBookmanL-DemiBoldItal	(b018035l.pfm)     (b018035l.pfb)   
+CenturySchL-Roma		(c059013l.pfm)     (c059013l.pfb)   
+CenturySchL-Bold		(c059016l.pfm)     (c059016l.pfb)   
+CenturySchL-Ital		(c059033l.pfm)     (c059033l.pfb)   
+CenturySchL-BoldItal		(c059036l.pfm)     (c059036l.pfb)   
+Dingbats			(d050000l.pfm)     (d050000l.pfb)   
+NimbusSanL-Regu			(n019003l.pfm)     (n019003l.pfb)   
+NimbusSanL-Bold			(n019004l.pfm)     (n019004l.pfb)   
+NimbusSanL-ReguItal		(n019023l.pfm)     (n019023l.pfb)   
+NimbusSanL-BoldItal		(n019024l.pfm)     (n019024l.pfb)   
+NimbusSanL-ReguCond		(n019043l.pfm)     (n019043l.pfb)   
+NimbusSanL-BoldCond		(n019044l.pfm)     (n019044l.pfb)   
+NimbusSanL-ReguCondItal		(n019063l.pfm)     (n019063l.pfb)   
+NimbusSanL-BoldCondItal		(n019064l.pfm)     (n019064l.pfb)   
+NimbusRomNo9L-Regu		(n021003l.pfm)     (n021003l.pfb)   
+NimbusRomNo9L-Medi		(n021004l.pfm)     (n021004l.pfb)   
+NimbusRomNo9L-ReguItal		(n021023l.pfm)     (n021023l.pfb)   
+NimbusRomNo9L-MediItal		(n021024l.pfm)     (n021024l.pfb)   
+NimbusMonL-Regu			(n022003l.pfm)     (n022003l.pfb)   
+NimbusMonL-Bold			(n022004l.pfm)     (n022004l.pfb)   
+NimbusMonL-ReguObli		(n022023l.pfm)     (n022023l.pfb)   
+NimbusMonL-BoldObli		(n022024l.pfm)     (n022024l.pfb)   
+URWPalladioL-Roma		(p052003l.pfm)     (p052003l.pfb)   
+URWPalladioL-Bold		(p052004l.pfm)     (p052004l.pfb)   
+URWPalladioL-Ital		(p052023l.pfm)     (p052023l.pfb)   
+URWPalladioL-BoldItal		(p052024l.pfm)     (p052024l.pfb)   
+StandardSymL			(s050000l.pfm)     (s050000l.pfb)   
+URWChanceryL-MediItal		(z003034l.pfm)     (z003034l.pfb)

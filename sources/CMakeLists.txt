@@ -63,14 +63,17 @@ add_library(DipolEqLib STATIC
     stdio_dmatrix.c
     tokamak.c
     tokgreen.c
+    plot_contour.c PDFOutput.c
 )
 
-dump_cmake_variables(hdf4)
-
+target_link_libraries(DipolEqLib 
+                        PRIVATE 
+                            clibpdf
+                    )
 
 target_include_directories(DipolEqLib 
                             PUBLIC 
                                 ${CMAKE_SOURCE_DIR}/includes
-                            PRIVATE 
+                            PRIVATE
                                 ${hdf4_INCLUDE_DIRS}
                             )

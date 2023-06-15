@@ -1,0 +1,127 @@
+README.MacOS8 -- Notes for the traditional MacOS 8 (or earlier)
+		 with Metrowerks CodeWarrior IDE.
+
+First, please read README, which describes non-platform specific information.
+For Mac OS X Server, please follow the instructions for Unix in README.
+
+[Based on MacOS8.1 + CodeWarrior IDE 3.2  (Pro 4);
+variations are possible for different versions;
+CWPro4/IDE 3.2 modifications thanks to Sam Fara <samfara@ro.com>]
+
+You must be familiar with Metrowerks CodeWarrior IDE developement environment.
+I am not a Mac programmer and know almost nothing about ToolBox/Carbon API.
+Steps described here are only suggestions.  Your mileage may vary.
+
+-----------------------------------------------------------------------------------------
+### IMPORTANT NOTE on cpdf_launchPreview(), cpdf_openPDFfileInViewer() ###
+
+Please note that these two functions (used to display generated PDF files automatically)
+call InitGraf() to allow sending Apple Event to Acrobat Reader.  If you do not use any
+ToolBox API in other parts of your program, there will not be any problems.  However,
+if your program calls InitGraf() elsewhere (definitely if ClibPDF is linked into
+a standard GUI application), the duplication of calls to InitGraf() is likely to
+cause a problem.
+
+These two functions should not be used in such cases.  Implement your own document-launch
+code yourself without InitGraf().
+
+-----------------------------------------------------------------------------------------
+### Installation, Compiling, and Creating applications ###
+
+[0] First, install Acrobat Reader.  Upgrade if your current Reader is older than 3.0.
+	http://www.adobe.com/prodindex/acrobat/readstep.html
+
+[1] Unpack the source distribution into a folder, e.g., ClibPDF:source.
+
+[2] Creating the library file cpdf.lib
+
+a) Start up Metrowerks CodeWarrior IDE
+
+b) File -> New Project
+	MacOS
+	    C/C++
+		Standard Console
+		Select "Std C Console PPC"
+		    [OK]
+	Select ClibPDF folder
+	Name new project as: lib
+		    [SAVE]
+
+c) In Finder, select all the *.c & h files (just the *.c files should be fine) in the source directory.
+    Drag the files into CodeWarrior window under "Sources" above HelloWorld.c.
+    Remove from the source list "HelloWorld.c" and "testpdf.c"
+    Remove from the file list ALL library files
+	(in both sections ANSI and Mac libraries).
+
+d) Project -> Project Settings..
+	Select in Project "PPC Project" (in the left-hand selection list)
+	Project type: Library
+	Library Info: File name: cpdf.lib
+
+e) Project -> Make
+	Now, you should find the library file as
+	    ClibPDF:lib:cpdf.lib
+
+There may still be many warning messages, but the library will work fine.
+
+
+[3] Building a test program "testpdf.out" using the library.
+
+a) Start up Metrowerks CodeWarrior IDE, if not already.
+
+b) File -> New Project
+	MacOS
+	    C/C++
+		Standard Console
+		Select "Std C Console PPC"
+		    [OK]
+
+	Select ClibPDF folder
+	Name new project as: testpdf
+		    [SAVE]
+
+c) In Finder, select "testpdf.c" in the source directory.
+    Drag the selected file into CodeWarrior window under "Sources" above HelloWorld.c.
+    Remove from the source list "HelloWorld.c"
+
+d) Change in example and test programs:
+    (if argc or argv is used - need to define and provide values)
+    (Minimal.c and weather.c expect an argument.)
+
+
+e) Add a "System Path" to the "Source" folder so the "cpdflib.h" file can be found by the project
+
+f) In Finder, select the library file cpdf.lib created in step [2] above.
+    Drag the library into the CodeWarrior window under either ANSI or Mac library
+    section (it does not seem to matter).
+
+h) Project -> Project Settings..
+    Select "Project->PPC Project" in the left selection list.
+	File name: testpdf.out
+
+    Also, increase the memory settings from the default, e.g.,
+	Preferred Heap Size (k): 600
+	Minimum Heap Size (k): 600
+	Stack Size (k): 64
+
+    Note that these sizes will depend on the complexity of your document and
+    program size.  The above values worked fine for testpdf.c executable.
+    If you do anything more complex, you may have to give even more memory.
+    Under MacOS X (Server), we will finally be free from this silliness.
+
+i) Copy the image file "testimg.jpg" into testpdf folder.
+    (The test program, testpdf.out expects it in the same folder.)
+   Do the same for font files *.pfm, *.pfb, and fontmap.lst
+    (You may have to fix End-of-line terminator of fontmap.lst for MacOS's CR from CRLF.)
+
+j) Run testpdf.out
+    This should create a PDF file "atest0.pdf" and open it automatically.
+    Watch Adobe Acrobat Reader (or Exchange) display the PDF file.
+
+
+[4] Building Examples
+
+Follow similar steps to build programs in the "examples"
+directory.
+
+

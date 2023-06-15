@@ -1,0 +1,64 @@
+#
+# just a makefile to generate the examples directory
+# contributed by Stipe Tolj <tolj@uni-duesseldorf.de>, 12 Dec 1998
+# Cygwin Porting Project 
+# http://www-public.rz.uni-duesseldorf.de/~tolj/
+# 
+
+# gcc compiler
+CC=gcc
+
+# exetutable extension
+X=.exe
+
+OBJECTS=arc/Arcs.o dash/dashtest.o text/textalign.o marker/MarkerTest.o \
+	weather/weather.o cover/cover.o timeaxis/timeaxis.o \
+	filltest/filltest.o minimal/Minimal.o domain/DomainDemo.o \
+	bezier/beziertest.o outline/outline.o fontlist/fontlist.c
+
+RUNOBJS=arc/Arcs dash/dashtest text/textalign marker/MarkerTest \
+	cover/cover timeaxis/timeaxis \
+	filltest/filltest domain/DomainDemo outline/outline fontlist/fontlist \
+
+
+.SUFFIXES: .o .c
+
+all: $(OBJECTS) run
+
+.c.o:
+	$(CC) -O2 -g -I/usr/local/include -c $*.c -o $*.o
+	$(CC) -o $* $*.o -L/usr/local/lib -lm -lcpdf
+
+clean:
+	rm -f $(OBJECTS)
+	rm -r arc/Arcs$(X) dash/dashtest$(X) text/textalign$(X) marker/MarkerTest$(X) \
+	weather/weather$(X) cover/cover$(X) timeaxis/timeaxis$(X) \
+	filltest/filltest$(X) minimal/Minimal$(X) domain/DomainDemo$(X) outline/outline$(X) \
+	fontlist/fontlist$(X)
+
+realclean:
+	rm -f $(OBJECTS)
+	rm -f *.pdf
+	rm -f arc/Arcs$(X) dash/dashtest$(X) text/textalign$(X) marker/MarkerTest$(X) \
+	weather/weather$(X) cover/cover$(X) timeaxis/timeaxis$(X) \
+	filltest/filltest$(X) minimal/Minimal$(X) domain/DomainDemo$(X) \
+	fontlist/fontlist$(X)
+	rm -f arc/*.pdf arc/core dash/*.pdf dash/core text/*.pdf \
+	text/core marker/*.pdf marker/core \
+	weather/*.pdf weather/core cover/*.pdf cover/core \
+	timeaxis/*.pdf timeaxis/core \
+	filltest/*.pdf filltest/core minimal/*.pdf minimal/core \
+	domain/*.pdf domain/core outline/outline.pdf outline/core \
+	fontlist/*.pdf fontlist/core 
+
+run:
+	-for f in $(RUNOBJS); do \
+		($$f); \
+	done
+	weather/weather weather/OAK.wdat
+	cp -f arctest.pdf minimal.pdf
+	minimal/Minimal minimal.pdf
+
+
+
+

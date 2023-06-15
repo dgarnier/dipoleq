@@ -1,0 +1,57 @@
+#!bin/csh
+# just a makefile to generate the examples directory
+# written by Matt Warner <mwarner1@ix.netcom.com>, 25 Nov 1998.
+
+OBJECTS=arc/Arcs.o dash/dashtest.o text/textalign.o marker/MarkerTest.o \
+	weather/weather.o cover/cover.o timeaxis/timeaxis.o \
+	filltest/filltest.o minimal/Minimal.o domain/DomainDemo.o \
+	bezier/beziertest.o outline/outline.o fontlist/fontlist.o
+
+RUNOBJS=arc/Arcs dash/dashtest text/textalign marker/MarkerTest \
+	cover/cover timeaxis/timeaxis \
+	filltest/filltest domain/DomainDemo outline/outline \
+	fontlist/fontlist
+
+# LIB=-lcpdfp
+LIB=-lcpdf
+
+.SUFFIXES: .o .c
+
+all: $(OBJECTS) run
+
+.c.o:
+	cc -O3 -c $*.c -o $*.o
+	cc -o $* $*.o -L/usr/lib32 -lc -lm $(LIB)
+
+clean:
+	rm -f $(OBJECTS)
+	rm -r arc/Arcs dash/dashtest text/textalign marker/MarkerTest \
+	weather/weather cover/cover timeaxis/timeaxis \
+	filltest/filltest minimal/Minimal domain/DomainDemo outline/outline \
+	fontlist/fontlist
+
+realclean:
+	rm -f $(OBJECTS)
+	rm -f *.pdf
+	rm -f arc/Arcs dash/dashtest text/textalign marker/MarkerTest \
+	weather/weather cover/cover timeaxis/timeaxis \
+	filltest/filltest minimal/Minimal domain/DomainDemo
+	rm -f arc/*.pdf arc/core dash/*.pdf dash/core text/*.pdf \
+	text/core marker/*.pdf marker/core \
+	weather/*.pdf weather/core cover/*.pdf cover/core \
+	timeaxis/*.pdf timeaxis/core \
+	filltest/*.pdf filltest/core minimal/*.pdf minimal/core \
+	domain/*.pdf domain/core outline/outline.pdf outline/core \
+	fontlist/*.pdf fontlist/core
+
+run:
+	-for f in $(RUNOBJS); do \
+		($$f); \
+	done
+	weather/weather weather/OAK.wdat
+	cp -f arctest.pdf minimal.pdf
+	minimal/Minimal minimal.pdf
+
+
+
+

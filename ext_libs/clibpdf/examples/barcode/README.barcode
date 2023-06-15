@@ -1,0 +1,46 @@
+Using Bar Code Fonts with ClibPDF [README.barcode, 1999-08-24]
+
+ClibPDF can embed external fonts from PostScript/ATM Type-1 font
+files in PFM/PFB format.  This is the standard Type-1 font format
+for Windows.  Font vendors may not list your platform in the supported
+list, but it is likely that if you purchase a license for Type-1
+PS/ATM fonts for Windows platform, they will probably work on any
+platform with ClibPDF, including Unix. (We do not guarantee this.)
+Make sure these fonts are available in PFM/PFB format before you
+purchase.  Do not purchase the MacOS version.
+
+Adobe has a list of bar code font vendors as a PDF file.
+http://partners.adobe.com/asn/developer/technotes.html
+Technical Note #5096 "Bar Code Font Vendor List" (27kb/ 4 pages).
+
+We have verified that "C39" barcode fonts for Windows from Azalea
+Software (www.azelea.com) work well with ClibPDF even on a non-Windows
+platform (FreeBSD - see our 1040 tax form demo).
+
+Azalea Software's bar code fonts will be installed by default in:
+C:\Program Files\Azalea\XXXTools\For_ATM\
+where XXX differs for different bar code type.
+
+For example, the default install path for "C39Tools" is:
+C:\Program Files\Azalea\C39Tools\For_ATM\
+
+You need to copy *.PFM and *.PFB files from the above directory
+to a font directory for use with ClibPDF.
+
+For case sensitive OS platforms, such as Unix, you may
+have to rename the extensions of these files to .pfm and .pfb.
+
+Fonts are software programs usually licensed to be installed onto
+one computer per licence.  If you purchase a font for use in dynamic
+PDF generation on a Unix-based web server, you should not use the
+font on the Windows machine on which you unpacked the font package.
+According to Azalea Software, one license per IP address is required
+for using their font for embedding in dynamic PDF web applications.
+
+Licensing terms may differ from one font vendor to another.  Other
+font vendors may not even allow font embedding in web server
+applications.  Before you purchase a font, please talk to the vendor
+whether their licensing terms allow font uses in web sever applications,
+such as our 1040 Tax Form demo at
+   http://www.fastio.com/forms/form1040.html.
+

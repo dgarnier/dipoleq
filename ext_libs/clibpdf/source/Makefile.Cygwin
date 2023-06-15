@@ -1,0 +1,191 @@
+# Makefile for ClibPDF library for Cygwin b20.1
+# contributed by Stipe Tolj <tolj@uni-duesseldorf.de>, 12 Dec 1998
+# Cygwin Porting Project 
+# http://www-public.rz.uni-duesseldorf.de/~tolj/
+#
+# make lib; make install
+
+# library
+LIB_FILE=libcpdfm.a
+# LIB_FILE=libcpdfpm.a
+
+# for making test executable without using the library
+ROOTTEST=testpdf
+
+
+# Cygwin b20 uses the GNU gcc (egcs-1.1 release)
+CC=gcc
+
+CFLAGS=-O2 -g -DCygwin
+LD_FLAGS=-lm
+#CFLAGS=-Wall -g -DNEXTSTEP -DUSE_LIBTIFF
+
+#For GCC, if you want to pack structure
+#PACK=-fpack-struct
+PACK=
+
+INCLUDE_DIR=/usr/local/include
+LIB_DIR=/usr/local/lib
+BINDIR=/local/ClibPDF
+
+
+#LIBS=-ltiff
+LIBS=
+
+# NEXTSTEP/OPENSTEP multiple architecture compile flags
+ARCHS=
+#ARCHS=-arch i386 -arch m68k -arch sparc -arch hppa
+#ARCHS=-arch i386 -arch m68k
+
+OBJS= cpdfInit.o cpdfPreview.o cpdfAnnot.o cpdfUtil.o cpdfTime.o cpdfText.o \
+cpdfRawPlot.o cpdfDomPlot.o cpdfDomain.o cpdfColor.o cpdfGstate.o \
+cpdfMarker.o cpdfAxis.o cpdfFont.o cpdfTicInt.o cpdfMemBuf.o cpdfImage.o \
+jpegsize.o cpdfArc.o cpdfImgIL.o cpdfOutline.o cpdfReadPFM.o cpdfReadPFB.o \
+cpdfTextBox.o
+
+# premium objects
+POBJS=
+# POBJS= pcpdfTIFF.o pcpdfPDFIMG.o pcpdfLinear.o pcpdfRawImg.o
+
+# the following is from zlib library
+ZOBJS= compress.o deflate.o adler32.o trees.o zutil.o
+
+#$(ROOT): $(ROOT).o $(LIB_DIR)/$(LIB_FILE)
+#	$(CC) $(LD_FLAGS) $(ARCHS) -o $(ROOT) $(ROOT).o $(OBJS) -L$(LIB_DIR) $(LIBS)
+
+
+
+test: $(ROOTTEST)
+
+lib: $(LIB_FILE)
+
+
+$(ROOTTEST):  $(ROOTTEST).o $(OBJS) $(POBJS) $(ZOBJS)
+	$(CC) $(LD_FLAGS) $(ARCHS) -o $(ROOTTEST) $(ROOTTEST).o $(OBJS) $(POBJS) $(ZOBJS) $(LIBS) -lm
+	cp ./arctest.pdf.sav ./arctest.pdf
+
+
+$(LIB_FILE):  $(OBJS) $(POBJS) $(ZOBJS) Makefile
+	rm -f $(LIB_FILE)
+	ar r $@ $(OBJS) $(POBJS) $(ZOBJS)
+	ranlib $@
+
+
+install: lib
+#	mkdir -p $(LIB_DIR)
+#	mkdir -p $(INCLUDE_DIR)
+	cp $(LIB_FILE) $(LIB_DIR)
+	ranlib $(LIB_DIR)/$(LIB_FILE)
+	cp cpdflib.h $(INCLUDE_DIR)
+
+
+# object files
+
+$(ROOTTEST).o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c $(ROOTTEST).c
+
+
+# Library modules
+
+cpdfInit.o: cpdflib.h version.h config.h cglobals.h
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfInit.c
+
+cpdfPreview.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfPreview.c
+
+cpdfAnnot.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfAnnot.c
+
+cpdfUtil.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfUtil.c
+
+cpdfTime.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfTime.c
+
+cpdfText.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfText.c
+
+cpdfRawPlot.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfRawPlot.c
+
+cpdfDomPlot.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfDomPlot.c
+
+cpdfDomain.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfDomain.c
+
+cpdfColor.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfColor.c
+
+cpdfGstate.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfGstate.c
+
+cpdfMarker.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfMarker.c
+
+cpdfAxis.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfAxis.c
+
+cpdfFont.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfFont.c
+
+cpdfTicInt.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfTicInt.c
+
+cpdfMemBuf.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfMemBuf.c
+
+cpdfImage.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfImage.c
+
+jpegsize.o: jinclude.h jconfig.h
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c jpegsize.c
+
+cpdfArc.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfArc.c
+
+cpdfImgIL.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfImgIL.c
+
+cpdfOutline.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfOutline.c
+
+cpdfReadPFM.o: cpdfPFM.h
+	$(CC) $(CFLAGS) $(PACK) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfReadPFM.c
+
+cpdfReadPFB.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfReadPFB.c
+
+cpdfTextBox.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c cpdfTextBox.c
+
+
+
+# Premium package modules
+
+pcpdfLinear.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c pcpdfLinear.c
+
+pcpdfTIFF.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c pcpdfTIFF.c
+
+pcpdfPDFIMG.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c pcpdfPDFIMG.c
+
+pcpdfRawImg.o:
+	$(CC) $(CFLAGS) $(ARCHS) -I $(INCLUDE_DIR) -c pcpdfRawImg.c
+
+
+
+# ZLIB files
+
+adler32.o: zlib.h zconf.h
+compress.o: zlib.h zconf.h
+deflate.o: deflate.h zutil.h zlib.h zconf.h
+trees.o: deflate.h zutil.h zlib.h zconf.h trees.h
+zutil.o: zutil.h zlib.h zconf.h  
+
+
+
+clean:
+	rm -f *.o $(ROOTTEST) $(LIB_FILE) $(SHLIB_FILE) .nfs* *.pdf  endian endian.h

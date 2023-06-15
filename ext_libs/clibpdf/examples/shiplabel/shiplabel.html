@@ -1,0 +1,67 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.6 [en] (Win98; I) [Netscape]">
+   <title>Dynamic PDF Example: Shipping Label with Bar Code</title>
+</head>
+<body bgcolor="#DDE0F2">
+
+<center>
+<h2>
+<font color="#0000CC">Dynamic PDF Example: Shipping Label with Bar Code</font>
+</h2></center>
+
+In this example, address data come from this HTML form, but they can easily come from
+an automated order processing system instead.  For simple form applications like this, you can draw everything
+programmatically without much effort.  Automatic invoice generation, for example, is only marginally
+different from this example.  Then, <b>you can forget about merging PDF and FDF for the form and fields</b>.  For more
+complex dynamic forms, see our <a href="form1040.html">1040 Tax Form example</a>.
+<hr>
+<b>107-line <a href="/example/shiplabel.c.txt">C source code</a> for this CGI.</b>
+<P>
+Please enter correct addresses for the "From" and "Ship To" fields, and a Tracking number (digits or upper-case
+alphabets only). 
+<br>
+<HR>
+
+<FORM METHOD="POST" ACTION="http://www.fastio.com/forms/shiplabel.cgi">
+
+<b>From:</b><br>
+<TEXTAREA NAME="From" ROWS=5 COLS=40>
+Hunny Factory, Inc.
+3442 Beehive Ave.
+Sydney 2342-897
+Australia
+Telephone: 2342-23-9877
+</TEXTAREA>
+<P>
+
+<b>Ship To:</b><br>
+<TEXTAREA NAME="ShipTo" ROWS=5 COLS=40>
+Mr. Pooh Bear
+3456 Hunny Street
+Thousand Acre Woods, MA 23456
+U.S.A.
+Telephone: (123) 456-7890
+</TEXTAREA>
+<P>
+
+<b>Airbill or Tracking Number:</b><br>
+<INPUT NAME="TrackingNum" VALUE="0123456789AB" size=12>
+<P>
+
+To generate shipping label, press this button:
+<INPUT TYPE="submit" VALUE="Generate Shipping Label">.
+<P>
+
+</FORM>
+
+<P> 
+<hr WIDTH="100%">
+<address>
+<i><font size=-2>(Copyright 1999, FastIO Systems, All Rights Reserved;
+Last modified: 1999-10-02)</font></i></address>
+
+</body>
+</html>

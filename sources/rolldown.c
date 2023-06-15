@@ -60,7 +60,7 @@ void rk4(double *y, double *dydx, int n, double x, double h, double *yout,
 
 static TOKAMAK *theTok;
 
-void RollDerivs(double , double *p, double *dpdz)
+void RollDerivs(double dummy, double *p, double *dpdz)
 {
 	double gpx, gpz, gp2;
 	
@@ -167,7 +167,7 @@ void RollOutToPsi(TOKAMAK *td, double *x, double *z, double psiNew)
 static double gV, gRmax, gZrmax;
 void	RmaxVStep(double x, double z, double y, int flag);
 
-void	RmaxVStep(double x, double z, double, int flag)
+void	RmaxVStep(double x, double z, double dummy, int flag)
 {	
 	static double 	Xlast, Zlast, IntLast;
 	double 			Integrand, B, dS;

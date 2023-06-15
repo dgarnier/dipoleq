@@ -1,0 +1,425 @@
+README file for Base ClibPDF [2000-01-27 version 2.02-r1-2]
+
+This package is released under:
+FastIO ClibPDF Software License 1.30, January 27, 2000.
+
+ClibPDF and Premium ClibPDF are not public-domain or free software.
+
+=====================================================================================
+New Features and Recent History
+=====================================================================================
+1999-12-12 [io] (version 2.02-r1-1)
+	-- Malloc size bug in cpdfInit.c was discovered by James Walker.
+	   It has been fixed and this fix should eliminate excessive memory
+	   use for TIFF2PDF and similar applications with thousands of pages of
+	   images per PDF file.  Most applications would not have hit this bug.
+	   The excessive memory allocation was imageIdx storage in CPDFpageInfo.
+
+1999-12-09 [io] (version 2.02-r1-0)
+1999-12-04 [io] (version 2.01-r2-13)
+	-- Compiler warnings and errors under MacOS9 and Sun CC cleaned up.
+	   (Thanks to J.W. Walker, and Pierre-Yves Monnet.)
+	-- Use of thread-safe localtime_r() where available.
+	   cpdf_localtime() now takes an extra argument for "struct tm" buffer.
+	   (See #define THREAD_SAFE_TIME_FUNCS in cpdfUtil.c)
+	-- Unicode binary strings are now escaped internally for '\', '(', and ')'.
+
+More Notes on Unicode for bookmarks and annotations.
+Unicode text is now automatically escaped for PDF string secial characters:
+'(', ')', and '\'  (See page 348 of PDF Reference Manual v1.3).  It also
+additionally converts CR char (0x0d) into "\r".  Newlines in annotations
+do not work otherwise in Acrobat (Reader).  I am not sure if this is documented,
+but that is the way it is.  Also, text to be inserted into annotations
+must be prepared with the MacOS end-of-line (EOL) convention.  That
+is, use CR (0x0d) alone to indicate newlines in annotation text.
+This applies to both Unicode and non-Unicode text.  Unix convention LF (0x0a)
+does not produce newlines, and Windows/DOS convention CRLF (0x0d 0x0a) causes
+undesired indentation of the new line.
+
+
+[1999-11-27]
+Unicode support for outlines (bookmarks), annotations, and text in page content
+has been added.
+
+void cpdf_hexStringMode(CPDFdoc *pdf, int flag);
+
+This function sets a new mode for text strings to be either HEX or standard ASCII.
+This call should be used with argument YES before HEX-coded Unicode strings are
+used in annotation, outline and basic text functions such as cpdf_text().
+  cpdf_hexStringMode(pdf, YES); places text API functions to accept HEX-coded strings.
+  cpdf_hexStringMode(pdf, NO); must be used to restore standard ASCII-mode for strings.
+
+Note that you cannot yet use Unicode text with cpdf_textAligned() or any TextBox functions.
+This is because the string width function, cpdf_stringWidth() used internally to align
+text, does not work yet for Unicode.  Please limit the use of Unicode for page test
+drawing to the following functions or their "raw" versions.
+cpdf_text(), cpdf_textShow(), and cpdf_textCRLFshow().
+
+char *cpdf_convertBinaryToHex(const unsigned char *datain, char *hexout, long length, int addFEFF);
+/*  datain - binary data of size "length"
+    hexout - Converted HEX string is placed into this output buffer.
+        Buffer for "hexout" must be allocated by the caller with a storage for a string
+	of size at least 2*length+5 (considering possible addition of "FEFF" and
+	string terminator).
+    length - byte length of input binary data pointed to by datain.
+    addFEFF - If non-zero, the function will check if "datain" begins with "FEFF" (in binary)
+	and if not, prepend it to the output HEX representation.  If it is zero, nothing is
+	prepended.
+*/
+
+unsigned char *cpdf_convertHexToBinary(const char *hexin, unsigned char *binout, long *length);
+/*   hexin - HEX string input (non-HEX characters are simply skipped, i.e., CR LF may be present).
+     binout - Converted binary data is placed into this output buffer.
+	The buffer for binout must be allocated by the caller, and must have the size of
+	sizeof(hexin)/2 + 1 at a minimum.
+     length - This variable will contain the byte length of converted binary data in "binout."
+*/
+
+=====================================================================================
+Premium ClibPDF ONLY
+(Similar functionality is available in base ClibPDF as cpdf_placeInLineImage().)
+
+README for pcpdfRawImg.c: cpdf_placeImageData(); cpdf_rawPlaceImageData();
+[1999-11-20]
+
+int cpdf_placeImageData(CPDFdoc *pdf, const char *uniqueID, const void *imagedata, 
+	long length, int nx, int ny, int ncomp_per_pixel, int bits_per_sample,
+	float x, float y, float angle, float width, float height, int flags, CPDFimgAttr *imattr);
+
+int cpdf_rawPlaceImageData(CPDFdoc *pdf, const char *uniqueID, const void *imagedata, 
+	long length, int nx, int ny, int ncomp_per_pixel, int bits_per_sample,
+	float x, float y, float angle, float width, float height, int flags, CPDFimgAttr *imattr);
+
+These two functions place bitmap image data that reside in memory (computed or preloaded from a file
+and decompressed) into a PDF via image XObject.  They work in a similar way to cpdf_placeInLineImage(),
+but the difference is that the image data can be large and shared across multiple uses within a PDF file.
+In-line images are not shared across multiple instances.
+
+const char *uniqueID -- Give a unique string identifying image data uniquely within a PDF file.
+			This is used for keeping only one copy of image data for a PDF file.
+ 
+const void *imagedata -- This is your image data in uncompressed form.  You must pass the image
+			data as expected by PDF.  If PDF requires byte alignment at the end of
+			a scan line (I don't know), you must take care of it.  Also, any byte
+			or bit-order issues must be taken care of by you, the programmer.
+			The function doesn't do anything in these areas.  It simply compresses
+			the data (by Flate if compression is ON), and inserts it into PDF.
+long length ----------  Number of bytes in imagedata.
+
+int nx, ny -----------	Number of pixels in X and Y dimensions, respectively.
+
+int ncomp_per_pixel --  Number of color components (e.g, RGB image should have 3 for this,
+			For CMYK, it should be 4).
+
+int bits_per_sample --  Number of bits per component (sample).  For 8-bit gray image, this
+			should be 8.  For 24-bit RGB image (8 bit for each of RGB), this should be 8.
+
+float x, y -----------  Position of the lower-left corner of the image.
+
+float width, height --  Size of the image in points (1/72 inches).  NOTE: this is true for BOTH
+			functions above.
+
+int flags ------------  Bit-0: IM_GSAVE - (LSB) is "gsave" flag. Usually only this is needed.
+			Bit-1: IM_IMAGEMASK - if 1 and B/W images (1-bit per pixel), the image data is
+				used as /ImageMask.  This should not be used with grayscale or
+				color images.
+			Bit-2: IM_INVERT - if 1, gray or B/W sense is inverted (negative image).
+			Bit-3  and up: Reserved
+
+			Use above defines by OR'ing them, as in IM_GSAVE | IM_INVERT.
+
+CPDFimgAttr *imattr --  Always pass NULL for now.
+
+-----------
+int cpdf_importImage(CPDFdoc *pdf, const char *imagefile, int type, float x, float y, float angle,
+	float *width, float *height, float *xscale, float *yscale, int flags);
+
+			NOTE: the last argument of cpdf_importImage() and its "raw" version has
+			been renamed to "flags" and its bit values are interpreted in the same way
+			as described for cpdf_placeImageData().
+			All bits should work as described, except that all flags other than
+			IM_GSAVE will be ignored for PDFIMG (CPDF_IMG type).
+
+
+
+====================================================================
+Porting the source code with the old API (v1.x)
+====================================================================
+
+[1] cpf_open(int mode) -> cpdf_open(int, CPDFdocLimits *dL)
+	If the default document limits are OK, typical usage is now:
+	CPDFdoc *pdf;
+	pdf = cpdf_open(0, NULL);
+
+[2] cpdf_setDocumentLimits() is now obsolete, and has been merged with cpdf_open()
+	as above.
+	Do instead:
+
+	CPDFdocLimits dL = {120, -1, -1, -1, 8000};	/* -1 keeps default */
+	pdf = cpdf_open(0, &dL);
+or
+	Set values to individual members of CPDFdocLimits struct:
+	    dL.nMaxPages = 120;
+	    dL.nMaxFonts = -1;
+	    dL.nMaxImages = -1;
+	    dL.nMaxAnnots = -1;
+	    dL.nMaxObjects = 8000;
+
+[3] cpdf_setViewerPreferences() now takes a pointer to a CPDFviewerPrefs struct as in:
+
+	CPDFviewerPrefs vP = {PM_OUTLINES, 0, 0, 0, 0, 0, 0, 0};
+	cpdf_setViewerPreferences(pdf, &vP);
+
+	The above will have the book mark view open upon PDF file opening.
+
+[4] Many (but not all) functions now take a pointer to document context struct
+	as the first argument.  This pointer is returned by cpdf_open().
+	Examples of change:
+	    cpdf_open(0);		->	pdf = cpdf_open(0, NULL);
+	    cpdf_moveto(x, y);		->	cpdf_moveto(pdf, x, y);
+	    cpdf_fill();		->	cpdf_fill(pdf);
+	    cpdf_pageInit(1, PORTRAIT, A4, A4);
+					->	cpdf_pageInit(pdf, 1, PORTRAIT, A4, A4);
+
+	The list of all functions that needs this modification can be obtained by this
+	command:
+		grep "CPDFdoc \*pdf" cpdflib.h
+
+[5] cpdf_textBox(), and cpdf_rawTextBox() now requires an additional argument,
+	orientation angle, after (xl, yl, width, height).
+	See the API manual and cpdflib.h.
+
+[6] New member has been added to CPDFtboxAttr struct (see cpdflib.h and the manual)
+	for use with cpdf_textBox() and cpdf_textBoxFit(), and their raw versions.
+	Do not forget to add:
+		tboxAttr.noMark = 0;
+	if you don't use NULL, and you use a struct to modifiy the default
+	attributes of text boxes.
+
+[7] Endian.h is no longer needed or created during the make process.
+
+[8] Private functions have been moved to cpdf_private.h.
+
+[9] Test program: testpdf.c now creates 2 slightly different PDF files in
+	a interleaved way at the same time.  This is not an ideal test
+	of multi-threading and thread safety.   Please band on the new
+	ClibPDF with respect to thread safety, and let us know of any
+	problems.
+
+[10] For multi-threaded application developer, please review the first half
+	of file cpdfUtil.c, and evaluate the need for mutex locks there.
+
+[11]  ### IMPORTANT ###: Use multi-threaded C run time library for multi-threaded
+	applications.
+	I believe there is LIBCMT.lib for Microsoft VC++ which is supposed
+	to be thread-safe.  Use this instead of standard LIBC.
+
+[12]  Reverse the order of cpdf_close(pdf); cpdf_launchPreview(pdf);
+	in all examples and programs that automatically open the document
+	in Acrobat Reader or other PDF viewers.
+	It must be:
+		cpdf_launchPreview(pdf);
+		cpdf_close(pdf);.
+	"pdf" is freed by cpdf_close(), so it can't be used after that.
+
+
+Sam
+fastio@fastio.com
+
+========================================================================
+Same content as ClibPDF version 1.02 below
+========================================================================
+
+## What is ClibPDF
+
+ClibPDF is a library of ANSI C functions, distributed in source
+form, for creating PDF (Acrobat) files directly via C language
+programs without relying on any Adobe Acrobat tools and related
+products.  It is suitable for fast dynamic PDF Web page generation
+in response to user input and server-side data, and also for implementing
+publication-quality graph plotting for both on-screen viewing and
+printing in any custom application.  Since there is minimal
+platform-specific code, it is ideal as cross-platform graphing
+solutions with minimal developement efforts.  Generated PDF files
+are viewed and printed by auto-launching Adobe Acrobat Reader or
+any other PDF viewer available free for many platforms.  Note that
+ClibPDF is for PDF file creation only.  It has no support for reading
+or editing existing PDF files.
+
+## Notable Features of ClibPDF
+- FONTS: Support for Adobe 39 PS Type1 fonts, plus
+    2 custom fonts (Helvetica-like fixed-pitch font, Small-Cap font).
+  Also, 7 Asian language (CJK) fonts with a total of 28 variations.
+- Multi-level Outline (Book Mark) support - hierarchical tree
+- Most basic PDF drawing primitives are supported, plus arc and circle.
+- Plot domains (linear, semi-log, log-log) with mesh to give graph
+    paper appearance.
+- Axes (linear, log, date) with flexible tick marks, numbering, and
+    labelling.
+- Markers, pointers, error bars for data points.
+- Multi-page documents may be generated in any page order, and
+    pages may be written in an interleaved manner.
+- Support for Flate/Zlib compression for fast web download
+    (No need for LZW license from Unisys.)
+- In-memory PDF generation (no temp files).
+- Transition, timed slide show support.
+
+## Possible Applications
+- Fast, light-weight CGI for dynamic PDF web pages generation.
+- Report generation in medical, scientific, and industrial
+   test equipment (and plots may be used directly in publications).
+- Giving legacy console-type applications an attractive
+   graphic output via auto-launched Arobat Reader (or any PDF viewer).
+- Cross-platform graphing solutions.
+- A unified imaging model for X-Window applications for beautiful
+   screen AND printed output (no more ugly screen dumps).  This
+   eases the pain of the death of DPS (Display PostScript).
+
+## Copyright Notice
+
+Copyright (C)1998, 1999 FastIO Systems, All Rights Reserved.
+For conditions of use, license, and distribution, see LICENSE.txt or LICENSE.pdf.
+
+ClibPDF is NOT public domain software.
+
+## License, Copying, and Distribution
+
+ClibPDF is free OR commercial depending on how and by whom it is used.
+
+ClibPDF is free for non-profit personal use, and use by educational,
+non-profit, and government organizations.
+
+Commercial license is required for use by for-profit entities (also
+refered to as commercial users), including commercial web-site
+deployment (including intranet), inclusion in in-house business,
+production, manufacturing and research applications, for-profit use
+by individuals, inclusion in commercial applications, libraries,
+and tools that are sold or bundled with other commercial products.
+There is a special deferment provision for shareware developers.
+An automatic free 30-day examination period is granted for commercial
+users for the purpose of evaluting ClibPDF.
+
+The summary of license terms described above is an overview and is
+not legally binding.  Exact and legally accurate details of licensing
+terms are described in the file LICENSE.pdf included in
+the distribution or at http://www.fastio.com/LICENSE.pdf.
+
+We welcome feedback regarding the feature list, licensing, bugs, and
+improvements and any other suggestions.  Please send comments to
+clibpdf@fastio.com.
+
+## Compile and Install
+
+[1] Install Adobe Acrobat Reader or a PDF viewer application.
+    (Free from http://www.adobe.com/prodindex/acrobat/readstep.html)
+    There is also a link to the download page for Asian languages fonts
+    (free) on this page (see near bottom left).
+    Acrobat Reader is needed only for viewing the PDF file on the
+    development system.  If you are using ClibPDF strictly for Web
+    server applications (you view the PDFs on other client machines),
+    there is no need to install either Acrobat or Asian fonts.
+
+[2] Compile and Install library
+
+Please see file README.<platform>, if present, for further platform-specific
+details for Mac/PC platforms.
+
+For Unix variants:
+  BSDI/Linux/FreeBSD/NEXTSTEP/OPENSTEP/MacOS X Server/SunOS/SGI
+
+    cd source
+    mv Makefile Makefile.orig
+
+For standard ClibPDF:
+    cp Makefile.<platform> Makefile
+For Premium ClibPDF:
+    cp Makefile.<platform>P Makefile
+
+    make lib
+    make install		(/usr/local/lib and include must be writable)
+    make test			(creates testpdf executable)
+    ./testpdf
+    cd ..
+    cd examples
+    (compile and run examples)
+
+If Makefile.<platform> or Makefile.<platform>P does not exist for
+your platform of choice, use Makefile.* of the closest variant,
+and also edit config.h.  Differences should really be minor.
+We can't generally help with specific compiler/linker problems
+for any given platform.
+
+## Platforms tested so far:
+
+-- Unix variants --
+BSDI BSD/OS 3.1 (gcc 2.7.2.1)
+FreeBSD 2.2.8-STABLE (gcc 2.7.2.1)
+Linux 2.0.34 (Red Hat 5.1) (gcc 2.7.2.3)
+MacOS X Server 1.1
+NEXTSTEP 3.2, 3.3, OPENSTEP 4.2
+SGI IRIX 6.2 (gcc-2.8.1) -- Thanks to Matt Warner <mwarner1@ix.netcom.com>
+SunOS 5.4 / (SUNWspro/SC4.0)
+Sun Solaris 7 (gcc-2.95.1)
+HP-UX B.11.00
+AIX 4.2
+
+-- Non-Unix --
+MacOS 8.6 (Metrowerks CWPro4/IDE 3.2) -- See also: README.MacOS8
+Windows 95/98/NT 4.0 SP3/SP4 (VC++ 6.0) -- See also: README.win32
+Cygwin b20.1 (gcc egcs-2.91.57) -- Thanks to Stipe Tolj <tolj@uni-duesseldorf.de>
+
+## Relationships to other software
+
+ClibPDF incorporates a portion of ZLIB Flate compression library.
+(C) 1995-1998 Jean-loup Gailly and Mark Adler [See README-zlib]
+
+Jpegsize.c and its header files been taken from the Independent
+JPEG Group's software distribution. It is a modified version of rdjpgcom.c.
+An image file, testimg.jpg, has also been taken from the JPEG distribution.
+Copyright (C) 1994-1997, Thomas G. Lane. [See README-jpeg]
+
+Code from "Technote 1002: On Launching an App with a Document"
+from Apple Developer Technical Support (DTS) is used in
+cpdfPreview.c.  The original code may be found at:
+    http://developer.apple.com/technotes/tn/tn1002.html
+Copyright (C) 1995 by Apple Computer, Inc.  All Rights Reserved.
+
+Files cpdfPFM.h and  cpdfReadPFM.c contain public-domain code
+from the following:
+Title:  pfm2afm - Convert Windows .pfm files to .afm files
+Author: Ken Borgendale   10/9/91  Version 1.0
+Copyright:
+      pfm2afm - Copyright (C) IBM Corp., 1991
+      This code is released for public use as long as the
+      copyright remains intact.  This code is provided asis
+      without any warrenties, express or implied
+
+Four Utopia family of fonts that accompany this distribution
+have been donated to the public domain by Adobe Systems
+(see README.Utopia).
+
+These items listed above are the only pieces of code/software that
+originate from others.
+
+The rest of the code has been written entirely from scratch, and
+is Copyright (C) 1998, 1999 FastIO Systems.
+
+Conceptually, ClibPDF has been inspired by public-domaiin Cgraph
+for PostScript (http://totoro.berkeley.edu/software/A_Cgraph.html),
+but ClibPDF is much more powerful.  Again, no code from Cgraph (PS)
+has been used.  Cgraph plot markers have been reimplemented.
+
+NO part of ClibPDF is derived from or related to either of
+two C-language PDF libraries; Adobe PDF Library or Thomas Merz's PDFLib.
+ClibPDF has been written completely independently.
+I have seen some documentation for each, but no source code.
+
+
+Sam Ohzawa
+
+--
+ClibPDF, JlibPDF, and FastIO are trademarks of FastIO Systems.
+Adobe, Acrobat, Exchange, and PostScript are tademarks of Adobe
+Systems Inc.  All other products or name brands are trademarks
+of their respective holders.
+

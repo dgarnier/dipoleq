@@ -1,0 +1,16 @@
+README.AIX - README for AIX 4.2 platform [1999-05-06]
+
+Please copy Makefile.AIX42 or Makefile.AIX42P (for Premium package user) to Makefile.
+Edit Makefile in the sections marked by "FIXME" to match your directory structure.
+
+After that,
+
+make lib; make install    OR   make shlib; make shinstall
+	should create and install the library.
+
+make test
+	should create a test executable in the source directory.
+
+./testpdf
+	should execute the test program.
+

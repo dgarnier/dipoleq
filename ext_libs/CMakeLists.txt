@@ -37,3 +37,26 @@ set(hdf4_LIBRARIES "mfhdf-static" "hdf-static" CACHE STRING "" FORCE)
 
 # hdf4_POPULATED, hdf4_SOURCE_DIR and hdf4_BINARY_DIR is defined by FetchContent
 #find_package(hdf4)
+
+#ExternalProject_Add(ClibPDF 
+#                    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/clibpdf
+#                    )
+
+#ExternalProject_Get_Property(ClibPDF)
+
+FetchContent_Declare(ClibPDF
+                    OVERRIDE_FIND_PACKAGE
+                    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/clibpdf
+                    )
+
+#ExternalProject_Get_Property(ClibPDF)
+FetchContent_MakeAvailable(ClibPDF)
+find_package(ClibPDF REQUIRED)
+
+#dump_cmake_variables(ClibPDF)
+
+#set(hdf4_INCLUDE_DIRS "${HDF4_MFHDF_LIBSRC_SOURCE_DIR}" "${HDF4_HDF_SRC_SOURCE_DIR}" "${HDF4_BINARY_DIR}" CACHE STRING "" FORCE)
+#set(hdf4_LIBRARIES "mfhdf-static" "hdf-static" CACHE STRING "" FORCE)
+
+# dump_cmake_variables()
+

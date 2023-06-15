@@ -1,0 +1,59 @@
+/* This is a test program that is at the end of cpdfMemBuf.c */
+
+static char *string1 = "0123456789 This is a test of memory stream0123456789";
+
+void main(void)
+{
+char sbuf[256];
+int i;
+CPDFmemStream *memStream = { NULL };
+char *memBuffer;
+int memLen, bufSize;
+	memStream = cpdf_openMemoryStream();
+	for(i=0; i<50; i++) {
+	    sprintf(sbuf, "%05d - %s\n", i, string1);
+	    cpdf_writeMemoryStream(memStream, sbuf, strlen(sbuf));
+	}
+	cpdf_saveMemoryStreamToFile(memStream, "junkmem.out");
+	cpdf_getMemoryBuffer(memStream, &memBuffer, &memLen, &bufSize);
+	fprintf(stderr,"memLen=%d,  bufSize=%d\n", memLen, bufSize);
+	cpdf_closeMemoryStream(memStream);
+}
+
+
+
+/* spbuf[] is in cglobals.h */
+
+--- complex case with multiple write statements ---------------------------
+static int count, bufsize;
+static char *mbuff;
+
+
+    cpdf_clearMemoryStream(scratchMem);
+    cpdf_memPutc('\n', scratchMem);
+    if(textClipMode)
+	cpdf_memPuts("q\n", scratchMem);
+    cpdf_memPuts("BT\n", scratchMem);
+    sprintf(spbuf, "%.4f %.4f %.4f %.4f %.4f %.4f Tm\n", a, b, c, d, e, f);
+    cpdf_writeMemoryStream(scratchMem, spbuf, strlen(spbuf));
+
+    cpdf_getMemoryBuffer(scratchMem, &mbuff, &count, &bufsize);
+    if(useContentMemStream)
+	cpdf_writeMemoryStream(currentMemStream, mbuff, count);
+    else
+	fwrite(mbuff, 1. (size_t)count, fpcontent);
+
+--- one line, but needs sprintf() ------------------------------------------
+    if(useContentMemStream) {
+	sprintf(spbuf, "%.3f %.3f m\n", x, y);
+	cpdf_writeMemoryStream(currentMemStream, spbuf, strlen(spbuf));
+    }
+    else
+	fprintf(fpcontent, "%.3f %.3f m\n", x, y);
+
+--- string constant --------------------------------------------------------
+    if(useContentMemStream)
+	cpdf_memPuts("W\n", currentMemStream);
+    else
+	fprintf(fpcontent, "W\n");
+

@@ -1,0 +1,58 @@
+Q1: How do I display the Euro character using ClibPDF?
+
+A1: Use Times or Helvetica family of fonts, WinAnsiEncoding, and octal code \200.
+    That is, for example:
+	cpdf_setFont(pdf, "Times-Italic", "WinAnsiEncoding", 48.0);
+	cpdf_text(pdf, 1.0, 6.5, 0.0, "Hello Euro \200 !");
+
+
+
+Q2: A CGI that generates PDF output to stdout under Windows produces bad PDF files.
+   However, saving to file works fine.  I am using the following scheme to perform
+   PDF output to stdout.  What am I doing wrong?
+
+    bufPDF = cpdf_getBufferForPDF(pdf, &length);
+    printf("Content-Type: application/pdf%c", 10);
+    printf("Content-Length: %d%c%c", length, 10, 10);
+    fwrite((void *)bufPDF, 1, (size_t)length, stdout);	/* Send PDF now */
+
+A2: The above works fine under Unix, but Windows performs end-of-line translations
+    which is difficult to disable especially for stdin/stdout.  A solution is to
+    use setmode() on stdout as below:
+
+Change the above to:
+#if defined(_WIN32) || defined(WIN32)
+#include <fcntl.h>
+extern int setmode(int filenum, int mode);
+#endif
+ ....
+
+    bufPDF = cpdf_getBufferForPDF(pdf, &length);
+    setmode(fileno(stdout), O_BINARY);			/* ADD: change stdout to binary mode */
+    printf("Content-Type: application/pdf%c", 10);
+    printf("Content-Length: %d%c%c", length, 10, 10);
+    fwrite((void *)bufPDF, 1, (size_t)length, stdout);	/* Send PDF now */
+
+
+
+
+Q: Problems with PDF, Netscape 4.x, SSL Web Server
+
+We are using PDFs on an Extranet (with SSL enabled), and have erratic
+problems viewing them with Netscape 4.0 while IE browsers seem to work
+just fine.  When clicking on a link to a PDF, some open up in the
+browser, while others do not.  Any suggestions?!
+
+A: Posted on pdf@lists.pdfzone.com:
+Date: Mon, 17 May 1999 12:20:12 -0700
+From: Roberto Perelman <rperelma@Adobe.COM>
+Subject: Re: [PDF] Viewing PDFs in Netscape
+
+That's a known Netscape 4.x bug. Here is the workaround provided by the folks at Netscape:
+Exit Netscape, then add this to the end of your prefs.js file (in the Netscape folder):
+
+user_pref("browser.cache.disk_cache_ssl", true);
+
+Then launch Netscape again.
+After you do this, you can open pdf files served via SSL.
+

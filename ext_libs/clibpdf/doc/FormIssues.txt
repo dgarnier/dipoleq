@@ -1,0 +1,91 @@
+Issues in dynamic generation of PDF for form CGI applications
+
+Acrobat/PDF form + FDF
+----------------------
+*Pros:
+   Adobe technology - established vender
+   Use of PDF template
+   Print quality of the form text and labels is better.
+*Cons:
+   Complexity of the mechanism (more things that can go wrong)
+   Available only for limited platforms
+   No source code
+   Client-side processing
+      (forms JavaScript, elaborate setups that users can break)
+   Forms JavaScript is limited (only simple arithmetic)
+   May require Acrobat Exchange on each client seat.
+   Bug fixes in Acrobat forms, JavaScript code, Forms plug-in
+      that is part of Exchange/Reader may take a long time to
+      propagate through client base.
+
+ClibPDF dynamic PDF with form as image
+--------------------------------------
+*Pros:
+   Source code
+   Deployable on any server platform
+   Server-side processing drawing on all available technology
+   Form field calculations can leverage on any C-callable mechanism
+     (e.g. math functions, complex if/else/case branching, database lookup)
+   Simpler client software requirement. Does not rely on complex Acrobat Form
+     and JavaScript mechanisms, making the generated PDF compatible with wider
+     range of Adobe and non-Adobe Reader software (less technical support
+     headaches from users without the lastest version)
+
+*Cons:
+   Form is a bitmap image
+   Slightly larger PDF file size
+   FastIO Systems is an unproven startup.
+     (but we license source which makes it less risky than binary-only
+     product from any vender)
+
+
+The CGI source code, the HTML page, Premium ClibPDF library,
+CGIHTML library (free library and see the link on the PDF clock
+example in the examples page), PDFIMG files for the tax form images
+are all we need to implement that demo (well there is http downloader
+to get web-cam images on demand.)  Please note that the above CGI
+source requires Premium ClibPDF package that includes fast-loading
+image format (PDFIMG) support, TIFF support, and conversion utilities.
+
+We do not have any template PDF to merge with new dynamic content,
+because ClibPDF cannot deal with existing PDF files. It can only
+generate new PDF files.
+
+The tax form itself is an bitmap image generated from f1040.pdf
+available from the IRS web site.  This may be done using Ghostscript.
+Essentially, PDF form image may be generated from PDF and producing
+a TIFF file.  This was done at 150-dpi, 200-dpi, and 300-dpi
+resolutions. The 300-dpi image is only 66kbytes for that complex
+image using CCITT G4 Fax format.  Simpler forms can be as small as
+20kbytes even at 300-dpi.
+
+TIFF file is then converted into our custom format called
+PDFIMG suitable for direct inclusion into PDF.
+This is done by our conversion program tiff2pdfimg which
+is part of the Premium package (with source code and
+Windows executable).
+
+For a given page, all CGI does is to import a image (cpdf_importImage()),
+and then place other objects like numbers, text strings, and images
+on top of this background form image.  At the API level, there is
+no distintion between form fields and other markings such as label
+or lines and area fills.  Any item can be dynamic if you make it
+so.
+
+Q: How did you get the coordinates for the fields????
+
+A: This is the most tedius part of the work for which we do not
+have appropriate tools yet.  We are working on it.  For the demo,
+I have obtained the form field coordinates manually using an
+PostScript viewer application on NEXTSTEP (now practically dead but
+its technologies to go into MacOS X) which allows PostScript viewing
+with a coordinate display while rubber-banding a rectangle.
+
+I believe GhostView has such a coordinate display of the mouse
+cursor which you can move over the rendered PostScript or PDF
+document, and read off the coordinate in the unit of points.  Those
+coordinates must be entered into a table as you find in the CGI
+source code (or possibly an external file that is loaded in).  This
+is a tedius job, but I assume can be farmed out to non-technical
+people.
+

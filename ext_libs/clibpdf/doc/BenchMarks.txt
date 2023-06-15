@@ -1,0 +1,57 @@
+Benchmark comparisons of ClibPDF, PDFlib, Adobe PDF Library,
+and PostScript generator + Adobe Acrobat Distiller.
+
+The following benchmark results have been provided by a user at a
+major manufacturer.  The test application is a conversion program,
+equivalently written for each library, that read in a 155-page
+(98304 bytes) file containing a parts list for a highly complex
+product, and generated a properly formatted version in PDF resulting
+in a 156 page file (including a cover page).  Each page contains
+mostly text, form lines and a corporate logo as an image.
+
+Platform: Sparc 5 with 64MB memory:
+
+## ClibPDF library [v1.00] (write only) from FastIO Systems:
+
+Conversion time: 15 seconds.
+Resultant PDF size: 257,027 bytes.
+Compression: Flate compression.
+Bookmarking support: yes.
+Serialization support: no.
+Image support: jpeg.
+
+## PDFlib [v0.6] (write only) from Thomas Merz:
+
+Conversion time: 80 seconds.
+Resultant PDF size: 1,314,084 bytes.
+Compression: none supported yet.
+Bookmarking support: yes.
+Serialization support: no.
+Image support: jpeg and gif.
+
+## PDF Library (read/modify/write) from Adobe (aka BigKahuna):
+
+Conversion time: 54 seconds.
+Resultant PDF size:  284,365 bytes.
+Compression: LZW compression.
+Bookmarking support: yes.
+Serialization support: yes.
+Image support: raw only.
+
+## PostScript generator code (from print agent) and Acrobat Distiller:
+
+Requires two step conversion:
+	PostScript conversion time: 7 seconds.
+	Distiller conversion time:  3 minutes 14 seconds.
+Resultant PDF size: 197,548 bytes.
+Compression: LZW compression.
+Bookmarking support: yes.
+Serialization support: no.
+Image support: everything in Postscript.
+
+---
+
+ClibPDF has also been used successfully to convert a massive parts list
+file (originally 7.2MB) into a 9255-page PDF file (15.2MB).
+
+[1998-11-30]

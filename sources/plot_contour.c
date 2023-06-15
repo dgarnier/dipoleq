@@ -21,7 +21,7 @@ void do_contour_pt_closed(double x, double y, double z, int ccode);
 static CPDFdoc *curPDF;
 static int doFill=0;
 
-void do_contour_pt_open(double x, double y, double , int ccode)
+void do_contour_pt_open(double x, double y, double dummy, int ccode)
 {
 	switch (ccode) {
 		case CONTOUR_START:
@@ -40,7 +40,7 @@ void do_contour_pt_open(double x, double y, double , int ccode)
 */			break;
 		}
 }
-void do_contour_pt_closed(double x, double y, double , int ccode)
+void do_contour_pt_closed(double x, double y, double dummy, int ccode)
 {
 	switch (ccode) {
 		case CONTOUR_START:

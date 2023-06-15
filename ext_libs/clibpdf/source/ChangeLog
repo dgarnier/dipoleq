@@ -1,0 +1,428 @@
+ChangeLog file for ClibPDF library -- Revision History (most recent first):
+
+Copyright 1998, 1999 FastIO Systems, All Rights Reserved.
+
+---
+2000-01-25 [io]  (version 2.02-r1-2)
+	-- Makefile.NetBSD contributed by Jeroen Scheerder <J.Scheerder@cwi.nl>
+
+2000-01-12 [io]  (version 2.02-r1-2)
+	-- Memory leak fixed in cpdfAxis.c thanks to alex_V.
+
+1999-12-12 [io] (version 2.02-r1-1)
+	-- Malloc size bug in cpdfInit.c was discovered by James Walker.
+	   It has been fixed and this fix should eliminate excessive memory
+	   use for TIFF2PDF with thousands of pages per PDF file.
+	   The excessive memory allocation was imageIdx storage in CPDFpageInfo.
+
+1999-12-09 [io] (version 2.02-r1-0)
+	-- Released as 2.02-r1-0.
+
+1999-12-04 [io] (version 2.01-r2-13)
+	-- Compiler warnings and errors under MacOS9 and Sun CC cleaned up.
+	   (Thanks to J.W. Walker, and Pierre-Yves Monnet.)
+	-- Use of thread-safe localtime_r() where available.
+	   cpdf_localtime() now takes an extra argument for "struct tm" buffer.
+	   (See #define THREAD_SAFE_TIME_FUNCS in cpdfUtil.c)
+	-- Unicode binary strings are now escaped internally for '\', '(', and ')'.
+
+1999-11-27 [io] (version 2.01-r2-12)
+	-- Unicode support for outline (bookmarks), annotations, and content text.
+	   Unicode strings must be passed to functions via HEX encoded string, because
+	   Unicode strings may contain zero-valued bytes in the middle and cannot go
+	   through standard C-strings.  Content strings can only be used with non-aligned
+	   text functions (i.e., it cannot be used with cpdf_textAligned() or TextBoxes).
+	   It seems, with Acrobat (Reader) 4.x, Unicode outlines and annotations are
+	   supported only on native language OS'es.  It requires system-level font support.
+	   Acrobat Reader 4.05 with Asian Fonts installed does not display Unicode outlines
+	   and annotations correctly.  MacOS (English) with xxx Languate Kit will render
+	   Unicode annotations and bookmarks correctly.
+	   Windows NT with Microsoft Global IME with Language support (free from MS) will
+	   display Unicode annotations and bookmarks correctly.  For Japanese, Golbal
+	   IME comes with MSGOTHIC.TTF (~4MB).  Windows 95/98 cannot display Unicode
+	   annotations and bookmarks.
+	-- For Unicode support the following new functions have been added:
+	   char *cpdf_convertBinaryToHex(const unsigned char *datain, char *hexout, long length, int addFEFF);
+	   unsigned char *cpdf_convertHexToBinary(const char *hexin, unsigned char *binout, long *length);
+	   void cpdf_hexStringMode(CPDFdoc *pdf, int flag);
+
+1999-11-21 [io] (version 2.01-r2-11)
+	-- Bit-2 of "flags" argument in cpdf_importImage(), and cpdf_placeImageData()
+	   now indicate "invert".  If 1, image is becomes negative of the normal apperance.
+	   Now, IM_GSAVE, IM_IMAGEMASK, and IM_INVERT are defined for OR'ing into "flags."
+
+1999-11-20 [io] (version 2.01-r2-10)
+	-- (Premium) Implemented cpdf_placeImageData(), and cpdf_rawPlaceImageData()
+	   to directly place image data from memory via image XObject.  Unlike
+	   cpdf_placeInLineImage(), the image data can be large and shared across
+	   multiple uses within a PDF file.
+
+1999-11-18 [io] (version 2.01-r2-9)
+	-- TextBox now honors form feed char ('\f') in NLmode = 1 (NL is NL).
+	-- ALTLANDSCAPE mode (opposite rotation to LADNSCAPE mode) has been added.
+	   To demonstrate the usage for this mode, landscape2.c has been added.
+	-- For B/W 1-bit/component images, /ImageMask support has been added to 
+	   use them as a mask for watermarking.
+
+1999-11-06 [io] (version 2.01-r2-8)
+	-- pcpdfTIFF.c made more rubust for dealing with missing tags.
+	-- There was a documentation bug in PDF Spec v1.2 about where /PageLayout key should
+	   be present.  It should be in the Catalog object and not in the /ViewerPreferences dict.
+	   It is fixed in _cpdf_WriteCatalogObject(), but Viewer Pref C struct is kept as before.
+	   PDF Spec v1.3 had this note.  Thanks to James W. Walker for pointing this out.
+
+1999-10-18 [io] (version 2.01-r2-7)
+	-- The first line's baseline in TextBox is at Ascent value down from the
+	   top edge of TextBox.
+
+1999-10-16 [io] (version 2.01-r2-6)
+	-- cpdf_rawTextBoxY() and cpdf_textBoxY() which returns yend indicating
+	   the Y location last line taking into the Descent value of current font.
+	   The Y position is with respect to the base line of the TextBox, not with
+	   respect to the coordinate system in which TextBox sits.
+	-- For the above functions, x_Points2Domain(), y_Points2Domain() and
+	   cpdf_descent() have been added.
+
+1999-10-14 [io] (version 2.01-r2-5)
+	-- cpdf_capHeight() was incorrectly returning a fraction of font size.
+	   It now returns the cap height in points as is documented.
+	   Also implemented cpdf_ascent() similarly and returns Ascent in points.
+	   Optimized cpdf_stringWidth() for speed.
+	   Incorporated roman font confusion bug fix (of 1999-10-10).
+
+1999-10-06 [io] (version 2.01-r2-4)
+	-- Many thanks to James W. Walker <http://www.jwwalker.com/> for MacOS
+	   related fixes which have now been incorporated.
+
+1999-10-03 [io] (version 2.01-r2-4)
+	-- Allow importing progressive JPEG now that Acrobat Reader 4.0 and
+	   PDF-1.3 support it.  Note that progressive JPEG files don't make
+	   images in PDF appear while the image or page's data are being
+	   downloaded.
+
+1999-10-02 [io] (version 2.01-r2-3)
+        -- FreeBSD setmode() confilict with Windows solved by #ifdef.
+        -- Half-width Roman char width inconsistency problem has been solved.
+           It was my fault in specifying the wrong ranges of CID char codes for
+           the /W [] array in DescendantFont object.
+
+1999-10-01 [io] (version 2.01-r2-1)
+	-- Public Release 2.01-r2-1
+	-- cpdf_stringWidth() now returns correct string width will all characters
+	   and for Standard, MacRoman, and WinAnsi Encodings.  MacExpertEncoding is
+	   strange and not implemented. Therefore, cpdf_stringWidth() will be incorrect
+	   for this encoding.  All encoding look-up tables are now complete in cpdfAFM.h,
+	   except for the conversion table for MacExpertEncoding.
+
+1999-09-30 [io] (version 2.01-r1-3)
+	-- Correct char width look up mechanism in place.
+	   WinAnsiEncoding char width table completed.
+	   Other encodings will be converted or looked up via WinAnsi table.
+		
+1999-09-29 (version 2.01-r1-2)
+	-- Bug fix in cpdfAFM.h (misspeling of GB1).
+	   Modified cpdfFont.c to allow CJK font modifiers: ",Bold", ",Italic", and ",BoldItalic".
+	   Each CJK font is worth 4 different styles.
+
+1999-09-28 (version 2.01-r1-1)
+	-- Released 2.01-r1-1 publicly.  CJK Font documentation addendum.
+
+1999-09-26 (version 2.01-r1-1)
+	-- cpdf_stringWidth(), and cpdf_textAligned() are now basically OK for
+	   traditional encodings, but not Unicode.
+	   Japanese and Korean support seems to be working OK.
+	   There does not appear to be half-width chars in the Korean fonts.
+	   TextBox'es still don't work.
+
+1999-09-25 (version 2.01-r1-0)
+	-- Japanese support, first try.
+
+1999-09-20 (version 2.00-r1-2)
+	-- Some MacOS bugs and misspelings fixed in cpdfInit.c and cpdfPreview.c.
+
+1999-09-18 (version 2.00-r1-1)
+	-- Windows stdout binary output problem fixed.  cpdfMemBuf.c cpdfInit.c updated.
+	   Fix update file made available separately.
+
+1999-09-14 (version 2.00-r1)
+	-- Release 2.00-r1.
+
+1999-09-11 (version 2.00-beta1-5)
+	-- Added orientation angle parameter to cpdf_textBox() (and its raw version).
+	-- Implemented cpdf_textBoxFit() (and raw version).
+	-- Implemented cpdf_rectRotated() (and raw version).
+	-- Note in the doc about making sure to have "\n\n" at the end of text data
+	   for text box.
+
+1999-09-09 (version 2.00-beta1-4)
+	-- Default fall back to DPI for TIFFs without Resolution Unit indication
+	   in pcpdfTIFF.c (premium only).
+
+1999-09-01 (version 2.00-beta1-3)
+	-- Sun Solaris 7 + gcc 2.95.1 Update.  Makefiles, config.h, cpdfPreview.c
+
+1999-08-29 (version 2.00-beta1-3)
+	-- Fixed MacOS file type setting bug -- (moved back into cpdf_finalizeAll()).
+
+1999-08-28 (version 2.00-beta1-2)
+	-- Examples and testpdf.c had a bug in the ordering of cpdf_close() and
+	   cpdf_launchPreview().  Fixed.
+	-- Released as public beta.
+
+1999-08-27 (version 2.00-beta1-1)
+	-- Released as public beta, briefly. Erratum for above posted.
+
+1999-08-24 (version 2.00-beta1-1)
+	-- Examples & Premium examples updated.
+	   Main test program testpdf.c now generates 2 PDF documents at the same time.
+
+1999-08-22 (version 2.00-beta1-0)
+	-- Move to multi-threading involves extensive API changes, major version bumped to 2.
+	   First semi-working version: sourceP/testpdf.c seems to work now.
+	   Private API functions now in cpdf_private.h, taken out of cpdflib.h.
+	   Added TIFF orientation tag as a member of CPDFimage struct.
+
+1999-08-11 (version 1.10-7e-4)
+	-- Run-time checking of endian-ness implemented as suggested by Rodney Sitton.
+	   (This is a lot more portable to non-Unix environments.)
+	   Added checking for NULL memory stream in cpdf_closeMemoryStream().
+	   Possible fix for external flont related memory leak as sugg. by Rodney.
+	   Possibly the last non-multithreaded version.
+	   Major work on multi-threaded version.
+
+1999-08-10 (version 1.10-7e-3)
+	-- Safety for TIFF (CCITT G3/G4) files with missing "bits/sample"
+	   and "samples/pixel".  Force these values to 1 for CCITT G3/G4.
+	   Mods in pcpdfTIFF.c. (affects Premium only)
+
+1999-07-01 (version 1.10-7e-2)
+	-- File was not closed in cpdfReadPFM.c. Now fixed.
+
+1999-06-12 (version 1.10-7e-1)
+	-- Bug fix in textbox.c
+	   Rewrote cpdfReadPFB.c
+
+1999-06-09 (version 1.10-7e)
+	-- Releaseing this version.
+	-- Fixed a small formatting bug in cpdfTextBox().
+	   Define "DEBUG" changed to "CPDF_DEBUG" or "ZLIB_DEBUG" to avoid collision.
+	   Font embedding under MacOS 8.x verified - works.
+
+1999-06-06 (version 1.10-7d)
+	-- Added: char *cpdf_rawTextBox(....);
+		  char *cpdf_textBox(...);
+		These do columnar paragraph formatting.
+		  char *cpdf_version(void);
+		  char *cpdf_platform(void);
+
+1999-06-01 (version 1.10-7c)
+	-- bit order fix (reverse bits when LSB2MSB order) for CCITT G4 Fax TIFF import.
+	   This makes it work on BIGENDIAN TIFF files.
+
+1999-05-20 (version 1.10-7b)
+	-- pcpdfTIFF.c modified to implement special pass-through processing for
+	   CCITT G4 Fax (/CCITTFaxDecode with /K -1) TIFF files.
+	   There is a problem with G4 TIFFs with NumberOfStrips != 1 and when the
+	   width number of pixels is not multiples of 8, so for now,
+	   G4 pass-through is only for images with NumberOfStrips == 1.  Don't know why.
+	   Now, G4 Fax TIFF files should be nearly as fast as importing JPEG and PDFIMG.
+	   And, G4 Fax files are much smaller than PDFIMG!
+
+1999-05-17 (version 1.10-6a)
+	-- Added HP-UX Makefile (for B.11.00)
+
+1999-05-12 (version 1.10-6a)
+	-- CPDFimageInfo struct now has 3 more members for TIFF resolution (DPI) info.
+	   pcpdfTIFF.c modified to support TIFF resolution info.
+	-- pcpdfTIFF.c, cpdfImage.c, cpdfInit.c, cpdflib.h, cglobals.h have been modified
+	   to support multi-image TIFF files.  A new function cpdf_countImagesInTIFF(), and
+	   cpdf_selectImage() have been added to support image selection in multi-page TIFF.
+	-- A new premium example tiff2pdf.c.
+
+1999-05-06 (version 1.10-5d)
+	-- Merged in AIX 4.2 support sent in from a user (thanks!).
+
+1999-05-03 (version 1.10-5c)
+	-- removed typedefs for uchar, uint, ushort, ulong from cpdfReadPFM.h and .c.
+	-- Redid cpdfReadPFB.c
+	-- Time axis wierdness fixed by a new function cpdf_suggestTimeDomainParams()
+	   added to cpdfAxis.c
+	-- Bug fix (added TIFFclose()) in pcpdfTiff.c.
+
+1999-04-06 (version 1.10-beta-4a)
+	-- Annotation bug fix from Peter Kleiweg <kleiweg@let.rug.nl> re: null pointer assignment
+	   in functions cpdf_rawSetActionURL() and  cpdf_rawSetLinkAction().
+
+1999-04-05 Realease (version 1.10-beta-4) publicly
+
+1999-04-03 (version 1.10-beta-4) [IO]
+	-- New API for annotations for more control.
+	-- Hyper-link annotations and action outlines
+	-- Utopia (Public Domain) font conversion and inclusion
+
+1999-03-18 (version 1.10-beta-3) [IO]
+	-- Type 1 PS font embedding sort of works (still some bug and ugliness).
+	   Now font encoding can be NULL, which will cause font's encoding to be used.
+	   NEW FUNCTIONS:
+		void cpdf_setFontMapFile(char *mapfile);
+		void cpdf_setFontDirectories(char *pfmdir, char *pfbdir);
+	-- Endian.h containing __BIG_ENDIAN__ or __LITTLE_ENDIAN__ is now generated
+	   as a part of make process.
+
+1999-03-09 (version 1.10-beta-2) [IO]
+	-- Fixed bug with Symbol and ZapfDigbats fixed.  /Encoding must not be
+	   present in the Font object.  Otherwise, they are displayed OK, but
+	   will not print (at least to a PS printer).
+
+1999-03-07 (version 1.10-beta-1) [IO]
+	-- Support for Adobe 39 PS Type1 fonts, plus 2 fake (virtual) fonts
+	   is now pretty much complete.  Includes, Helvetica-Narrow, and
+	   Helvetica-Condensed families.  Also, for fun, Helvetica-like
+	   fixed-pitch (monospace) font, and Small-Cap font are created
+	   by hacking up font metrics/descriptors (these are the "plus 2").
+	   Programmatic addition of similar fonts would be nice, but that
+	   is for the future.
+
+1999-01-14 (version 1.02b) [IO]
+	-- PDFIMG format specification and implementation.
+	   Fast dynamic loading of pre-optimized images for PDF.
+
+1999-01-10 (version 1.02b) [IO]
+	-- TIFF image support added by adding cpdfTIFF.c which interfaces with
+	   SGI/Sam Leffler's libtiff library.  Images that may be read
+	   by scan line based access method TIFFReadScanline() are supported,
+	   but not those with alpha (transparency), CMYK or JPEG-compressed
+	   TIFF files.  Palette images are supported via TIFFReadRGBAImage()
+	   interface.  This may not be included in the standard distribution.
+
+1999-01-07 (version 1.02a) [IO]
+	-- Settable error handler function, instead of hardcoded fprintf(stderr,...).
+	   cpdf_Error();
+	   cpdf_setErrorHandler();
+	   _cpdf_defaultErrorHandler();
+
+1998-12-28 (version 1.02) [IO]
+	-- Now, cpdf_finalizePage() compresses page content memory stream, so
+	   it is a good idea to call this for a large PDF file with many pages.
+	   That way, uncompressed pages aren't kept until the end.
+	   It doesn't make much difference for small PDF files.
+	   int  _cpdf_closeContentMemStreamForPage(int page); has been added
+	   for this.
+
+1998-12-14 (version 1.01b) [IO]
+	-- Cygwin b20.1/gcc egcs-2.91.57 support added thanks to
+	   Stipe Tolj <tolj@uni-duesseldorf.de>.
+	-- Rolled in changes for new Mac environment under CWPro4 (IDE 3.2)
+	   thanks to Sam Fara <samfara@ro.com>.
+
+1998-11-29 (version 1.01a1) [IO]
+	-- New function cpdf_setViewerPreferences() to insert more control parameters
+	   into the Catalog object, for such things as specifying that outline (book
+	   marks) or thumbnails be visible on document open.  There are other
+	   viewer preferences that may be controlled via this function.
+
+1998-11-28 (version 1.01a) [IO]
+	-- Bug fixed in private function in cpdfOutline.c: _cpdf_freeAllOutlineEntries().
+	   It was fatal for WinNT4.0, but was not noticed on other platforms.
+
+1998-11-27 (version 1.01) [IO]
+	-- Multi-level Outline (book mark) support has been implemented.
+	-- cpdf_setDocumentLimits() to change limits such as maximum number of pages,
+	   fonts, images, annotations, etc. without recompiling the library.
+
+1998-11-25 (version 1.00c) [IO] -- Thank you for contributions!
+	-- Incorporated Framework (shared library) support for
+	   OPENSTEP 4.2 thanks to Jeff Sickel.
+	-- Makefile.irix62gcc for SGI IRIX 6.2 from Matt Warner has been incorporated.
+
+1998-11-21 (version 1.00b) [IO]
+	-- Win32 my_init_debug() in cpdfInit.c is now called only once.
+	   This may not have been a problem, but is a good thing to make sure.
+
+1998-11-20 (version 1.00a) [IO]
+	-- Fixed bug in global variable initialization, which caused failure
+	   if cpdf_open() is called the second time in a program.
+	   Function _cpdf_initDocumentGolbals() added to cpdfInit.c
+
+1998-11-16 (version 1.00) [IO]
+	-- Released 1.00.
+
+1998-10-30 (version 0.96a) [IO]
+	-- Sigh, Sun C-4.0 does not recognize // as comments.
+	-- Tested with SunOS 5.4 / (SUNWspro/SC4.0).
+
+1998-10-25 (version 0.96) [IO]
+	-- It just works under Linux 2.0.34 (Red Hat 5.1)/gcc 2.7.2.3. No changes needed.
+	-- Linux version of Adobe Acrobat Reader works beautifully.
+	-- Month name internationalization for time axis, cpdf_setMonthNames().
+	-- MacOS mods for SetFrontCreator(), which brings doc window to front.
+
+1998-10-16 (version 0.95) [IO]
+	-- It just works under FreeBSD 2.2.7-STABLE/gcc 2.7.2.1. No changes needed.
+	-- Finally, opening document in cpdfPreview.c works for MacOS 8.
+
+1998-10-09 (version 0.94b) [IO]
+	-- MacOS8/CodeWarrior 1.7.4 mods complete, except for opening doc.
+	-- MacOS X Server (Rhapsody) DR2 tested, nothing needs to be changed.
+
+1998-10-02 (version 0.94a) [IO]
+	-- Win32 mods now complete.
+	-- Tested on BSDI BSD/OS 3.1, gcc version 2.7.2.1. Joy.
+	    ?? /usr/include/stdio.h:357: warning: `__sputc' defined but not used
+
+1998-09-27 (version 0.94) [IO]
+	-- Multi-page PDF file support now implemented.
+		Pages can be written in non-sequential order and
+		may be interleaved jumping back and forth among pages.
+	-- Page Duration and Transition now supported.
+	-- Nearly all text operators now implemented.
+	-- In-line images are now supported.
+	-- multiple annotations and URL hyper-links implemented.
+
+1998-09-22 (version 0.93a) [IO]
+	-- Version 0.93 now compiles on MacOS8 under CodeWarrier.
+	-- fopen() binary mode flags fixed for MacOS8 under CodeWarrier.
+	-- Extensive edits begin for multi-page support.
+
+1998-09-05 (version 0.93) [IO]
+	-- Good arc and circle implemented. cpdfArc.c added.
+
+1998-09-03 (version 0.92a) [IO]
+	-- Image import for baseline JPEG file is now supported (cpdfImage.c).
+
+1998-08-28 (version 0.92) [IO]
+	-- Memory stream implemented in cpdfMemBuf.c.  It is now possible to
+		bypass all file usage and generate PDF entirely in memory.
+
+1998-08-26 (version 0.91b) [IO]
+	-- cpdf_suggestLinearDomainParams() implemented to give default tick/mesh
+		values and intervals at the time of plot domain and axis
+		creation.  One can still override these later.
+
+1998-08-24 (version 0.91a) [IO]
+	-- Added support for date/time axis and domains.
+		Uses struct tm (see man 3 ctime) to pass time values.
+
+1998-08-21 (version 0.91) [IO]
+	-- Zlib Flate compression internalized into ClibPDF library.
+		compression uses malloc to allocate buffers of the
+		size of PDF drawing content.  Out-of-memory is a
+		concern for OSes with no real VM (e.g., MacOS8).
+
+1998-07-19 (version 0.90a) [IO]
+	-- Zlib Flate compression implemented by external command
+		zlibcomp based on the public domain Zlib library.
+	-- Data point markers and pointers are done.
+
+1998-07-18 [IO]
+	-- A bug in cpdfAxis.c (labelEncoding not initialized) that
+		prevented Windows version from working found and fixed.
+		Windows version now works.
+
+1998-07-07 [IO]
+	-- MacOS/CodeWarrior adjustments.
+
+1998-06-30 [IO]
+	-- First version, NEXTSTEP3.x/OPENSTEP4.2
+
+---

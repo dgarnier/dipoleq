@@ -1,0 +1,111 @@
+diff -c2 orig/afm2pfm.c new/afm2pfm.c
+*** orig/afm2pfm.c	Fri Jan 14 14:34:50 1994
+--- new/afm2pfm.c	Mon Feb 27 09:31:49 1995
+***************
+*** 233,239 ****
+  	
+  void lcheck(void) {
+!     if (strlen(line) >= sizeof(line)-1)
+         fprintf(stderr,"Error on line %d, line too long\n", linecount);
+!     exit(2);
+  }
+  
+--- 233,240 ----
+  	
+  void lcheck(void) {
+!     if (strlen(line) >= sizeof(line)-1) {
+         fprintf(stderr,"Error on line %d, line too long\n", linecount);
+!        exit(2);
+!      }
+  }
+  
+***************
+*** 346,349 ****
+--- 347,359 ----
+  	    inhdr = FALSE;
+  	}
++ 	else if (strcmp(key, "FullName")==0) {
++ 	  /* nop */
++ 	}
++ 	else if (strcmp(key, "Comment")==0) {
++ 	  /* nop */
++ 	}
++ 	else if (strcmp(key, "Version")==0) {
++ 	  /* nop */
++ 	}
+      	else {
+  	    if (warnflag) {
+***************
+*** 364,369 ****
+      pfm.dfFirstChar = 255;
+      pfm.dfLastChar = 0;
+!     if (strncmp(line, "StartFontMetrics",16)!=0) {
+!         fprintf(stderr,"Error on line %d, expecting StartFontMetrics\n",linecount);
+          exit(2);
+      }
+--- 374,379 ----
+      pfm.dfFirstChar = 255;
+      pfm.dfLastChar = 0;
+!     if (strncmp(line, "StartCharMetrics",16)!=0) {
+!         fprintf(stderr,"Error on line %d, expecting StartCharMetrics\n",linecount);
+          exit(2);
+      }
+diff -c2 orig/pfm2afm.c new/pfm2afm.c
+*** orig/pfm2afm.c	Fri Jan  7 14:40:20 1994
+--- new/pfm2afm.c	Mon Feb 27 09:59:11 1995
+***************
+*** 276,279 ****
+--- 276,280 ----
+  void  putheader(void) {
+      uchar * cp;
++     int temp;
+  
+      fputs("StartFontMetrics 3.0\n", outf);
+***************
+*** 337,341 ****
+      if (isMono) outval(-20);      /* Just guess at left bounds */
+      else outval(-100);
+!     outval(-(psx->descender+5));  /* Descender is given as positive value */
+      outval(pfm->maxwidth+10);
+      outval(pfm->ascent+5);
+--- 338,344 ----
+      if (isMono) outval(-20);      /* Just guess at left bounds */
+      else outval(-100);
+!     temp = psx->descender;
+!     temp = -(temp+5);
+!     outval(temp);  /* Descender is given as positive value */
+      outval(pfm->maxwidth+10);
+      outval(pfm->ascent+5);
+***************
+*** 526,530 ****
+--- 529,538 ----
+  void outval(int v) {
+      char chx[16];
++     printf("The number is %d\n", v);
++ #ifdef unix
++     sprintf(chx, "%d", v);
++ #else
+      itoa(v, chx, 10);
++ #endif
+      fputc(' ', outf);
+      fputs(chx, outf);
+diff -c2 orig/pfm2afm.h new/pfm2afm.h
+*** orig/pfm2afm.h	Fri Jan 14 14:17:18 1994
+--- new/pfm2afm.h	Mon Feb 27 09:39:40 1995
+***************
+*** 37,42 ****
+  typedef unsigned long   ulong;
+  typedef unsigned int    uint;
+! #ifdef __EMX__
+  #define itoa(a,b,c) _itoa(a,b,c)
+  #define NEAR
+  #define MAINENT int
+--- 37,44 ----
+  typedef unsigned long   ulong;
+  typedef unsigned int    uint;
+! #if defined(__EMX__) || defined(unix)
+! #if defined(__EMX__)
+  #define itoa(a,b,c) _itoa(a,b,c)
++ #endif
+  #define NEAR
+  #define MAINENT int
