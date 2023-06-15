@@ -51,6 +51,10 @@
 #define BETA_1D 	"Beta_1D"
 #define J_1D 		"Jave_1D"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void	HDFPsiGrid(PSIGRID *,char *);
 void	HDFBoundary(const char *Oname, const char *Vname, double, double *, double *, int);
 void    HDFPPsi(PSIGRID *, char *);
@@ -60,6 +64,8 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 					double *q, double *dVdpsi, double *Vol, double *Shear, 
 					double *Well, double *Jave, double *B2ave, double *Beta);
 
-
+#ifdef __cplusplus
+}
+#endif
 #endif
 

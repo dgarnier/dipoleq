@@ -1,4 +1,4 @@
-add_library(DipolEqLib
+add_library(DipolEqLib STATIC
     AddCoilJ.c 
     AddShellJ.c 
     CDipoleIntStable.cc 
@@ -14,6 +14,7 @@ add_library(DipolEqLib
     GetFluxMoments.c
     GetFluxParameters.c
     GetPlasmaParameters.cc
+    HDFOutput.c
     InitJ.c
     J_DipoleStd.c
     J_IsoNoFlow.c
@@ -64,4 +65,12 @@ add_library(DipolEqLib
     tokgreen.c
 )
 
-target_include_directories(DipolEqLib PUBLIC ${CMAKE_SOURCE_DIR}/includes)
+dump_cmake_variables(hdf4)
+
+
+target_include_directories(DipolEqLib 
+                            PUBLIC 
+                                ${CMAKE_SOURCE_DIR}/includes
+                            PRIVATE 
+                                ${hdf4_INCLUDE_DIRS}
+                            )

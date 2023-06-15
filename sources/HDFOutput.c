@@ -35,10 +35,19 @@
 #define 	VMS 	1
 #endif
 
-extern "C" {
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /* #include "hdf.h" */
 #include "mfhdf.h"
+
+#ifdef __cplusplus
 }
+#endif
+
+typedef float float32;
 
 #include "psigrid.h"
 #include "plasma.h"
@@ -52,10 +61,9 @@ extern "C" {
 
 #define COMPRESS_TYPE 	COMP_CODE_DEFLATE
 #define COMPRESS_LEVEL 	6
-#define COMPRESS(x) 	SDCHK(SDsetcompress (x, comp_type, &c_info)) 
+#define COMPRESS(x) 	SDCHK(SDsetcompress (x, COMP_CODE_DEFLATE, &c_info)) 
 
-static  comp_coder_t  comp_type = COMP_CODE_DEFLATE;           /* Compression flag */
-static  comp_info     c_info = {c_info.deflate.level = 6};	/* Compression structure */
+static comp_info c_info = {.deflate.level = 6};	/* Compression structure */
 
 
 #define PI	3.14159265358979323
