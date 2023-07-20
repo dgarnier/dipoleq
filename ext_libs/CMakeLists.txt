@@ -1,4 +1,6 @@
 include(FetchContent)
+include(FindZLIB)
+
 
 FetchContent_Declare(hdf4
                      GIT_REPOSITORY https://github.com/HDFGroup/hdf4.git
