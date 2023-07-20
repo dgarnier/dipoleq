@@ -1,5 +1,5 @@
 # dipoleq
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.20)
 
 project(DipolEq VERSION 1.2 LANGUAGES C CXX)
 
@@ -17,6 +17,6 @@ target_sources(dipoleq
 
 target_compile_definitions(dipoleq PUBLIC PDFOUTPUT=1)
 
-target_link_libraries(dipoleq PUBLIC DipolEqLib ${hdf4_LIBRARIES})
+target_link_libraries(dipoleq PUBLIC DipolEqLib ${hdf4_LIBRARIES} ${ClibPDF_LIBRARIES})
 target_include_directories(dipoleq PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/includes" "${hdf4_INCLUDE_DIRS}" "${HDF4_INSTALL_INCLUDE_DIR}")
 

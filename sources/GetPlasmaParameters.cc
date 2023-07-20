@@ -67,7 +67,7 @@ void          GetGradPsi(TOKAMAK * td)
 {
 	PLASMA       *pl;
 	PSIGRID      *pg;
-	register int  n, m1, m2, ix, iz;
+	int  		n, m1, m2, ix, iz;
 	double      **Psi, **gPsiX, **gPsiZ, **gPsi2;
 	double        dx, dz;
 
