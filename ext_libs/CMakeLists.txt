@@ -49,8 +49,7 @@ else()
                         )
 
     add_library(HDF4::HDF4 ALIAS hdf4)
-    
-    dump_cmake_variables(HDF4)
+    # dump_cmake_variables(HDF4)
 endif()
 
 if (CMAKE_VERSION VERSION_LESS 3.24)
