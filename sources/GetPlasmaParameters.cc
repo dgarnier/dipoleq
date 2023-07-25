@@ -257,7 +257,8 @@ void          GetBeta(TOKAMAK * td)
 		for (iz = 1; iz < nmax; iz++)
 			if (pg->IsPlasma[ix][iz]) {
 				Wpol += pl->GradPsi2[ix][iz] / X[ix];
-				dWtor += X[ix] * (DSQR(pl->B0R0 / X[ix]) - DSQR(pl->Bt[ix][iz]));
+				dWtor += X[ix] * (DSQR(pl->B0R0 / X[ix]));
+				dWtor -= X[ix] * (DSQR(pl->Bt[ix][iz]));
 				diamag += pl->Bt[ix][iz] - pl->B0R0 / X[ix];
 			}
 	Wpol = Wpol * dx * dz / 2.0 / MU0 / TWOPI;
