@@ -55,5 +55,6 @@
   "C_Cpp_Runner.useAddressSanitizer": false,
   "C_Cpp_Runner.useUndefinedSanitizer": false,
   "C_Cpp_Runner.useLeakSanitizer": false,
-  "C_Cpp_Runner.showCompilationTime": false
+  "C_Cpp_Runner.showCompilationTime": false,
+  "cmake.buildDirectory": "${workspaceFolder}/build/${buildKitTargetOs}-${buildKitTargetArch}"
 }
