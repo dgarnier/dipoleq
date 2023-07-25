@@ -11,6 +11,10 @@ If you use this code, please reference this paper as source.
 
 ## Compilation
 
-On ubuntu, you may need the zlib and libjpeg libraries installed:
+On ubuntu, the recommended build is for hdf4, zlib and libjpeg libraries to be installed:
 
-`sudo apt install zlib1g-dev libjpeg-dev`
+`sudo apt install zlib1g-dev libjpeg-dev libhdf4-dev`
+
+Then, the code can be compiled with:
+
+`cmake `

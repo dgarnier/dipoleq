@@ -69,11 +69,10 @@ add_library(DipolEqLib STATIC
 target_link_libraries(DipolEqLib 
                         PRIVATE 
                             clibpdf
+                            HDF4::HDF4
                     )
 
 target_include_directories(DipolEqLib 
                             PUBLIC 
                                 ${CMAKE_SOURCE_DIR}/includes
-                            PRIVATE
-                                ${hdf4_INCLUDE_DIRS}
                             )
