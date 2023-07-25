@@ -66,9 +66,13 @@ add_library(DipolEqLib STATIC
     plot_contour.c PDFOutput.c
 )
 
+# TSPACK?
+# target_compile_definitions(DipolEqLib PRIVATE _USE_TSPACK_=1)
+
 target_link_libraries(DipolEqLib 
                         PRIVATE 
                             clibpdf
+                            # tspack
                             HDF4::HDF4
                     )
 

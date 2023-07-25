@@ -10,6 +10,7 @@ add_subdirectory(ext_libs EXCLUDE_FROM_ALL)
 include(FindHDF4)
 
 add_compile_definitions(DIPOLE=1 HDFOUTPUT=1)
+add_subdirectory(fortran)
 add_subdirectory(sources EXCLUDE_FROM_ALL)
 
 add_executable(dipoleq)
