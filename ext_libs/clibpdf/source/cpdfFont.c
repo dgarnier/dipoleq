@@ -434,13 +434,14 @@ int _cpdf_loadExternalFont(CPDFdoc *pdf, const char *fontname,
 int retval = 0;
 int fontlocation = 0;	/* 0=current dir, 1=in specified font dir, 2=fontmap file */
 char filePFM[1024], filePFB[1024];
+volatile int fnsize = sizeof(filePFM);
 
     /* int _cpdf_readPFM(char *pfmfile, CPDFfontInfo *fI, CPDFfontDescriptor *fD); */
     strcpy(filePFM, fontname);
     strcat(filePFM, ".pfm");
     if((retval = _cpdf_readPFM(filePFM, eFI, eFDesc))) {	/* trying in current dir */
 	/* not in current dir */
-	sprintf(filePFM, "%s%c%s.pfm", pdf->pfm_directory, DIR_SEPARATOR, fontname);	/* prepend possibly set dir */
+	snprintf(filePFM, fnsize, "%s%c%s.pfm", pdf->pfm_directory, DIR_SEPARATOR, fontname);	/* prepend possibly set dir */
 	if((retval = _cpdf_readPFM(filePFM, eFI, eFDesc))) {
 	    /* Not in specified directory path. So try finding it in Fontmap file. */
 	    if((retval =_cpdf_readFontPathFromMapFile(pdf, fontname, filePFM, filePFB))) {
@@ -481,7 +482,7 @@ char filePFM[1024], filePFB[1024];
 	    return(retval);
     }
     else if(fontlocation == 1) {
-	sprintf(filePFB, "%s%c%s.pfb", pdf->pfb_directory, DIR_SEPARATOR, fontname);
+	snprintf(filePFB, fnsize, "%s%c%s.pfb", pdf->pfb_directory, DIR_SEPARATOR, fontname);
 	if((retval = _cpdf_readPFB(filePFB, eFData)))
 	    return(retval);
     }
