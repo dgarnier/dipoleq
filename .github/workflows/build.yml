@@ -12,9 +12,6 @@ jobs:
               uses: actions/checkout@v2
               with:
                 fetch-depth: 1
-            - uses: awalsh128/cache-apt-pkgs-action@latest
-              with:
-                packages: zlib1g-dev libjpeg-dev libhdf4-dev
             - name: Build on Ubuntu
               uses: threeal/cmake-action@v1.2.0
               with:
