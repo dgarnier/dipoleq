@@ -2,10 +2,34 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "(gdb) Linux x64 Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/linux-x64/dipoleq",
+      "args": ["-f", "${workspaceFolder}/Testing/beta1.in"],
+      "stopAtEntry": false,
+      "cwd": "Testing",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+          {
+              "description": "Enable pretty-printing for gdb",
+              "text": "-enable-pretty-printing",
+              "ignoreFailures": true
+          },
+          {
+              "description": "Set Disassembly Flavor to Intel",
+              "text": "-gdb-set disassembly-flavor intel",
+              "ignoreFailures": true
+          }
+      ]
+    }
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "lldb",
       "request": "launch",
-      "args": [],
+      "args": [-f ],
       "cwd": "/Users/garnier/dipoleq_git",
       "program": "/Users/garnier/dipoleq_git/build/Debug/outDebug"
     }
