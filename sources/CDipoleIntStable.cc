@@ -152,7 +152,7 @@ void CDipoleIntStable::UpdateModel(TOKAMAK *td)
 	
 	// first lets compute Psi
 	mPsi[0]     = mPsiPeak;
-	mPsi[mNpts] = mPsiEdge;
+	mPsi[mNpts-1] = mPsiEdge;
 	for (i=0;i<mNpts;i++) {
 		mPsi[i] = mPsiPeak + mPsiFlat*(mPsiEdge-mPsiPeak)*i/(mNpts-1);
 	}
@@ -173,7 +173,7 @@ void CDipoleIntStable::UpdateModel(TOKAMAK *td)
 		lastp = mP[i] = (lastp < p) ? p : lastp;
 	}
 	
-	mP[mNpts] = MU0*mPEdge;
+	mP[mNpts-1] = MU0*mPEdge;
 	mPPeak = mP[0];
 	
 #if _USE_TSPACK_
@@ -300,7 +300,7 @@ void CDipoleIntStable::ModelOutput(FILE *fi)
 {
 	int i;
 	fprintf(fi,"Psi\tP\tPp\tG2\tG2p\t  [%d]\n",mNpts);
-	for (i=1;i<=mNpts;i++) fprintf(fi,"%f %g %g %g %g\n", 							mPsi[i],P(mPsi[i]),Pp(mPsi[i]),G2(mPsi[i]),G2p(mPsi[i]));
+	for (i=0;i<mNpts;i++) fprintf(fi,"%f %g %g %g %g\n", 							mPsi[i],P(mPsi[i]),Pp(mPsi[i]),G2(mPsi[i]),G2p(mPsi[i]));
 }
 
 double CDipoleIntStable::G2(double psi)
