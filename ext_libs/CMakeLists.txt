@@ -1,7 +1,6 @@
 include(FetchContent)
 include(FindZLIB)
 include(FindJPEG)
-include(FindHDF4)
 
 function(dump_cmake_variables)
     get_cmake_property(_variableNames VARIABLES)
@@ -18,12 +17,16 @@ function(dump_cmake_variables)
     endforeach()
 endfunction()
 
-#find_package(HDF4)
-if(TARGET HDF4::HDF4)
-    dump_cmake_variables(HDF4)
-#    add_library(HDF4::HDF4 ALIAS HDF4_TARGETS)
-else()
-#if(NOT HDF4_FOUND)
+if(NOT BUILD_HDF4_WITH_FETCHCONTENT)
+    find_package(HDF4)
+    if(TARGET HDF4::HDF4)
+        dump_cmake_variables(HDF4)
+    else()
+        set(BUILD_HDF4_WITH_FETCHCONTENT ON CACHE BOOL "" FORCE)
+    endif()
+endif()
+
+if(BUILD_HDF4_WITH_FETCHCONTENT)
     # if you don't have it, build it
     FetchContent_Declare(HDF4
                         GIT_REPOSITORY https://github.com/HDFGroup/hdf4.git
