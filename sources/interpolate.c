@@ -17,11 +17,20 @@
 */
 
 #include <math.h>
-#include "nrutil.h"
 #include "psigrid.h"
 #include "interpolate.h"
 
 #define PT_FLOOR(x, xmin, dx)	(int) floor( ((x)-(xmin))/(dx) )
+
+double limit(double x, double xmin, double xmax) {
+    if (x < xmin) {
+        return xmin;
+    } else if (x > xmax) {
+        return xmax;
+    } else {
+        return x;
+    }
+}
 
 /***************************************************************
  * interpolate
@@ -38,10 +47,8 @@ double        interpolate(PSIGRID * pg, double **A, double x, double z)
 	double        xm, zm;
 	double        t, u;
 
-	xm = DMAX(x, pg->Xmin);
-	xm = DMIN(x, pg->Xmax);
-	zm = DMIN(z, pg->Zmax);
-	zm = DMAX(z, pg->Zmin);
+    xm = limit(x, pg->Xmin, pg->Xmax);
+    zm = limit(z, pg->Zmin, pg->Zmax);
 
 	ix = PT_FLOOR(xm, pg->Xmin, pg->dx);
 	iz = PT_FLOOR(zm, pg->Zmin, pg->dz);
@@ -67,10 +74,8 @@ double        interpolate_int(PSIGRID * pg, int **A, double x, double z)
 	double        xm, zm;
 	double        t, u;
 
-	xm = DMAX(x, pg->Xmin);
-	xm = DMIN(x, pg->Xmax);
-	zm = DMIN(z, pg->Zmax);
-	zm = DMAX(z, pg->Zmin);
+    xm = limit(x, pg->Xmin, pg->Xmax);
+    zm = limit(z, pg->Zmin, pg->Zmax);
 
 	ix = PT_FLOOR(xm, pg->Xmin, pg->dx);
 	iz = PT_FLOOR(zm, pg->Zmin, pg->dz);
