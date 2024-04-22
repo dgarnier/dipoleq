@@ -14,7 +14,8 @@ add_library(DipolEqLib STATIC
     GetFluxMoments.c
     GetFluxParameters.c
     GetPlasmaParameters.cc
-    HDFOutput.c
+    # HDFOutput.c
+    HDF5Output.c
     InitJ.c
     J_DipoleStd.c
     J_IsoNoFlow.c
@@ -73,7 +74,8 @@ target_link_libraries(DipolEqLib
                         PRIVATE 
                             clibpdf
                             # tspack
-                            HDF4::HDF4
+                            # HDF4::HDF4
+                            hdf5::hdf5 hdf5::hdf5_hl
                     )
 
 target_include_directories(DipolEqLib 

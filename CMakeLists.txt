@@ -10,7 +10,9 @@ option(BUILD_HDF4_WITH_FETCHCONTENT "Build HDF4 with FetchContent" ON)
 
 add_subdirectory(ext_libs EXCLUDE_FROM_ALL)
 # for some reason, ext_libs can't export this info...
-include(FindHDF4)
+#include(FindHDF4)
+
+find_package(HDF5 COMPONENTS C HL REQUIRED)
 
 add_compile_definitions(DIPOLE=1 HDFOUTPUT=1)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -34,7 +36,11 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
     target_link_options(dipoleq PRIVATE -fsanitize=address)
 endif()
 
-target_link_libraries(dipoleq PUBLIC DipolEqLib HDF4::HDF4 ${ClibPDF_LIBRARIES})
+target_link_libraries(dipoleq PUBLIC DipolEqLib 
+    # HDF4::HDF4
+    HDF5::HDF5
+    ${ClibPDF_LIBRARIES}
+)
 target_include_directories(dipoleq PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/includes")
 
 install(TARGETS dipoleq DESTINATION bin)
