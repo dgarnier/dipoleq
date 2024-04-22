@@ -37,7 +37,8 @@
         {
             "name": "macos-clang-arm",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/opt/local/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

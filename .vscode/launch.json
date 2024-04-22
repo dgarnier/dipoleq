@@ -29,9 +29,9 @@
       "name": "C/C++ Runner: Debug Session",
       "type": "lldb",
       "request": "launch",
-      "args": [-f ],
-      "cwd": "/Users/garnier/dipoleq_git",
-      "program": "/Users/garnier/dipoleq_git/build/Debug/outDebug"
+      "args": ["-f", "beta1.in"],
+      "cwd": "${workspaceFolder}/Testing",
+      "program": "${workspaceFolder}/build/none-unknown/dipoleq",
     }
   ]
 }
