@@ -24,17 +24,6 @@
 #include <unistd.h>
 #include "multitask.h"
 
-/* The following machine definitions are needed for the HDF library */
-#ifdef THINK_C
-#define 	MAC 	1
-#endif
-#ifdef __SC__
-#define 	MAC 	1
-#endif
-#ifdef VAXC
-#define 	VMS 	1
-#endif
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -63,52 +52,6 @@ typedef float float32;
 #define MU0	1.25663706e-06
 #define TWOPI	6.283185307
  
-float32      *AryToFloat32(double **ad, int nmax, double multiplier);
-float32      *VecToFloat32(double *vd, int nmax, double multiplier);
-
-#define	TO_FLOAT32(d,a,npts) for(i=0;i<npts;i++) a[i] = (float32)d[i]
-
-/*
-**	AryToFloat32
-**
-**
-*/
-float32      *AryToFloat32(double **ad, int nmax, double multiplier)
-{
-	int           ix, iz;
-	float32      *a, *a0;
-
-	a0 = a = (float32 *) malloc((unsigned) ((nmax + 1) * (nmax + 1)) * sizeof(float32));
-	if (!a)
-		nrerror("ERROR: Allocation failure in AryToFloat32.");
-
-	for (iz = 0; iz <= nmax; iz++)	/* slowest */
-		for (ix = 0; ix <= nmax; ix++)	/* fastest */
-			*a++ = (float32) (ad[ix][iz] * multiplier);
-
-	return a0;
-}
-
-/*
-**	VecToFloat32
-**
-**
-*/
-float32      *VecToFloat32(double *vd, int nmax, double multiplier)
-{
-	int           ix;
-	float32      *v, *v0;
-
-	v0 = v = (float32 *) malloc((unsigned) (nmax + 1) * sizeof(float32));
-	if (!v)
-		nrerror("ERROR: Allocation failure in VecToFloat32.");
-
-	for (ix = 0; ix <= nmax; ix++)
-		*v++ = (float32)( vd[ix] * multiplier );
-
-	return v0;
-}
-
 /*
 **	ScaleArray
 **
