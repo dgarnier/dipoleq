@@ -49,37 +49,33 @@ static const int B2DI[] = {0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1,
                            0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1};
 							       
 static CPDFviewerPrefs theVP = { PM_NONE, NO, NO, NO, NO, NO, PL_SINGLE, PM_NONE };
-							          
+
+#define BSIZE 8191			          
 void PDFOutput(TOKAMAK *td)
 {	
     CPDFdoc *pdf;
 
-    char  *tempBuf;
-
-    tempBuf = (char *) malloc(8192);
-    
+    char  buf[BSIZE+1];    
     pdf = cpdf_open(0, NULL);
 
-    sprintf(tempBuf,"%s.pdf",td->Oname);
-    cpdf_setOutputFilename(pdf,tempBuf);
-    cpdf_enableCompression(pdf,YES);		/* use Flate/Zlib compression */
+    snprintf(buf, BSIZE, "%s.pdf", td->Oname);
+    cpdf_setOutputFilename(pdf, buf);
+    cpdf_enableCompression(pdf, YES);		/* use Flate/Zlib compression */
     cpdf_init(pdf);
     
     /* This will have outline (book marks) visible upon document open */
     cpdf_setViewerPreferences(pdf,&theVP);
     
     /* PDF Info object */
-    sprintf(tempBuf,"%s: built %s, %s",APPNAME,__DATE__,__TIME__);
-    cpdf_setCreator(pdf,tempBuf);
-    sprintf(tempBuf,"%s Equilibrium Output",td->Name);
-    cpdf_setTitle(pdf,tempBuf);
+	snprintf(buf, BSIZE, "%s: built %s, %s", APPNAME, __DATE__, __TIME__);
+	cpdf_setCreator(pdf, buf);
+	snprintf(buf, BSIZE, "%s Equilibrium Output", td->Name);
+	cpdf_setTitle(pdf, buf);
     cpdf_setSubject(pdf,td->Info);
-    sprintf(tempBuf,"Equilibrium, Grad-Shafranov,  %s, %s, %s",APPNAME,
-            td->Name, td->Info);
-    cpdf_setKeywords(pdf,tempBuf);
-
-    free(tempBuf);
-
+	snprintf(buf, BSIZE, "Equilibrium, Grad-Shafranov,  %s, %s, %s", APPNAME,
+			 td->Name, td->Info);
+	cpdf_setKeywords(pdf, buf);
+	
     cpdf_pageInit(pdf,1, PORTRAIT, LETTER, LETTER);		/* page orientation */
     Eq_Plot(pdf,td);
 

@@ -95,7 +95,7 @@ void          meas_plasmacur_Now(TOKAMAK * td, MEAS * m)
 **	Note:	The L array has dimensions [1..NumUnkns].
 **
 */
-void          meas_plasmacur_L(TOKAMAK * td, MEAS *, double *L)
+void          meas_plasmacur_L(TOKAMAK * td, MEAS *dummy, double *L)
 {
 	int           iu, iup;
 	int           ix, iz, nmax;

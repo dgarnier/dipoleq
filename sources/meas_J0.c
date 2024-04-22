@@ -106,7 +106,7 @@ void          meas_J0_Now(TOKAMAK * td, MEAS * m)
 **	Note:	The L array has dimensions [1..NumUnkns].
 **
 */
-void          meas_J0_L(TOKAMAK * td, MEAS *, double *L)
+void          meas_J0_L(TOKAMAK * td, MEAS *dummy, double *L)
 {
 	int           iu, pt, gt;
 	double		 Gtemp,Ptemp;

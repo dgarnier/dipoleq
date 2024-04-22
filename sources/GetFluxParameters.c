@@ -104,7 +104,7 @@ double  find_Min(PSIGRID * pg, double PsiX);
 
 
 
-void		quick_Int_Step(double x, double z, double, int flag)
+void		quick_Int_Step(double x, double z, double dummy, int flag)
 {
 	static double 	Xlast, Zlast, IntLast;
 	double 			Integrand, hx, hz, dS;
@@ -141,7 +141,7 @@ void		quick_Int_Step(double x, double z, double, int flag)
 
 static double gIntMin, gXimin, gZimin;
 
-void		find_Min_Step(double x, double z, double, int flag)
+void		find_Min_Step(double x, double z, double dummy, int flag)
 {
 	double 			Integrand, hx, hz;
 	int				ix, iz;
@@ -235,7 +235,7 @@ int           NearPlasma(int **ip, int ix, int iz)
 */
 #define CHKSET(chk, op, set)   if (chk op set) set = chk
 
-void          Trace_Integrand(double x, double z, double , int flag)
+void          Trace_Integrand(double x, double z, double dummy, int flag)
 {
 	int           ix, iz;
 	double        hx, hz, Integrand;
@@ -571,7 +571,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	double        t1, t2, t3;
 	double        PsiX;			/* normalized Psi */
 	double        DelPsi;
-	double       *Pp;			/* ¶<P>/¶Psi */
+	double       *Pp;			/* ï¿½<P>/ï¿½Psi */
 	double        R0, Wnorm;
 
 	pg = td->PsiGrid;

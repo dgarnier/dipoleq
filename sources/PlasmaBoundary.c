@@ -120,13 +120,13 @@ double        get_dxdz(double **Psi, int ix, int iz)
 **	magnetic axes.
 **
 **	A separatrix or magnetic axis is defined when
-**		|¶p/¶x|^2 + |¶p/¶z|^2 < |¶p/¶x|^2 + |¶p/¶z|^2 on all sides
+**		|ï¿½p/ï¿½x|^2 + |ï¿½p/ï¿½z|^2 < |ï¿½p/ï¿½x|^2 + |ï¿½p/ï¿½z|^2 on all sides
 **
 **	The minimum is a magnetic axis when
-**		¶2p/¶x2 * ¶2p/¶z2 - (¶2p/¶z¶x)^2 > 0
+**		ï¿½2p/ï¿½x2 * ï¿½2p/ï¿½z2 - (ï¿½2p/ï¿½zï¿½x)^2 > 0
 **
 **	The minimum is a separatrix when
-**		¶2p/¶x2 * ¶2p/¶z2 - (¶2p/¶z¶x)^2 < 0
+**		ï¿½2p/ï¿½x2 * ï¿½2p/ï¿½z2 - (ï¿½2p/ï¿½zï¿½x)^2 < 0
 **
 **	Interpolation is used to find the actual coordinates for the
 **	where |grad(Psi)|^2 vanishes.
@@ -141,7 +141,7 @@ double        get_dxdz(double **Psi, int ix, int iz)
 **					axis.
 **
 **	April 7, 1993	We increased the order of finite-difference
-**					formula used for ¶2p/¶x2, ¶2p/¶z2, and ¶2p/¶z¶x.
+**					formula used for ï¿½2p/ï¿½x2, ï¿½2p/ï¿½z2, and ï¿½2p/ï¿½zï¿½x.
 **					We now use 5 point formula.
 **
 */
@@ -286,13 +286,13 @@ MULTI;
 **	magnetic axes.
 **
 **	A separatrix or magnetic axis is defined when
-**		|¶p/¶x|^2 + |¶p/¶z|^2 < |¶p/¶x|^2 + |¶p/¶z|^2 on all sides
+**		|ï¿½p/ï¿½x|^2 + |ï¿½p/ï¿½z|^2 < |ï¿½p/ï¿½x|^2 + |ï¿½p/ï¿½z|^2 on all sides
 **
 **	The minimum is a magnetic axis when
-**		¶2p/¶x2 * ¶2p/¶z2 - (¶2p/¶z¶x)^2 > 0
+**		ï¿½2p/ï¿½x2 * ï¿½2p/ï¿½z2 - (ï¿½2p/ï¿½zï¿½x)^2 > 0
 **
 **	The minimum is a separatrix when
-**		¶2p/¶x2 * ¶2p/¶z2 - (¶2p/¶z¶x)^2 < 0
+**		ï¿½2p/ï¿½x2 * ï¿½2p/ï¿½z2 - (ï¿½2p/ï¿½zï¿½x)^2 < 0
 **
 **	Interpolation is used to find the actual coordinates for the
 **	where |grad(Psi)|^2 vanishes.
@@ -657,7 +657,7 @@ void          FindMinPsiLimiter(PSIGRID * pg, LIMITER * lm, int **div)
 **	stores it in PsiMin
 **
 */
-void          FindMaxPsiLimiter(PSIGRID * pg, LIMITER * lm, int **)
+void          FindMaxPsiLimiter(PSIGRID * pg, LIMITER * lm, int **dummy)
 {
 	int           i;
 	double        xL, zL, Psi;
@@ -705,7 +705,7 @@ void          FindMaxPsiLimiter(PSIGRID * pg, LIMITER * lm, int **)
 **
 ** From J_IsoNoFlow.c.....
 **
-** 		J(x,z) = -2pi*(X ¶p/¶Psi + ((R0*B0)^2/2X)*¶g^2/¶Psi)
+** 		J(x,z) = -2pi*(X ï¿½p/ï¿½Psi + ((R0*B0)^2/2X)*ï¿½g^2/ï¿½Psi)
 **
 ** Therefore, at X = 1,
 **

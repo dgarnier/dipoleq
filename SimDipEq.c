@@ -493,7 +493,7 @@ void          MakeEqualEq(TOKAMAK * td)
 		printf("\n		[Equal Eq %d]\n", ie + 1);
 		fprintf(LogFile, "\n		[Equal Eq %d]\n", ie + 1);
 
-		sprintf(anam, "_%d", ie + 1);
+		snprintf(anam, sizeof(anam), "_%d", ie + 1);
 		strcpy(td->Oname, Oname0);
 		strcat(td->Oname, anam);
 
@@ -578,7 +578,7 @@ void          MakeEqualEq2(TOKAMAK * td)
 		printf("\n		[Equal Eq %d]\n", ie + 1);
 		fprintf(LogFile, "\n		[Equal Eq %d]\n", ie + 1);
 
-		sprintf(anam, "_%d", ie + 1);
+		snprintf(anam, sizeof(anam), "_%d", ie + 1);
 		strcpy(td->Oname, Oname0);
 		strcat(td->Oname, anam);
 
@@ -665,7 +665,7 @@ void          MakeMCarloEq(TOKAMAK * td)
 		printf("\n		[MCarlo Eq %d]\n", ie + 1);
 		fprintf(LogFile, "\n		[MCarlo Eq %d]\n", ie + 1);
 
-		sprintf(anam, "_%d", ie + 1);
+		snprintf(anam, sizeof(anam), "_%d", ie + 1);
 		strcpy(td->Oname, Oname0);
 		strcat(td->Oname, anam);
 
@@ -746,7 +746,7 @@ void          MakeMCarloData(TOKAMAK * td)
 		printf("\n		[MCarlo Data %d]\n", ie + 1);
 		fprintf(LogFile, "\n		[MCarlo Data %d]\n", ie + 1);
 
-		sprintf(anam, "_%d", ie + 1);
+		snprintf(anam, sizeof(anam), "_%d", ie + 1);
 		strcpy(td->Oname, Oname0);
 		strcat(td->Oname, anam);
 
