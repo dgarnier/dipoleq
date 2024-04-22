@@ -28,7 +28,7 @@
 #include "VAX_Alloc.h"
 #include "nrutil.h"
 
-#define NR_END 			1
+#define NR_END 			8
 #define FREE_ARG 		void *
 
 /*
