@@ -51,43 +51,45 @@ if(NOT JPEG_FOUND)
 endif()
 # dump_cmake_variables(JPEG)
 
-if(NOT BUILD_HDF4_WITH_FETCHCONTENT)
-    find_package(HDF4)
-    if(TARGET HDF4::HDF4)
-        dump_cmake_variables(HDF4)
-    else()
-        set(BUILD_HDF4_WITH_FETCHCONTENT ON CACHE BOOL " " FORCE)
+if (BUILD_WITH_HDF4)
+    if(NOT BUILD_HDF4_WITH_FETCHCONTENT)
+        find_package(HDF4)
+        if(TARGET HDF4::HDF4)
+            dump_cmake_variables(HDF4)
+        else()
+            set(BUILD_HDF4_WITH_FETCHCONTENT ON CACHE BOOL " " FORCE)
+        endif()
     endif()
-endif()
 
-if(BUILD_HDF4_WITH_FETCHCONTENT)
-    # if you don't have it, build it
-    FetchContent_Declare(HDF4
-                        GIT_REPOSITORY https://github.com/HDFGroup/hdf4.git
-                        GIT_TAG        hdf-4_2_16-2
-                        )
+    if(BUILD_HDF4_WITH_FETCHCONTENT)
+        # if you don't have it, build it
+        FetchContent_Declare(HDF4
+                            GIT_REPOSITORY https://github.com/HDFGroup/hdf4.git
+                            GIT_TAG        hdf-4_2_16-2
+                            )
 
-    # set(HDF4_ENABLE_JPEG_LIB_SUPPORT OFF CACHE BOOL " " FORCE)
-    # set(BUILD_ZLIB_WITH_FETCHCONTENT ON CACHE BOOL " " FORCE)
-    set(HDF4_EXTERNALLY_CONFIGURED ON CACHE BOOL " " FORCE)
-    set(HDF4_EXPORTED_TARGETS "project-targets" CACHE STRING " " FORCE)
-    # set(BUILD_JPEG_WITH_FETCHCONTENT ON CACHE BOOL " " FORCE)
-    set(HDF4_BUILD_TOOLS OFF CACHE BOOL " " FORCE)
+        # set(HDF4_ENABLE_JPEG_LIB_SUPPORT OFF CACHE BOOL " " FORCE)
+        # set(BUILD_ZLIB_WITH_FETCHCONTENT ON CACHE BOOL " " FORCE)
+        set(HDF4_EXTERNALLY_CONFIGURED ON CACHE BOOL " " FORCE)
+        set(HDF4_EXPORTED_TARGETS "project-targets" CACHE STRING " " FORCE)
+        # set(BUILD_JPEG_WITH_FETCHCONTENT ON CACHE BOOL " " FORCE)
+        set(HDF4_BUILD_TOOLS OFF CACHE BOOL " " FORCE)
 
-    FetchContent_MakeAvailable(HDF4)
+        FetchContent_MakeAvailable(HDF4)
 
-    set(HDF4_INCLUDE_DIRS "${HDF4_MFHDF_LIBSRC_SOURCE_DIR}" "${HDF4_HDF_SRC_SOURCE_DIR}" "${HDF4_BINARY_DIR}" CACHE STRING " " FORCE)
-    set(HDF4_LIBRARIES "mfhdf-static" "hdf-static" CACHE STRING " " FORCE)
+        set(HDF4_INCLUDE_DIRS "${HDF4_MFHDF_LIBSRC_SOURCE_DIR}" "${HDF4_HDF_SRC_SOURCE_DIR}" "${HDF4_BINARY_DIR}" CACHE STRING " " FORCE)
+        set(HDF4_LIBRARIES "mfhdf-static" "hdf-static" CACHE STRING " " FORCE)
 
-    add_library(hdf4 INTERFACE)
-    set_target_properties(hdf4 PROPERTIES
-                        INTERFACE_INCLUDE_DIRECTORIES "${HDF4_INCLUDE_DIRS}"
-                        INTERFACE_LINK_LIBRARIES "${HDF4_LIBRARIES}"
-                        )
-    add_dependencies(hdf4 JPEG::JPEG)
+        add_library(hdf4 INTERFACE)
+        set_target_properties(hdf4 PROPERTIES
+                            INTERFACE_INCLUDE_DIRECTORIES "${HDF4_INCLUDE_DIRS}"
+                            INTERFACE_LINK_LIBRARIES "${HDF4_LIBRARIES}"
+                            )
+        add_dependencies(hdf4 JPEG::JPEG)
 
-    add_library(HDF4::HDF4 ALIAS hdf4)
-    # dump_cmake_variables(HDF4)
+        add_library(HDF4::HDF4 ALIAS hdf4)
+        # dump_cmake_variables(HDF4)
+    endif()
 endif()
 
 if (CMAKE_VERSION VERSION_LESS 3.24)

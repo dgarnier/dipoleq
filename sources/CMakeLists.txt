@@ -1,4 +1,5 @@
-add_library(DipolEqLib STATIC
+set(dipoleq_SOURCES)
+list(APPEND dipoleq_SOURCES 
     AddCoilJ.c 
     AddShellJ.c 
     CDipoleIntStable.cc 
@@ -14,8 +15,6 @@ add_library(DipolEqLib STATIC
     GetFluxMoments.c
     GetFluxParameters.c
     GetPlasmaParameters.cc
-    # HDFOutput.c
-    HDF5Output.c
     InitJ.c
     J_DipoleStd.c
     J_IsoNoFlow.c
@@ -67,16 +66,24 @@ add_library(DipolEqLib STATIC
     plot_contour.c PDFOutput.c
 )
 
+set(dipoleq_LIBS clibpdf)
+
+if (BUILD_WITH_HDF4)
+    list(APPEND dipoleq_SOURCES HDFOutput.c)
+    list(APPEND dipoleq_LIBS HDF4::HDF4)
+endif()
+
+if (BUILD_WITH_HDF5)
+    list(APPEND dipoleq_SOURCES HDF5Output.c)
+    list(APPEND dipoleq_LIBS hdf5::hdf5 hdf5::hdf5_hl)
+endif()
+
+add_library(DipolEqLib STATIC ${dipoleq_SOURCES})
+
 # TSPACK?
 # target_compile_definitions(DipolEqLib PRIVATE _USE_TSPACK_=1)
 
-target_link_libraries(DipolEqLib 
-                        PRIVATE 
-                            clibpdf
-                            # tspack
-                            # HDF4::HDF4
-                            hdf5::hdf5 hdf5::hdf5_hl
-                    )
+target_link_libraries(DipolEqLib PRIVATE ${dipoleq_LIBS})
 
 target_include_directories(DipolEqLib 
                             PUBLIC 

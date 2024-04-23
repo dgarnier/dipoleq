@@ -6,15 +6,22 @@ project(DipolEq VERSION 1.2 LANGUAGES C CXX)
 
 include_directories("${CMAKE_SOURCE_DIR}/includes")
 
+option(BUILD_WITH_HDF5 "Build with HDF5" ON)
+option(BUILD_WITH_HDF4 "Build with HDF4" OFF)
 option(BUILD_HDF4_WITH_FETCHCONTENT "Build HDF4 with FetchContent" ON)
 
 add_subdirectory(ext_libs EXCLUDE_FROM_ALL)
 # for some reason, ext_libs can't export this info...
-#include(FindHDF4)
+add_compile_definitions(DIPOLE=1)
+if (BUILD_WITH_HDF4)
+    include(FindHDF4)
+    add_compile_definitions(HDFOUTPUT=1)
+endif()
+if (BUILD_WITH_HDF5)
+    find_package(HDF5 COMPONENTS C HL REQUIRED)
+    add_compile_definitions(HDFOUTPUT=1)
+endif()
 
-find_package(HDF5 COMPONENTS C HL REQUIRED)
-
-add_compile_definitions(DIPOLE=1 HDFOUTPUT=1)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_compile_options(-fsanitize=address)
 endif()
