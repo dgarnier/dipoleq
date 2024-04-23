@@ -2,19 +2,16 @@
 # Convert a dipoleq h5 file to a g-eqdsk file
 # Usage: python dipoleq_h5togeqdsk.py <dipoleq.h5> <g-eqdsk>
 
-import re
-import sys
+from typing import Dict, Union, Any
 import h5py
 import numpy as np
 from freeqdsk import geqdsk
 
 
 def dipoleq_lim_to_eqdsk(lim):
-    import numpy as np
-
-    # lim is a 3D array with shape (nlim, 2, 2)
-    # with a start and end point for each limiter
-    # in this we will assume that the start is the end of the last
+    '''lim is a 3D array with shape (nlim, 2, 2)
+    with a start and end point for each limiter
+    in this we will assume that the start is the end of the last'''
     newlim = np.zeros((lim.shape[0] + 1, 2))
     newlim[:-1] = lim[:, 0]
     newlim[-1] = lim[-1, 1]
@@ -22,10 +19,11 @@ def dipoleq_lim_to_eqdsk(lim):
 
 
 def dipoleq_to_geqdsk(h5f):
-    import numpy as np
-    from typing import Dict, Union
-    from numpy.typing import ArrayLike
-
+    '''Extract geqdsk data from a dipoleq h5 file'''
+    
+    # future version of geqdsk will have type hints
+    # from typing import Dict, Union
+    # from numpy.typing import ArrayLike
     # gdata = Dict[str, Union[int, float, ArrayLike]]
     gdata = {}
 
@@ -64,7 +62,8 @@ def dipoleq_to_geqdsk(h5f):
             return np.interp(psiXn, psiX, y)
 
     else:
-        regrid = lambda y: y
+        def regrid(y):
+            return y
     gdata["fpol"] = regrid(Flux["fpol"][()])
     gdata["pres"] = regrid(Flux["pres"][()])
     # gdata['ffprime']   = Flux['ffprime'][()]
@@ -80,12 +79,17 @@ def dipoleq_to_geqdsk(h5f):
     fcfs = h5f["/Boundaries/FCFS"][()]
     gdata["rbdry"] = lcfs[:, 0]
     gdata["zbdry"] = lcfs[:, 1]
+    gdata["ribdry"] = fcfs[:, 0]
+    gdata["zibdry"] = fcfs[:, 1]
 
     olimq = h5f["/Boundaries/lim"][()]
     ilimq = h5f["/Boundaries/ilim"][()]
     olim = dipoleq_lim_to_eqdsk(olimq)
     gdata["rlim"] = olim[:, 0]
     gdata["zlim"] = olim[:, 1]
+    ilim = dipoleq_lim_to_eqdsk(ilimq)
+    gdata["rlimi"] = ilim[:, 0]
+    gdata["zlimi"] = ilim[:, 1]
     oname = str(h5f.attrs["ONAME"], "utf-8")
 
     return (gdata, oname)
@@ -99,8 +103,17 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     for h5file in args.h5files:
-        with h5py.File(h5file, "r") as h5f:
+        stem = Path(h5file).stem
+        with h5py.File(h5file) as h5f:
             gdata, oname = dipoleq_to_geqdsk(h5f)
-            ofile = f"{Path(h5file).stem}.geqdsk"
-        with open(ofile, "w") as fh:
+
+        with open(f"{stem}.geqdsk", "w") as fh:
             geqdsk.write(gdata, fh, label=f"DipQ:{oname}")
+
+        with open(f"{stem}_fcfs.csv", "w", encoding='utf-8') as fh:
+            fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
+            np.savetxt(fh, fcfs, delimiter=',', header='r,z', )
+
+        with open(f"{stem}_flim.csv", "w", encoding='utf-8') as fh:
+            flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
+            np.savetxt(fh, flim, delimiter=',', header='r,z', )
