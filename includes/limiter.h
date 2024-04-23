@@ -23,6 +23,7 @@
 
 #define	Limiter_Off 	0
 #define Limiter_On		1
+#define Limiter_Inner	-1
 
 typedef struct limiter { 	
 	int					Enabled;	/* if non-zero, then use this limiter */
