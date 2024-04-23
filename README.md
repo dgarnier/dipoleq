@@ -1,9 +1,11 @@
 # dipoleq
 Dipole equilibrium design code 
 
+Based on "TokaMac v2.0" by L. Bai and M. Mauel at Columbia University.
+
 Can be used to show high beta equilibria in a dipole confined plasma.  In other words, solve the Grad-Shafranov equation in a machine with an "first closed flux surface" and no toroidal field.
 
-The code is licensed under the MIT license, except for the ClibPDF code, which is licensed for free use in academic use.
+The code is licensed under the MIT license, except for the ClibPDF code, which no longer is available but was licensed for free use in academic use.
 
 If you use this code, please reference this paper as source.
 
@@ -11,10 +13,31 @@ If you use this code, please reference this paper as source.
 
 ## Compilation
 
-On ubuntu, the recommended build is for hdf4, zlib and libjpeg libraries to be installed:
+### Dependencies
+#### Ubuntu
+The recommended build is for hdf5, zlib and libjpeg libraries to be installed:
 
-`sudo apt install zlib1g-dev libjpeg-dev libhdf4-dev`
+```
+sudo apt install cmake gcc zlib1g-dev libjpeg-dev libhdf5-dev
+```
 
-Then, the code can be compiled with:
+#### macOS
+`cmake` and `hdf5` can be installed with macports or homebrew and should be enough to compile the code.
+```
+brew install cmake hdf5
+```
+or
+```
+sudo port install cmake hdf5
+```
+### Build and Install
 
-`cmake `
+The code can be configured and compiled with cmake.  The recommended way to compile is to create a build directory and run cmake from there:
+```
+cd dipoleq
+mkdir build
+cd build
+cmake ..
+cmake --build .
+sudo cmake --install .
+```
