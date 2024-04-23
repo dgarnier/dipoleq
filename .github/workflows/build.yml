@@ -7,7 +7,7 @@ jobs:
             - name: Dependencies
               uses: daaku/gh-action-apt-install@v4
               with:
-                packages: zlib1g-dev libjpeg-dev libhdf4-dev
+                packages: zlib1g-dev libjpeg-dev libhdf5-dev
             - name: Checkout on Ubuntu
               uses: actions/checkout@v2
               with:
