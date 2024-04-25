@@ -20,7 +20,7 @@ def dipoleq_lim_to_eqdsk(lim):
 
 def dipoleq_to_geqdsk(h5f):
     '''Extract geqdsk data from a dipoleq h5 file'''
-    
+
     # future version of geqdsk will have type hints
     # from typing import Dict, Union
     # from numpy.typing import ArrayLike
@@ -72,7 +72,7 @@ def dipoleq_to_geqdsk(h5f):
     gdata["qpsi"] = regrid(Flux["qpsi"][()])
 
     # 2D values
-    gdata["psi"] = Grid["Psi"][()]
+    gdata["psi"] = Grid["Psi"][()].T # should be fortran order
 
     # Boundary values
     lcfs = h5f["/Boundaries/LCFS"][()]
@@ -94,17 +94,41 @@ def dipoleq_to_geqdsk(h5f):
 
     return (gdata, oname)
 
+
+def plot_h5eq(h5eq):
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots()
+    ax.contour(h5eq["Grid"]["R"], h5eq["Grid"]["Z"], h5eq["Grid"]["Psi"], 100)
+    ax.set_xlabel(f'R [{h5eq["Grid"]["R"].attrs["UNITS"].decode()}]')
+    ax.set_ylabel(f'Z [{h5eq["Grid"]["Z"].attrs["UNITS"].decode()}]')
+    ax.set_aspect("equal")
+    ax.plot(h5eq["Boundaries"]["LCFS"][:, 0], h5eq["Boundaries"]["LCFS"][:, 1], "b--")
+    ax.plot(h5eq["Boundaries"]["FCFS"][:, 0], h5eq["Boundaries"]["FCFS"][:, 1], "b--")
+    ilim = h5eq["Boundaries"]["ilim"]
+    olim = h5eq["Boundaries"]["lim"]
+    for lim in [ilim, olim]:
+        for i in range(lim.shape[0]):
+            ax.plot(lim[i, :, 0], lim[i, :, 1], "k-")
+    plt.show()
+
+
 if __name__ == "__main__":
     from argparse import ArgumentParser
     from pathlib import Path
     parser = ArgumentParser(description="Convert a dipoleq hdf5 file to a g-eqdsk file")
     parser.add_argument('h5files', metavar='h5file', type=str, nargs='+',
                         help="dipoleq hdf5 file(s)")
+    parser.add_argument('--plot', '-p', action='store_true', 
+                        help="Plot the g-eqdsk")
+    
     args = parser.parse_args()
 
     for h5file in args.h5files:
         stem = Path(h5file).stem
         with h5py.File(h5file) as h5f:
+            if args.plot:
+                plot_h5eq(h5f)
             gdata, oname = dipoleq_to_geqdsk(h5f)
 
         with open(f"{stem}.geqdsk", "w") as fh:
