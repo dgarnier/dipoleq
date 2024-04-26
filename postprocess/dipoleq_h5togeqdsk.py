@@ -25,8 +25,15 @@ def dipoleq_to_geqdsk(h5f):
     # from typing import Dict, Union
     # from numpy.typing import ArrayLike
     # gdata = Dict[str, Union[int, float, ArrayLike]]
+    
+    # HDF5 and DipolEq is COCOS=11 (and HDF5 is in COCOS=11 for ITER)
+    # this converts to COCOS=1 (for EFIT and g-eqdsk)
+    # EFIT is COCOS=3 according to COCOS paper
+    
     gdata = {}
 
+    two_pi = 2 * np.pi
+    
     # 0D values
     # commputational domain
     Grid = h5f["/Grid"]
@@ -47,8 +54,8 @@ def dipoleq_to_geqdsk(h5f):
     gdata["rmagx"] = eq0d["rmagx"][()]
     gdata["zmagx"] = eq0d["zmagx"][()]
     # psi values
-    gdata["simagx"] = h5f["/Grid/Psi"].attrs["PsiAxis"][0]
-    gdata["sibdry"] = h5f["/Grid/Psi"].attrs["PsiLim"][0]
+    gdata["simagx"] = -h5f["/Grid/Psi"].attrs["PsiAxis"][0]/two_pi
+    gdata["sibdry"] = -h5f["/Grid/Psi"].attrs["PsiLim"][0]/two_pi
 
     # 1D values
     # geqdsk assumes that the radial resolution is the same
@@ -67,12 +74,14 @@ def dipoleq_to_geqdsk(h5f):
     gdata["fpol"] = regrid(Flux["fpol"][()])
     gdata["pres"] = regrid(Flux["pres"][()])
     # gdata['ffprime']   = Flux['ffprime'][()]
-    gdata["ffprime"] = regrid(Flux["dG2dPsi_1D"][()] / 2)
-    gdata["pprime"] = regrid(Flux["pprime"][()])
+    gdata["ffprime"] = -regrid(Flux["dG2dPsi_1D"][()] * np.pi)
+    gdata["pprime"] = -regrid(Flux["pprime"][()] * two_pi)
     gdata["qpsi"] = regrid(Flux["qpsi"][()])
 
     # 2D values
-    gdata["psi"] = Grid["Psi"][()].T # should be fortran order
+    gdata["psi"] = - Grid["Psi"][()].T / two_pi 
+    # should be fortran order
+    # should be in Wb/rad
 
     # Boundary values
     lcfs = h5f["/Boundaries/LCFS"][()]
