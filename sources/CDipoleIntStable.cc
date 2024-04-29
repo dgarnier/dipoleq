@@ -307,14 +307,14 @@ double CDipoleIntStable::G2(double psi)
 {
 	double lG2;
 	
-	if (isVacuum) return 0;
+	if (isVacuum) return 1.0;
 		
 	if (mG2pow == 0.0) return CPlasmaModel::G2(psi);
-	
+	// this really is wrong... not sure what I was thinking of 25 years ago.
 	if (psi <= mPsiDipole) {
 		lG2 = 1.0;
 	} else if (psi >= mPsiEdge ) {
-		lG2 = 0.0;
+		lG2 = 1.0;
 	} else {
 		lG2 = pow(1.0 - (psi - mPsiDipole) / (mPsiEdge - mPsiDipole), mG2pow);
 	}
@@ -325,7 +325,7 @@ double CDipoleIntStable::G2p(double psi)
 {
 	double lG2p;
 	
-	if (isVacuum) return 0;
+	if (isVacuum) return 0.0;
 		
 	if (mG2pow == 0.0) return CPlasmaModel::G2p(psi);
 	
@@ -372,13 +372,9 @@ void CDipoleIntStable::GetPParam(TOKAMAK *td)
 			} else {
 				Press[ix][iz] = 0.0;
 			}
-			if (isVacuum) {
-				G[ix][iz] = sqrt(G2(Psi[ix][iz]));
-				Bt[ix][iz] = G[ix][iz] * pl->B0R0 / pg->X[ix];
-			} else {
-				G[ix][iz] = 0;
-				Bt[ix][iz] = 0;
-			}
+			/* G not effected by pressure */
+			G[ix][iz] = sqrt(G2(Psi[ix][iz]));
+			Bt[ix][iz] = G[ix][iz] * pl->B0R0 / pg->X[ix];
 				
 			B2[ix][iz] = gPsi2[ix][iz] / TWOPI / pg->X[ix] / TWOPI / pg->X[ix];
 			B2[ix][iz] = B2[ix][iz] + DSQR(Bt[ix][iz]);

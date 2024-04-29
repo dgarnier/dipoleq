@@ -134,6 +134,7 @@ typedef struct plasma {
 	double				qStar;			/* qCircular *(1+k^2)/2 */
 	double  			XMagAxis;		/* the magnetic axis */
 	double  			ZMagAxis;
+	double				PsiMagAxis;		/* Psi at magnetic axis */
 	double				PsiAxis,PsiLim;	/* copies of values named in PsiGrid */
 	double  			HalfWidth;
 	double  			Elongation;

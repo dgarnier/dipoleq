@@ -188,12 +188,14 @@ void          HDFPsiGrid(PSIGRID * pg, char *Oname)
 	/* Do Psi */
 	ScaleArray(a, pg->Psi, nmax, 1.0);
 	HDFWrite2D(a, PSI_NAME, "Wb", g2d, dsp2d, dsc1, dsc2);
-	H5LTset_attribute_double(g2d, PSI_NAME, "PsiAxis", &pg->PsiAxis, 1);
-	H5LTset_attribute_double(g2d, PSI_NAME, "PsiLim", &pg->PsiLim, 1);
-	H5LTset_attribute_double(g2d, PSI_NAME, "DelPsi", &pg->DelPsi, 1);
-	HDFWrite0D(&pg->PsiAxis, PSIAXIS_0D, "Wb", g0d);
-	HDFWrite0D(&pg->PsiLim, PSILIM_0D, "Wb", g0d);
-	HDFWrite0D(&pg->DelPsi, "DelPsi", "Wb", g0d);
+	/* attributes can't have units, but they are in Wb */
+	H5LTset_attribute_double(g2d, PSI_NAME, PSIFCFS_0D, &pg->PsiAxis, 1);
+	H5LTset_attribute_double(g2d, PSI_NAME, PSILCFS_0D, &pg->PsiLim, 1);
+	HDFWrite0D(&pg->PsiMagAxis, PSIAXIS_0D, "Wb", g0d);
+	HDFWrite0D(&pg->PsiAxis, PSIFCFS_0D, "Wb", g0d);
+	HDFWrite0D(&pg->PsiLim, PSILCFS_0D, "Wb", g0d);
+
+	
 
 
 	/* Do Residuals */
@@ -252,6 +254,7 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 	TELL_FOLDER("Opened 2nd time");	
 	/* 0D values */
 	HDFWrite0D(&pl->R0, R0_0D, "m", g0d);
+	HDFWrite0D(&pl->Z0, Z0_0D, "m", g0d);
 	HDFWrite0D(&pl->B0, BT_0D, "T", g0d);
 	HDFWrite0D(&pl->Ip, IP_0D, "A", g0d);
 	
@@ -281,9 +284,9 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 	/* G */
 	MULTI;
 	ScaleArray(a, pl->G, nmax, 1.0);
-	HDFWrite2D(a, TFLUX_NAME, "Wb", g2d, dsp2d, dsc1, dsc2);
-	
-	/* P R E S S U R E */
+	HDFWrite2D(a, TFLUX_NAME, "1", g2d, dsp2d, dsc1, dsc2);
+
+		/* P R E S S U R E */
 	MULTI;
 	switch (pl->ModelType) {
       default :
@@ -382,7 +385,7 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 	
 	/* G */
 	MULTI;
-	HDFWrite1D(G, G_1D, "Wb", g1d, dims, dsrho);
+	HDFWrite1D(G, G_1D, "1", g1d, dims, dsrho);
 
 	/* dP_dPsi */
 	MULTI;
@@ -390,7 +393,7 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 
 	/* g2p */
 	MULTI;
-	HDFWrite1D(G2p, G2P_1D, "Wb", g1d, dims, dsrho);
+	HDFWrite1D(G2p, G2P_1D, "1/Wb", g1d, dims, dsrho);
 
 	/* dV/dPsi */
 	MULTI;

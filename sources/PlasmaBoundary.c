@@ -805,7 +805,7 @@ void          PlasmaBoundary(TOKAMAK * td)
 	double        PsiMin, PsiMax;
 	double        PsiMinL;		/*  PsiMin along a limiter */
 	double        PsiMinS;		/* 	PsiMin at a separatrix */
-	double        PsiDipole;   /*  PsiMax on the Dipole coil */
+	double        PsiMaxD;   /*  PsiMax on the Dipole coil */
 	double 		  PsiAxis;
 
 	/* I N I T I A L I Z E   L O C A L   V A R I A B L E S  */
@@ -886,6 +886,8 @@ void          PlasmaBoundary(TOKAMAK * td)
         PsiAxis = pg->PsiAxis = flats[0].Psi;
         td->Plasma->XMagAxis = pg->XMagAxis = flats[0].X;
         td->Plasma->ZMagAxis = pg->ZMagAxis = flats[0].Z;
+		td->Plasma->PsiMagAxis = pg->PsiMagAxis = PsiAxis;
+
 
         // all other flats have been assigned to separatricies...
         for (i = 1; i < MAX_FLATNUM; i++) {
@@ -922,7 +924,7 @@ MULTI;
 	** keep the old checks there... now I want to exclude the innermost region.
 	*/
 	
-	PsiDipole  = PsiAxis;
+	PsiMaxD  = PsiAxis;
 	
    for (i = 0; i < td->NumLimiters; i++) {
 		lm = td->Limiters[i];
@@ -932,7 +934,7 @@ MULTI;
 
 
 			FindMaxPsiLimiter(pg, lm, IsDivertor);
-			PsiDipole = MAX(PsiDipole, lm->PsiMin);
+			PsiMaxD = MAX(PsiMaxD, lm->PsiMin);
 		}
 	}
 #endif
@@ -954,7 +956,7 @@ MULTI;
 	pg->PsiLim = PsiMinL;
 
 #ifdef DIPOLE
-	pg->PsiAxis = PsiDipole;  
+	pg->PsiAxis = PsiMaxD;  
 #endif /* DIPOLE */
 
 	pg->DelPsi = pg->PsiLim - pg->PsiAxis;

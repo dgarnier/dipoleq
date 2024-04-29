@@ -47,7 +47,7 @@
 #define FCFS_NAME	"FCFS"
 #define PSI_1D 		"Psi_1D"
 #define PRESS_1D 	"pres"
-#define G_1D 		"fpol"
+#define G_1D 		"G_1D"
 #define PP_1D 		"pprime"
 #define G2P_1D 		"dG2dPsi_1D"
 #define FFP_1D 		"ffprime"
@@ -59,15 +59,18 @@
 #define B2_1D 		"B2ave_1D"
 #define BETA_1D 	"Beta_1D"
 #define J_1D 		"Jave_1D"
-#define IP_0D 		"cpasma" // EFIT name for plasma current
-#define BT_0D 		"bcentr" // EFIT name for toroidal field
-#define R0_0D 		"rcentr" // EFIT name for reference radius
-#define PSIAXIS_0D 	"simagx" // EFIT name for psi axis
-#define PSILIM_0D   "sibdry" // EFIT name for psi axis
-#define RMAGX_0D 	"rmagx" // EFIT name for R axis
-#define ZMAGX_0D 	"zmagx" // EFIT name for Z axis
-#define OLIM_NAME   "lim"   // EFIT name for limiter
-#define ILIM_NAME   "ilim"  // inner limiter
+#define IP_0D 		"Ip"      // name for plasma current
+#define BT_0D 		"B0"      // EFIT name for toroidal field
+#define R0_0D 		"R0"      // EFIT name for reference radius
+#define Z0_0D 		"Z0"      // EFIT name for reference radius
+#define R0Z0_0D 	"R0Z0"    // Scale factor for G -> F conversion
+#define PSIAXIS_0D 	"PsiMagX" // psi on magnetic axis
+#define PSIFCFS_0D 	"PsiFCFS" // psi at boundary near or at magnetic axis
+#define PSILCFS_0D  "PsiLCFS" // psi at boundary at outer limiter or separatrix
+#define RMAGX_0D 	"RMagX"   // R axis
+#define ZMAGX_0D 	"ZMagX"   // Z axis
+#define OLIM_NAME   "olim"    // EFIT name for limiter
+#define ILIM_NAME   "ilim"    // inner limiter
   
 
 #ifdef __cplusplus

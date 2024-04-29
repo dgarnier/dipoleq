@@ -50,7 +50,8 @@ typedef	struct psigrid { 	/* the poloidal flux and the toroidal current */
 	double		UnderRelax1;	/* when = 0.0, then update Current linearly */
 	double		UnderRelax2;	/* when = 0.0, then update Unknowns linearly */
 
-	double		PsiAxis;		/* value of Psi at Magnetic Axis */
+	double		PsiAxis;		/* value of Psi at Magnetic Axis or FCFS */
+	double 		PsiMagAxis;		/* value of Psi at Magnetic Axis */
 	double		PsiLim;			/* value of Psi at Plasma/Vacuum boundary */
 	double		DelPsi;			/* PsiLim - PsiAxis */
 	double		XMagAxis;		/* Copies of data within PLASMA */

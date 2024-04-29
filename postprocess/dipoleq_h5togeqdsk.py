@@ -4,6 +4,7 @@
 
 from typing import Dict, Union, Any
 import h5py
+from matplotlib import scale
 import numpy as np
 from freeqdsk import geqdsk
 
@@ -18,23 +19,24 @@ def dipoleq_lim_to_eqdsk(lim):
     return newlim
 
 
-def dipoleq_to_geqdsk(h5f):
+def dipoleq_to_geqdsk(h5f, COCOS=3, NormalizeAtAxis=True) -> Dict[str, Union[int, float, np.ndarray]]:
     '''Extract geqdsk data from a dipoleq h5 file'''
 
     # future version of geqdsk will have type hints
     # from typing import Dict, Union
     # from numpy.typing import ArrayLike
     # gdata = Dict[str, Union[int, float, ArrayLike]]
-    
+
     # HDF5 and DipolEq is COCOS=11 (and HDF5 is in COCOS=11 for ITER)
     # this converts to COCOS=1 (for EFIT and g-eqdsk)
     # EFIT is COCOS=3 according to COCOS paper
-    
+
     gdata = {}
 
-    two_pi = 2 * np.pi
-    
-    # 0D values
+    scale_psi = 0.5 / np.pi if COCOS < 10 else 1.0
+    if COCOS % 10 == 3:
+        scale_psi = -scale_psi
+
     # commputational domain
     Grid = h5f["/Grid"]
     Flux = h5f["/FluxFunctions"]
@@ -42,44 +44,53 @@ def dipoleq_to_geqdsk(h5f):
 
     R = Grid["R"][()]
     Z = Grid["Z"][()]
+
+    # 0D values
     gdata["rdim"] = max(R) - min(R)
     gdata["rleft"] = min(R)
     gdata["zdim"] = max(Z) - min(Z)
     gdata["zmid"] = (max(Z) + min(Z)) / 2
     # reference values
-    gdata["rcentr"] = eq0d["rcentr"][()]
-    gdata["bcentr"] = eq0d["bcentr"][()]
+    gdata["rcentr"] = eq0d["R0"][()]
+    gdata["zcentr"] = eq0d["Z0"][()]
+    gdata["bcentr"] = eq0d["B0"][()]
+    fscale = eq0d["R0"][()] * eq0d["B0"][()]
+    
     # plasma current
-    gdata["cpasma"] = eq0d["cpasma"][()]
-    gdata["rmagx"] = eq0d["rmagx"][()]
-    gdata["zmagx"] = eq0d["zmagx"][()]
+    gdata["cpasma"] = eq0d["Ip"][()]
+    gdata["rmagx"] = eq0d["RMagX"][()]
+    gdata["zmagx"] = eq0d["ZMagX"][()]
     # psi values
-    gdata["simagx"] = -h5f["/Grid/Psi"].attrs["PsiAxis"][0]/two_pi
-    gdata["sibdry"] = -h5f["/Grid/Psi"].attrs["PsiLim"][0]/two_pi
+    PsiFCFS = eq0d["PsiFCFS"][()] * scale_psi
+    PsiLCFS = eq0d["PsiLCFS"][()] * scale_psi
+    PsiMagX = eq0d["PsiMagX"][()] * scale_psi
+    
 
     # 1D values
     # geqdsk assumes that the radial resolution is the same
     # as the number of X gridpoints
-    psiX = Flux["PsiX"][()]
-    if len(psiX) != len(R):
-        # must interpolate
-        psiXn = np.linspace(psiX[0], psiX[-1], len(R))
+    # also.. some code requires that psi normalized STARTS at
+    # the magnetic axis
 
-        def regrid(y):
-            return np.interp(psiXn, psiX, y)
-
+    psi1D = Flux["Psi_1D"][()]
+    if NormalizeAtAxis:
+        psi = np.linspace(PsiMagX, PsiLCFS, len(R))
     else:
-        def regrid(y):
-            return y
-    gdata["fpol"] = regrid(Flux["fpol"][()])
+        psi = np.linspace(PsiFCFS, PsiLCFS, len(R))
+
+    def regrid(y):
+        return np.interp(psi, psi1D, y)
+
+    gdata["simagx"] = psi[0]
+    gdata["sibdry"] = psi[-1]
+    gdata["fpol"] = regrid(Flux["G_1D"][()] * fscale)
     gdata["pres"] = regrid(Flux["pres"][()])
-    # gdata['ffprime']   = Flux['ffprime'][()]
-    gdata["ffprime"] = -regrid(Flux["dG2dPsi_1D"][()] * np.pi)
-    gdata["pprime"] = -regrid(Flux["pprime"][()] * two_pi)
+    gdata["ffprime"] = regrid(Flux["dG2dPsi_1D"][()] * fscale / scale_psi)
+    gdata["pprime"] = regrid(Flux["pprime"][()] / scale_psi)
     gdata["qpsi"] = regrid(Flux["qpsi"][()])
 
     # 2D values
-    gdata["psi"] = - Grid["Psi"][()].T / two_pi 
+    gdata["psi"] = Grid["Psi"][()].T * scale_psi
     # should be fortran order
     # should be in Wb/rad
 
@@ -91,7 +102,7 @@ def dipoleq_to_geqdsk(h5f):
     gdata["ribdry"] = fcfs[:, 0]
     gdata["zibdry"] = fcfs[:, 1]
 
-    olimq = h5f["/Boundaries/lim"][()]
+    olimq = h5f["/Boundaries/olim"][()]
     ilimq = h5f["/Boundaries/ilim"][()]
     olim = dipoleq_lim_to_eqdsk(olimq)
     gdata["rlim"] = olim[:, 0]
@@ -115,7 +126,7 @@ def plot_h5eq(h5eq):
     ax.plot(h5eq["Boundaries"]["LCFS"][:, 0], h5eq["Boundaries"]["LCFS"][:, 1], "b--")
     ax.plot(h5eq["Boundaries"]["FCFS"][:, 0], h5eq["Boundaries"]["FCFS"][:, 1], "b--")
     ilim = h5eq["Boundaries"]["ilim"]
-    olim = h5eq["Boundaries"]["lim"]
+    olim = h5eq["Boundaries"]["olim"]
     for lim in [ilim, olim]:
         for i in range(lim.shape[0]):
             ax.plot(lim[i, :, 0], lim[i, :, 1], "k-")
