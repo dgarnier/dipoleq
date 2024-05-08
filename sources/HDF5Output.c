@@ -52,7 +52,12 @@ typedef float float32;
 #define PI	3.14159265358979323
 #define MU0	1.25663706e-06
 #define TWOPI	6.283185307
- 
+
+#define ITER_IJ(ix, iz, nmin, nmax) \
+	for (int iz = nmin; iz <= nmax; iz++)	  /* slowest */ \
+		for (int ix = nmin; ix <= nmax; ix++) /* fastest */ \
+
+
 /*
 **	ScaleArray
 **
@@ -60,11 +65,7 @@ typedef float float32;
 */
 static void ScaleArray(double *a, double **ad, int nmax, double multiplier)
 {
-	int ix, iz;
-
-	for (iz = 0; iz <= nmax; iz++)	   /* slowest */
-		for (ix = 0; ix <= nmax; ix++) /* fastest */
-			*a++ = ad[ix][iz] * multiplier;
+	ITER_IJ(ix, iz, 0, nmax) *a++ = ad[ix][iz] * multiplier;
 }
 
 /*
@@ -266,18 +267,13 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 	/* Bp_x */
 	MULTI;
 	ap = a;
-	for (int ix = 0; ix <= nmax; ix++)
-		for (int iz = 0; iz <= nmax; iz++)
-			*ap++ = pl->GradPsiZ[ix][iz] / TWOPI / pg->X[ix];
-
+	ITER_IJ(ix, iz, 0, nmax) *ap++ = pl->GradPsiZ[ix][iz] / TWOPI / pg->X[ix];
 	HDFWrite2D(a, BpX_NAME, "T", g2d, dsp2d, dsc1, dsc2);
 	
 	/* Bp_z */
 	MULTI;
 	ap = a;
-	for (int ix = 0; ix <= nmax; ix++)
-		for (int iz = 0; iz <= nmax; iz++)
-			*ap++ = -pl->GradPsiX[ix][iz] / TWOPI / pg->X[ix];
+	ITER_IJ(ix, iz, 0, nmax) *ap++ = -pl->GradPsiX[ix][iz] / TWOPI / pg->X[ix];
 
 	HDFWrite2D(a, BpZ_NAME, "T", g2d, dsp2d, dsc1, dsc2);
 	
@@ -309,9 +305,7 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 	switch (pl->ModelType) {
 	  default :
 	  		ap = a;
-	  	    for (int ix = 1; ix <= nmax; ix++)
-			    for (int iz = 1; iz <= nmax; iz++)
-			       *ap++ = 2*pl->Piso[ix][iz]/pl->B2[ix][iz];
+			ITER_IJ(ix, iz, 0, nmax) *ap++ = 2*pl->Piso[ix][iz]/pl->B2[ix][iz];
 			HDFWrite2D(a, BETA_NAME, "", g2d, dsp2d, dsc1, dsc2);
 		  	break;
 	  case Plasma_IsoFlow:
