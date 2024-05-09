@@ -54,7 +54,7 @@ def dipoleq_to_geqdsk(h5f, COCOS=3, NormalizeAtAxis=True) -> Dict[str, Union[int
     gdata["rcentr"] = eq0d["R0"][()]
     gdata["zcentr"] = eq0d["Z0"][()]
     gdata["bcentr"] = eq0d["B0"][()]
-    fscale = eq0d["R0"][()] * eq0d["B0"][()]
+    Fscale = eq0d["R0"][()] * eq0d["B0"][()]
     
     # plasma current
     gdata["cpasma"] = eq0d["Ip"][()]
@@ -72,7 +72,7 @@ def dipoleq_to_geqdsk(h5f, COCOS=3, NormalizeAtAxis=True) -> Dict[str, Union[int
     # also.. some code requires that psi normalized STARTS at
     # the magnetic axis
 
-    psi1D = Flux["Psi_1D"][()]
+    psi1D = Flux["psi"][()]
     if NormalizeAtAxis:
         psi = np.linspace(PsiMagX, PsiLCFS, len(R))
     else:
@@ -83,9 +83,9 @@ def dipoleq_to_geqdsk(h5f, COCOS=3, NormalizeAtAxis=True) -> Dict[str, Union[int
 
     gdata["simagx"] = psi[0]
     gdata["sibdry"] = psi[-1]
-    gdata["fpol"] = regrid(Flux["G_1D"][()] * fscale)
-    gdata["pres"] = regrid(Flux["pres"][()])
-    gdata["ffprime"] = regrid(Flux["dG2dPsi_1D"][()] * fscale / scale_psi)
+    gdata["fpol"] = regrid(Flux["Gpsi"][()] * Fscale)
+    gdata["pres"] = regrid(Flux["ppsi"][()])
+    gdata["ffprime"] = regrid(Flux["G2prime"][()] * Fscale / scale_psi)
     gdata["pprime"] = regrid(Flux["pprime"][()] / scale_psi)
     gdata["qpsi"] = regrid(Flux["qpsi"][()])
 

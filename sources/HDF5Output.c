@@ -339,7 +339,9 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 void	HDFFluxFuncs(char *Oname, int npts, double *PsiX, 
 					double *Psi, double *P, double *G, double *Pp, double *G2p, 
 					double *q, double *dVdpsi, double *Vol, double *Shear, 
-					double *Well, double *Jave, double *B2ave, double *Beta)
+					double *Well, double *Jave, double *B2ave, double *Beta,
+					double *BetaMax, double *XBetaMax, double *ZBetaMax, double *BBetaMax,
+					double *BMax, double *XBMax, double *ZBMax)
 {
 	char fname[FILENAME_MAX] = "";
 	hid_t file, dsp1d, dsrho, g1d;
@@ -420,6 +422,19 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 	/* Beta ave */
 	MULTI;
 	HDFWrite1D(Beta, BETA_1D, "", g1d, dims, dsrho);
+
+	/* Beta max */
+	MULTI;
+	HDFWrite1D(BetaMax,    BETAMAX_1D, "", g1d, dims, dsrho);
+	HDFWrite1D(XBetaMax, X_BETAMAX_1D, "m", g1d, dims, dsrho);
+	HDFWrite1D(ZBetaMax, Z_BETAMAX_1D, "m", g1d, dims, dsrho);
+	HDFWrite1D(BBetaMax, B_BETAMAX_1D, "T", g1d, dims, dsrho);
+
+	/* B max */
+	MULTI;
+	HDFWrite1D(BMax,    BMAX_1D, "T", g1d, dims, dsrho);
+	HDFWrite1D(XBMax, X_BMAX_1D, "m", g1d, dims, dsrho);
+	HDFWrite1D(ZBMax, Z_BMAX_1D, "m", g1d, dims, dsrho);
 
 	/* Close the file */
 	H5CHK(H5Dclose(dsrho));

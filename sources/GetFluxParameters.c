@@ -759,7 +759,7 @@ void          GetFluxParameters(TOKAMAK * td)
 
     /* F I N D   M A X   B E T A   P O S I T I O N */
     
-        pl->BetaMax_pr = dvector(0, npts - 1);
+    pl->BetaMax_pr  = dvector(0, npts - 1);
 	pl->XBetaMax_pr = dvector(0, npts - 1);
 	pl->ZBetaMax_pr = dvector(0, npts - 1);
 	pl->BBetaMax_pr = dvector(0, npts - 1);

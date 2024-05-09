@@ -647,7 +647,9 @@ void          FluxProfileOutput(TOKAMAK * td)
 	fclose(fi);
 #ifdef HDFOUTPUT	
 	HDFFluxFuncs(td->Oname,npts,PsiXV,PsiV,PV,GV,PpV,G2V,pl->q_pr,pl->Volp_pr, pl->Vol_pr, 
-			pl->S_pr, pl->Well_pr, pl->J_pr, pl->B2_pr, pl->Beta_pr);
+			pl->S_pr, pl->Well_pr, pl->J_pr, pl->B2_pr, pl->Beta_pr,
+			pl->BetaMax_pr, pl->XBetaMax_pr, pl->ZBetaMax_pr, pl->BBetaMax_pr,
+                         pl->BMax_pr,pl->XBMax_pr,pl->ZBMax_pr);
 #endif /* HDFOUTPUT */
 	free_dvector(PsiV,  0, npts-1);
 	free_dvector(PsiXV, 0, npts-1);

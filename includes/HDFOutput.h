@@ -36,8 +36,8 @@
 #define RES_NAME 	"Residuals"
 #define DIMX_NAME 	"R"
 #define DIMZ_NAME 	"Z"
-#define PSIX_NAME 	"PsiX"
-#define MODB_NAME 	"Mod B2"
+#define PSIX_NAME 	"PsiNorm"
+#define MODB_NAME 	"B2"
 #define BpX_NAME  	"Bp_R"
 #define BpZ_NAME  	"Bp_Z"
 #define TFLUX_NAME 	"ToroidalFlux"
@@ -45,20 +45,28 @@
 #define BETA_NAME 	"Beta"
 #define LCFS_NAME	"LCFS"
 #define FCFS_NAME	"FCFS"
-#define PSI_1D 		"Psi_1D"
-#define PRESS_1D 	"pres"
-#define G_1D 		"G_1D"
+#define PSI_1D 		"psi"
+#define PRESS_1D 	"ppsi"
+#define G_1D 		"Gpsi"
 #define PP_1D 		"pprime"
-#define G2P_1D 		"dG2dPsi_1D"
+#define G2P_1D 		"G2prime"
 #define FFP_1D 		"ffprime"
 #define Q_1D 		"qpsi"
-#define V_1D 		"dVdPsi_1D"
-#define VOL_1D 		"Vol_1D"
-#define SHEAR_1D 	"Shear_1D"
-#define WELL_1D 	"Well_1D"
-#define B2_1D 		"B2ave_1D"
-#define BETA_1D 	"Beta_1D"
-#define J_1D 		"Jave_1D"
+#define V_1D 		"Vprime"
+#define VOL_1D 		"Vpsi"
+#define SHEAR_1D 	"Shear"
+#define WELL_1D 	"Well"
+#define B2_1D 		"B2Ave"
+#define BETA_1D 	"BetaAve"
+#define J_1D 		"JAve"
+#define BETAMAX_1D  "BetaMax"
+#define X_BETAMAX_1D "RBetaMax"
+#define Z_BETAMAX_1D "ZBetaMax"
+#define B_BETAMAX_1D "BBetaMax"
+#define BMAX_1D 	"BMax"
+#define X_BMAX_1D 	"RBMax"
+#define Z_BMAX_1D 	"ZBMax"
+
 #define IP_0D 		"Ip"      // name for plasma current
 #define BT_0D 		"B0"      // EFIT name for toroidal field
 #define R0_0D 		"R0"      // EFIT name for reference radius
@@ -85,7 +93,9 @@ void	HDFPlasma(PLASMA *,PSIGRID *,char *);
 void	HDFFluxFuncs(char *Oname, int npts, double *PsiX, 
 					double *Psi, double *P, double *G, double *Pp, double *G2p, 
 					double *q, double *dVdpsi, double *Vol, double *Shear, 
-					double *Well, double *Jave, double *B2ave, double *Beta);
+					double *Well, double *Jave, double *B2ave, double *Beta,
+					double *BetaMax, double *XBetaMax, double *ZBetaMax, double *BBetaMax,
+					double *BMax, double *XBMax, double *ZBMax);
 
 #ifdef __cplusplus
 }
