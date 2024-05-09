@@ -6,3 +6,4 @@ Testing/*.csv
 Testing/*.geqdsk
 Testing/*.h5
 Testing/*.bin
+__pycache__
