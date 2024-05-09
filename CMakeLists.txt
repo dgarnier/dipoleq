@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 project(DipolEq VERSION 1.2 LANGUAGES C CXX)
-
+include(CTest)
 include_directories("${CMAKE_SOURCE_DIR}/includes")
 
 option(BUILD_WITH_HDF5 "Build with HDF5" ON)
@@ -49,6 +49,9 @@ target_link_libraries(dipoleq PUBLIC DipolEqLib
     ${ClibPDF_LIBRARIES}
 )
 target_include_directories(dipoleq PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/includes")
+
+add_subdirectory(postprocess)
+add_subdirectory(Testing)
 
 install(TARGETS dipoleq DESTINATION bin)
 

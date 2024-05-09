@@ -23,6 +23,8 @@
 #include "multitask.h"
 #include "nrutil.h"
 
+#include <unistd.h>
+
 #define APPNAME  "DipolEq v0.9"
 void    Eq_Plot(CPDFdoc *pdf,TOKAMAK *td);
 void	showGeometry(CPDFdoc *pdf,TOKAMAK *td);
@@ -80,7 +82,9 @@ void PDFOutput(TOKAMAK *td)
     Eq_Plot(pdf,td);
 
     cpdf_finalizeAll(pdf);			/* PDF file is actually written here */
-    cpdf_launchPreview(pdf);	/* launch Acrobat/PDF viewer on the output file */
+	if (isatty(STDOUT_FILENO)) {	/* only launch preview if output is interactive terminal */
+	    cpdf_launchPreview(pdf);	/* launch Acrobat/PDF viewer on the output file */
+	}
     cpdf_close(pdf);		/* shut down the library resources */
 
 }
