@@ -148,12 +148,12 @@ PYBIND11_MODULE(_dipoleq, m) {
     py::class_<IMatrixView>(m, "IMatrixView", py::buffer_protocol())
         .def_buffer(&IMatrixView::get_buffer_info)
     ;
-    py::class_<TOKAMAK>(m, "TOKAMAK")
-        .def(py::init(&new_Tokamak), "Return new TOKAMAK struct")
+    py::class_<TOKAMAK>(m, "MACHINE")
+        .def(py::init(&new_Tokamak), "Return new MACHINE struct")
         .def("init", [](TOKAMAK& self) {init_Tokamak(&self);},
-            "Initialize TOKAMAK")
-        .def(py::init(&FileInput), "Initialize TOKAMAK with a file")
-        .def("__del__", &free_Tokamak, "Free TOKAMAK and what is below it")
+            "Initialize MACHINE")
+        .def(py::init(&FileInput), "Initialize MACHINE with a file")
+        .def("__del__", &free_Tokamak, "Free MACHINE and what is below it")
         .def("set_start_time", &SetStartTime, "Set the start time")
         .def("set_stop_time", &SetStopTime, "Set the end time")
         .def("find_shell_current", &Find_ShellCurrent, "Find shell current")

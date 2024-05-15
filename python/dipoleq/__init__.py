@@ -1,3 +1,7 @@
-from ._dipoleq import TOKAMAK, PLASMA, PSIGRID, CPlasmaModel, \
-    VectorView, MatrixView, IMatrixView, __doc__
+from ._dipoleq import MACHINE, PLASMA, PSIGRID, CPlasmaModel, \
+    VectorView, MatrixView, IMatrixView, IVectorView
 
+__all__ = [
+        'MACHINE', 'PLASMA', 'PSIGRID', 'CPlasmaModel',
+        'VectorView', 'MatrixView', 'IMatrixView', 'IVectorView'
+        ]
