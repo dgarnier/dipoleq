@@ -25,8 +25,16 @@
 
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void CopyUnknowns(TOKAMAK *, double *);
 void RewriteUnknowns(TOKAMAK *, double *);
 void LeastSquares(TOKAMAK *,int );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

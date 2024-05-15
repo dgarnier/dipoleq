@@ -21,8 +21,14 @@
 
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void 	PlasmaBoundary(TOKAMAK *td);
 
+#ifdef __cplusplus
+}   // extern "C"
+#endif
 #endif
 

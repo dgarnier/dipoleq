@@ -20,10 +20,18 @@
 
 #define _FIND_DJDY_  1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 double ***new_dJdy(int , int );
 void 	free_dJdy(double ***,int , int);
 
 void Find_dJdy(TOKAMAK *, double ***);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

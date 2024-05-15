@@ -18,9 +18,14 @@
 
 #define _LOADBNDRYGREENS_ 		1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void LoadBndryGreens(TOKAMAK *);
 void RewriteBndryGreens(TOKAMAK *);
-
 void free_BndryGreens(TOKAMAK *);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

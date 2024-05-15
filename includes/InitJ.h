@@ -24,7 +24,14 @@
 #include "psigrid.h"
 #include "plasma.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void InitJ(PSIGRID * , PLASMA * );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

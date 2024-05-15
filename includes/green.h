@@ -16,7 +16,16 @@
 
 #define _GREEN_ 	1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 double Green(double, double, double, double);
 void GetdGreen(double *,double *,double *,double,double,double,double);
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif

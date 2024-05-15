@@ -20,8 +20,16 @@
 
 #define _LOADMEASGREENS_		1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void          LoadMeasGreens(TOKAMAK * );
 void          RewriteMeasGreens(TOKAMAK * );
 void          free_MeasGreens(TOKAMAK * );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

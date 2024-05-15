@@ -23,8 +23,15 @@
 #include "shell.h"
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void AddSubShellJ(PSIGRID * , SHELL * );
 void AddShellJ(TOKAMAK *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

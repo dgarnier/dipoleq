@@ -30,10 +30,17 @@
 #include "measurement.h"
 #include "tokamak.h"
 
-double        g_bp(double x, double z, double xc, double zc);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+double  g_bp(double x, double z, double xc, double zc);
 void	meas_bp_Green(TOKAMAK *, MEAS *);
 void	meas_bp_Fit(TOKAMAK *, MEAS *);
 void	meas_bp_Now(TOKAMAK *, MEAS *);
 void	meas_bp_L(TOKAMAK *, MEAS *, double *);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

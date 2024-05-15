@@ -22,6 +22,10 @@
 
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void 		J_DipoleStd(TOKAMAK *,double **);
 double 		J_DipoleStd_Loc(TOKAMAK * , int , int);
 double		Pp_DipoleStd_Loc(TOKAMAK *, double Psi);
@@ -29,5 +33,8 @@ double		P_DipoleStd_Loc(TOKAMAK *, double Psi);
 double		G2p_DipoleStd_Loc(TOKAMAK *, double Psi);
 double		G2_DipoleStd_Loc(TOKAMAK *, double Psi);
 
+#ifdef __cplusplus
+}
+#endif
 #endif
 

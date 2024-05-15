@@ -91,10 +91,6 @@
 #define CircleType_brcos	3
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
 **
 ** MEAS data structure
@@ -157,6 +153,10 @@ typedef struct meas {
 ** Function Prototypes
 **
 */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 MEAS *new_Measure(int );
 void free_Measure(MEAS *,int , int, int );

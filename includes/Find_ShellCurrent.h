@@ -18,7 +18,14 @@
 
 #include "tokamak.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void Find_ShellCurrent(TOKAMAK *);
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif

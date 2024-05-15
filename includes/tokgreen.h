@@ -54,10 +54,17 @@
 **
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LHVEC *new_LHvec(int);
 void free_LHvec(LHVEC *, int);
 
 LHARY *new_LHary(int);
 void free_LHary(LHARY *, int);
 
+#ifdef __cplusplus
+}  // extern "C"
+#endif
 #endif

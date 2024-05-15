@@ -23,7 +23,15 @@
 
 #include "tokamak.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void WriteRestart(char *, TOKAMAK *);
 void ReadRestart(char *, TOKAMAK *);
 
+#ifdef __cplusplus
+}   // extern "C"
 #endif
+#endif
+

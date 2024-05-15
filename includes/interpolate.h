@@ -20,8 +20,16 @@
 
 #include "psigrid.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 double  interpolate(PSIGRID * , double **, double , double );
 double  interpolate_int(PSIGRID * , int **, double , double );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

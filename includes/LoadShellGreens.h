@@ -16,9 +16,16 @@
 
 #define _LOADSHELLGREENS_ 	1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void 	LoadShellGreens(TOKAMAK * );
 void    free_ShellGreens(TOKAMAK * );
 void    RewriteShellGreens(TOKAMAK * );
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

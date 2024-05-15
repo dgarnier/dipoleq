@@ -30,8 +30,16 @@
 #include "psigrid.h"
 #include "tokamak.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void PsiPlasmaBoundary(LHARY *,PSIGRID *);
 void PsiCoilBoundary(PSIGRID *, COIL *);
 void PsiBoundary(TOKAMAK *);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
