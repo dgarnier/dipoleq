@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "hdf5.h": "c"
+        "hdf5.h": "c",
+        "nrutil.h": "c",
+        "shell.h": "c"
     }
 }

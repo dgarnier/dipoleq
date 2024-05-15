@@ -63,19 +63,28 @@ list(APPEND dipoleq_SOURCES
     stdio_dmatrix.c
     tokamak.c
     tokgreen.c
-    plot_contour.c PDFOutput.c
 )
 
-set(dipoleq_LIBS clibpdf)
+set(pydipoleqlib_SOURCES ${dipoleq_SOURCES})
+
+set(dipoleq_LIBS)
+set(dipoleq_DEFS)
 
 if (BUILD_WITH_HDF4)
     list(APPEND dipoleq_SOURCES HDFOutput.c)
     list(APPEND dipoleq_LIBS HDF4::HDF4)
+    list(APPEND dipoleq_DEFS HDFOUTPUT=1)
 endif()
 
 if (BUILD_WITH_HDF5)
     list(APPEND dipoleq_SOURCES HDF5Output.c)
     list(APPEND dipoleq_LIBS hdf5::hdf5 hdf5::hdf5_hl)
+    list(APPEND dipoleq_DEFS HDFOUTPUT=1)
+endif()
+
+if (BUILD_WITH_CLIBPDF)
+    list(APPEND dipoleq_SOURCES plot_contour.c PDFOutput.c)
+    list(APPEND dipoleq_LIBS clibpdf)
 endif()
 
 add_library(DipolEqLib STATIC ${dipoleq_SOURCES})
@@ -89,3 +98,11 @@ target_include_directories(DipolEqLib
                             PUBLIC 
                                 ${CMAKE_SOURCE_DIR}/includes
                             )
+target_compile_definitions(DipolEqLib PRIVATE ${dipoleq_DEFS})
+
+# Python bindings library for pydipoleq target
+if (BUILD_PYTHON_BINDINGS)
+    add_library(pydipoleqlib STATIC ${pydipoleqlib_SOURCES})
+    target_include_directories(pydipoleqlib PUBLIC ${CMAKE_SOURCE_DIR}/includes)
+    target_compile_definitions(pydipoleqlib PRIVATE PYBIND11=1)
+endif()

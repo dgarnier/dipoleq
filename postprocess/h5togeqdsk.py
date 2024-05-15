@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Convert a dipoleq h5 file to a g-eqdsk file
-# Usage: python dipoleq_h5togeqdsk.py <dipoleq.h5> <g-eqdsk>
+# Usage: python h5togeqdsk.py <dipoleq.h5> ...
 
 from typing import Dict, Union, Any
 import h5py
@@ -72,7 +72,7 @@ def dipoleq_to_geqdsk(h5f, COCOS=3, NormalizeAtAxis=True) -> Dict[str, Union[int
     # also.. some code requires that psi normalized STARTS at
     # the magnetic axis
 
-    psi1D = Flux["psi"][()]
+    psi1D = Flux["psi"][()] * scale_psi
     if NormalizeAtAxis:
         psi = np.linspace(PsiMagX, PsiLCFS, len(R))
     else:

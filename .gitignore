@@ -7,3 +7,4 @@ Testing/*.geqdsk
 Testing/*.h5
 Testing/*.bin
 __pycache__
+dist

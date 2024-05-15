@@ -1,0 +1,112 @@
+[build-system]
+requires = [
+    "cmake",
+    "scikit-build-core", 
+    "pybind11", 
+    "numpy",
+    "cibuildwheel",
+    "wheel",
+    "build" 
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "dipoleq"
+dynamic = ["version"]
+description="DipolEq equilibrium solver python bindings."
+readme = "README.md"
+authors = [
+  { name = "Darren Garnier", email = "dgarnier@reinrag.net" },
+]
+requires-python = ">=3.9"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+wheels = ["cmake", "ninja; sys_platform!='win32'"]
+
+[tool.scikit-build]
+wheel.expand-macos-universal-tags = true
+cmake.targets = ["pydipoleq", "dipoleq"]
+# cmake.verbose = true
+install.components = ["python", "cli"]
+wheel.packages = ["python/dipoleq"]
+wheel.py-api = "py3"
+# logging.level = "INFO"
+build-dir = "build/{wheel_tag}"
+
+[tool.scikit-build.cmake.define]
+BUILD_PYTHON_BINDINGS = "ON"
+CMAKE_OSX_DEPLOYMENT_TARGET = "10.10"
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "CMakelists.txt"
+regex = 'project\([^)]+ VERSION (?P<value>[0-9.]+)'
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
+xfail_strict = true
+log_cli_level = "INFO"
+filterwarnings = [
+  "error",
+]
+testpaths = ["tests"]
+
+
+[tool.cibuildwheel]
+build = "cp39-*"
+test-command = "pytest {project}/tests"
+test-extras = ["test"]
+test-skip = ["*universal2:arm64"]
+build-verbosity = 1
+
+[tool.cibuildwheel.macos.environment]
+MACOSX_DEPLOYMENT_TARGET = "10.10"
+
+
+
+[tool.ruff]
+src = ["src"]
+
+[tool.ruff.lint]
+extend-select = [
+  "B",           # flake8-bugbear
+  "I",           # isort
+  "ARG",         # flake8-unused-arguments
+  "C4",          # flake8-comprehensions
+  "EM",          # flake8-errmsg
+  "ICN",         # flake8-import-conventions
+  "G",           # flake8-logging-format
+  "PGH",         # pygrep-hooks
+  "PIE",         # flake8-pie
+  "PL",          # pylint
+  "PT",          # flake8-pytest-style
+  "PTH",         # flake8-use-pathlib
+  "RET",         # flake8-return
+  "RUF",         # Ruff-specific
+  "SIM",         # flake8-simplify
+  "T20",         # flake8-print
+  "UP",          # pyupgrade
+  "YTT",         # flake8-2020
+  "EXE",         # flake8-executable
+  "NPY",         # NumPy specific rules
+  "PD",          # pandas-vet
+]
+ignore = [
+  "PLR09",    # Too many X
+  "PLR2004",  # Magic comparison
+]
+isort.required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["T20"]

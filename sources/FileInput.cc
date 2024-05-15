@@ -751,8 +751,7 @@ TOKAMAK      *FileInput(const char *fname)
 	pl = td->Plasma;
 	pg = td->PsiGrid;
 
-	strcpy(td->Iname, fname);
-
+	strncpy(td->Iname, fname, sizeof(td->Iname) - 1);
 	fi = fopen(fname, "r");		/* open textfile for read only */
 	if (!fi)
 		nrerror("ERROR:	Could not open file in FileInput.");
@@ -769,6 +768,9 @@ TOKAMAK      *FileInput(const char *fname)
 		i++;
 		linelen = getline(linebuf, 128, fi);
 	}
+
+	
+	
 
 	/* P S I G R I D */
 	rewind(fi);
@@ -934,7 +936,6 @@ TOKAMAK      *FileInput(const char *fname)
 	}
 	for (i=0;i<=count;i++) 
 		if (td->Coils[i]->dX >= 0) compute_SubCoils(td->Coils[i], td->PsiGrid);
-	
 	/* S H E L L S and S U B S H E L L S */
 	count = -1;
         isOK = FALSE;
@@ -965,6 +966,5 @@ TOKAMAK      *FileInput(const char *fname)
 		fprintf(LogFile, "\nWARNING from FileInput.  Not enough Shells in file.\n");
 	}
 	fclose(fi);
-
 	return td;
 }

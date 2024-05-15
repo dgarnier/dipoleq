@@ -55,6 +55,15 @@ void          nrinfo(char error_text[])
 	IDL_Message(IDL_M_GENERIC, IDL_MSG_INFO, error_text);
 }
 #else
+#ifdef PYBIND11
+/* don't define nrerror here.. */
+//#include <stdexcept>
+//void          nrerror(const char error_text[])
+//{
+//	nrinfo(error_text);
+//	throw std::runtime_error(error_text);
+//}
+#else
 void          nrerror(const char error_text[])
 {
 /*	void          exit(int); */
@@ -67,9 +76,8 @@ void          nrerror(const char error_text[])
 	fprintf(stderr, "        ...now exiting to system.\n");
 	fprintf(LogFile, "        ...now exiting to system.\n");
 	exit(1);
-
 }
-
+#endif
 void          nrinfo(const char error_text[])
 {
 	fprintf(stderr, "%s\n", error_text);
