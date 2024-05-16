@@ -108,6 +108,10 @@ void          RewriteMeasGreens(TOKAMAK * td)
 			(*(m->FindGreen)) (td, m);
 	}
 
+	/* don't write if not a good filename */
+	if ((td->MGname[0] == '\0') || (td->MGname[0] == '*'))
+		return;
+
 	fi = fopen(td->MGname, "wb");
 	if (!fi)
 		nrerror("ERROR:	Could not open file for writing in MeasGreen.");

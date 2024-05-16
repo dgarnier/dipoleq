@@ -868,6 +868,7 @@ void          GetFluxParameters(TOKAMAK * td)
 		  case Plasma_Std:
 		  case Plasma_IsoNoFlow: 
 		  case Plasma_DipoleStd:
+		  case Plasma_DipoleIntStable:
 			  t2 = MU0 * (Pp[i + 1] - Pp[i - 1]) / t1;	/* Pressure gradient */
 			  pl->Well_pr[i] = (pl->Vol_pr[i] / pl->Vol_pr[i])
 				  * ((pl->B2_pr[i + 1] - pl->B2_pr[i - 1]) / 2.0 / t1 + t2) / pl->B2_pr[i];
@@ -884,6 +885,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	  case Plasma_Std:
 	  case Plasma_IsoNoFlow:
 	  case Plasma_DipoleStd:
+	  case Plasma_DipoleIntStable:
 		  t2 = 2.0 * MU0 * (Pp[npts - 1] - Pp[npts - 2]) / t1;	/* Pressure gradient */
 		  pl->Well_pr[npts - 1] = (pl->Vol_pr[npts - 1] / pl->Vol_pr[npts - 1])
 			  * ((pl->B2_pr[npts - 1] - pl->B2_pr[npts - 2]) / 4.0 / t1 + t2) / pl->B2_pr[npts - 1];

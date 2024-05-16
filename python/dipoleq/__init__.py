@@ -1,7 +1,9 @@
-from ._dipoleq import MACHINE, PLASMA, PSIGRID, CPlasmaModel, \
+from ._c import MACHINE, PLASMA, PSIGRID, CPlasmaModel, \
     VectorView, MatrixView, IMatrixView, ModelType
+    
+from .solve import solve
 
 __all__ = [
-        'MACHINE', 'PLASMA', 'PSIGRID', 'CPlasmaModel',
-        'VectorView', 'MatrixView', 'IMatrixView'
-        ]
+    'MACHINE', 'PLASMA', 'PSIGRID', 'CPlasmaModel',
+    'VectorView', 'MatrixView', 'IMatrixView', ModelType, solve
+]

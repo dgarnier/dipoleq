@@ -541,6 +541,11 @@ void          RewriteBndryGreens(TOKAMAK * td)
 				MakeShellGreenSymmetric(td->PsiGrid, shell);
 		}
 	}
+	if ((td->LHname[0] == '\0') || (td->LHname[0] == '*')) {
+		// don't write the greens file
+		return;
+	}
+
 	fi = fopen(td->LHname, "wb");
 	if (!fi)
 		nrerror("ERROR:	Could not open BndryGreen file for writing.");
