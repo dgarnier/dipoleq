@@ -16,7 +16,9 @@ jobs:
               uses: actions/setup-python@v5
               with:
                 python-version: '3.11'
+                cache: 'pip'
+                cache-dependency-path: 'pyproject.toml'
             - name: Build on Ubuntu
-              uses: threeal/cmake-action@v1.2.0
+              uses: threeal/cmake-action@v1.3.0
               with:
                 run-build: true
