@@ -9,9 +9,13 @@ jobs:
               with:
                 packages: zlib1g-dev libjpeg-dev libhdf5-dev
             - name: Checkout on Ubuntu
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
               with:
                 fetch-depth: 1
+            - name : Set up Python
+              uses: actions/setup-python@v5
+              with:
+                python-version: '3.11'
             - name: Build on Ubuntu
               uses: threeal/cmake-action@v1.2.0
               with:

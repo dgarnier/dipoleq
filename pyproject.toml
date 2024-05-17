@@ -6,7 +6,8 @@ requires = [
     "numpy",
     "cibuildwheel",
     "wheel",
-    "build" 
+    "build",
+    "pydantic"
 ]
 build-backend = "scikit_build_core.build"
 

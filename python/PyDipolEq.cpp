@@ -678,24 +678,24 @@ PYBIND11_MODULE(_c, m) {
         .def_readwrite("R2", &LIMITER::X2)
         .def_readwrite("Z2", &LIMITER::Z2)
         .def_readwrite("Enabled", &LIMITER::Enabled)
-        .def_readonly("Name", &LIMITER::Name)
-        .def("setName", [](LIMITER& self, std::string name) 
-                {strncpy(self.Name, name.c_str(), sizeof(LIMITER::Name)-1);}, 
-                "Set the name of the limiter")
         .def_readwrite("PsiMin", &LIMITER::PsiMin)
         .def_readwrite("Rmin", &LIMITER::Xmin)
         .def_readwrite("Zmin", &LIMITER::Zmin)
+        .def_property("Name", [](LIMITER& self) {return self.Name;},
+            [](LIMITER& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(LIMITER::Name)-1);
+            }, "Name of the limiter")
     ;
 
     py::class_<SUBCOIL>(m, "SUBCOIL")
         .def(py::init(&new_SubCoil), "Create SUBCOIL")
         .def_readwrite("R", &SUBCOIL::X)
         .def_readwrite("Z", &SUBCOIL::Z)
-        .def_readwrite("CurrentFraction", &SUBCOIL::CurrentFraction)
-        .def_readonly("Name", &SUBCOIL::Name)
-        .def("setName", [](SUBCOIL& self, std::string name) 
-                {strncpy(self.Name, name.c_str(), sizeof(SUBCOIL::Name)-1);}, 
-                "Set the name of the subcoil")
+        .def_readwrite("Fraction", &SUBCOIL::CurrentFraction, "Fraction of current")
+        .def_property("Name", [](SUBCOIL& self) {return self.Name;},
+            [](SUBCOIL& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(COIL::Name)-1);
+            }, "Name of the subcoil")
     ;
 
     py::class_<COIL>(m, "COIL")
