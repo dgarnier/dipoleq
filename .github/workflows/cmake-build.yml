@@ -1,7 +1,7 @@
-on: [push]
+on: [push, pull_request]
 
 jobs:
-    build_on_ubuntu:
+    cmake_build_on_ubuntu:
         runs-on: ubuntu-latest
         steps:
             - name: Dependencies
