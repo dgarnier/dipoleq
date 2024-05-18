@@ -18,6 +18,7 @@ jobs:
                 python-version: '3.11'
                 cache: 'pip'
                 cache-dependency-path: 'pyproject.toml'
+            - name: Install dependencies
               run:
                 python -m pip install .[dev]
             - name: Build on Ubuntu
