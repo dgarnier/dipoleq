@@ -7,7 +7,6 @@ requires = [
     "cibuildwheel",
     "wheel",
     "build",
-    "pydantic"
 ]
 build-backend = "scikit_build_core.build"
 
@@ -30,9 +29,16 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
 ]
 
+dependencies = [
+  "numpy >=1.21",
+  "pydantic >=2.7"
+]
+
 [project.optional-dependencies]
 test = ["pytest"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
+dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
+       "numpy", "pybind11"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
