@@ -138,14 +138,20 @@ if (BUILD_PYTHON_BINDINGS)
     set(Python_FIND_FRAMEWORK "LAST")
     find_package(Python GLOBAL REQUIRED COMPONENTS Interpreter Development.Module NumPy ${SKBUILD_SABI_COMPONENT})
     include(FindPyBind11)
-    find_package(pybind11 CONFIG QUIET)
+    find_package(pybind11 GLOBAL CONFIG QUIET)
     if(NOT pybind11_FOUND)
         include(get_cpm)
         CPMAddPackage(
             NAME pybind11
+            VERSION 2.12.0
             GITHUB_REPOSITORY pybind/pybind11
-            GIT_TAG v2.12.0
+            OPTIONS
+                "PYBIND11_INSTALL ON"
+                "PYBIND11_TEST OFF"
+                "PYBIND11_FINDPYTHON OFF"
         )
+        find_package(pybind11 GLOBAL REQUIRED)
+        dump_cmake_variables(pybind11)
     endif()
 endif()
 
