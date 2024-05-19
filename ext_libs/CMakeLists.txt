@@ -92,6 +92,64 @@ if (BUILD_WITH_HDF4)
     endif()
 endif()
 
+if (BUILD_WITH_HDF5)
+    find_package(HDF5 COMPONENTS C HL NO_MODULE)
+    if(HDF5::HDF5)
+        dump_cmake_variables(HDF5)
+    else()
+        include(get_cpm)
+        CPMAddPackage(
+            NAME hdf5
+            GITHUB_REPOSITORY HDFGroup/hdf5
+            GIT_TAG hdf5_1.14.4
+            OPTIONS
+                "BUILD_SHARED_LIBS OFF"
+                "HDF5_BUILD_TOOLS OFF"
+                "HDF5_BUILD_EXAMPLES OFF"
+                "HDF5_BUILD_HL_LIB ON"
+                "HDF5_BUILD_CPP_LIB OFF"
+                "HDF5_BUILD_FORTRAN OFF"
+                "HDF5_BUILD_JAVA OFF"
+                "HDF5_BUILD_TESTING OFF"
+                "HDF5_ENABLE_PARALLEL OFF"
+                "HDF5_ENABLE_Z_LIB_SUPPORT ON"
+                "HDF5_ENABLE_SZIP_SUPPORT OFF"
+                "HDF5_ENABLE_FILTERS OFF"
+                "HDF5_ENABLE_DEPRECATED_SYMBOLS OFF"
+                "HDF5_ENABLE_CLEAR_FILE_BUFFER ON"
+                "HDF5_ENABLE_LOGGING ON"
+                "HDF5_ENABLE_USING_MEMCHECKER ON"
+                "HDF5_ENABLE_USING_CODE_COVERAGE ON"
+                "HDF5_ENABLE_USING_FI ON"
+                "HDF5_EXTERNALLY_CONFIGURED ON"
+        )
+
+        add_library(hdf5::hdf5 ALIAS hdf5-static)
+        add_library(hdf5::hdf5_hl ALIAS hdf5_hl-static)
+
+    endif()
+    
+endif()
+
+if (BUILD_PYTHON_BINDINGS)
+    # Find the module development requirements (requires FindPython from 3.17 or
+    # scikit-build-core's built-in backport)
+    set(Python_FIND_VIRTUALENV "FIRST")
+    set(Python_FIND_FRAMEWORK "LAST")
+    find_package(Python GLOBAL REQUIRED COMPONENTS Interpreter Development.Module NumPy ${SKBUILD_SABI_COMPONENT})
+    include(FindPyBind11)
+    find_package(pybind11 CONFIG QUIET)
+    if(NOT pybind11_FOUND)
+        include(get_cpm)
+        CPMAddPackage(
+            NAME pybind11
+            GITHUB_REPOSITORY pybind/pybind11
+            GIT_TAG v2.12.0
+        )
+    endif()
+endif()
+
+
 if (CMAKE_VERSION VERSION_LESS 3.24)
     FetchContent_Declare(ClibPDF
                         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/clibpdf

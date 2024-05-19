@@ -6,7 +6,7 @@ execute_process(COMMAND pybind11-config --cmakedir
 )
 
 if(NOT PYBIND11_CONFIG_RESULT EQUAL 0)
-    message(FATAL_ERROR "pybind11-config failed to execute")
+    message(STATUS "pybind11-config failed to execute")
 else()
     message(STATUS "Found pybind11Config.cmake at ${PYBIND11_CMAKE_DIR}")
 endif()

@@ -4,7 +4,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 project(DipolEq VERSION 1.2 LANGUAGES C CXX)
 include(CTest)
-include_directories("${CMAKE_SOURCE_DIR}/includes")
 
 option(BUILD_WITH_HDF5 "Build with HDF5" ON)
 option(BUILD_WITH_HDF4 "Build with HDF4" OFF)
@@ -13,27 +12,19 @@ option(BUILD_WITH_CLIBPDF "Build with C libPDF" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
 
 add_subdirectory(ext_libs EXCLUDE_FROM_ALL)
-# for some reason, ext_libs can't export this info...
+
+include_directories("${CMAKE_SOURCE_DIR}/includes")
+
 add_compile_definitions(DIPOLE=1)
 if (BUILD_WITH_HDF4)
     include(FindHDF4)
 endif()
 if (BUILD_WITH_HDF5)
-    find_package(HDF5 COMPONENTS C HL REQUIRED)
+    find_package(HDF5 COMPONENTS C HL)
 endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_compile_options(-fsanitize=address)
-endif()
-
-if (BUILD_PYTHON_BINDINGS)
-    # Find the module development requirements (requires FindPython from 3.17 or
-    # scikit-build-core's built-in backport)
-    set(Python_FIND_VIRTUALENV "FIRST")
-    set(Python_FIND_FRAMEWORK "LAST")
-    find_package(Python REQUIRED COMPONENTS Interpreter Development.Module NumPy ${SKBUILD_SABI_COMPONENT})
-    include(FindPyBind11)
-    find_package(pybind11 CONFIG REQUIRED)
 endif()
 
 # add_subdirectory(fortran)
