@@ -1,3 +1,4 @@
+name: Build with CMake
 on: [push, pull_request]
 
 jobs:
