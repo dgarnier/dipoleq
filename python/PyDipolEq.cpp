@@ -1,3 +1,12 @@
+/* 
+ *  DipoleEq python bindings
+ *
+ *  Author: Darren Garnier <darren@openstar.nz>
+ *
+ * 
+ */
+
+
 #include <stdexcept>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -23,6 +32,9 @@
 #include "FindMeasFit.h"
 #include "GetPlasmaParameters.h"
 #include "Restart.h"
+#include "measurement.h"
+
+#include "PyDipoleEq.hpp"
 
 
 namespace py = pybind11;
@@ -39,98 +51,6 @@ void nrerror(const char error_text[])
 	// nrinfo(error_text);  // maybe not even do this
 	throw std::runtime_error(error_text);
 }
-
-class DMatrixView {
-public:
-    DMatrixView(size_t nsize, double ** data) : m_size(nsize+1), m_data(data) {};
-    double& operator()(size_t i, size_t j) { return m_data[i][j]; };
-    py::buffer_info get_buffer_info() {
-        return py::buffer_info(
-            m_data[0],                             /* Pointer to buffer */
-            sizeof(double),                          /* Size of one scalar */
-            py::format_descriptor<double>::format(), /* Python struct-style format descriptor */
-            2,                                      /* Number of dimensions */
-            { m_size, m_size },                 /* Buffer dimensions */
-            { sizeof(double) ,            /* Strides (in bytes) for each index */
-              sizeof(double) * m_size }   /* nrutil is fortran order */
-        );
-    }
-private:
-    size_t m_size;
-    double ** m_data;
-};
-
-class IMatrixView {
-public:
-    IMatrixView(size_t nsize, int ** data) : m_size(nsize+1), m_data(data) {};
-    int& operator()(size_t i, size_t j) { return m_data[i][j]; };
-    py::buffer_info get_buffer_info() {
-        return py::buffer_info(
-            m_data[0],                             /* Pointer to buffer */
-            sizeof(int),                          /* Size of one scalar */
-            py::format_descriptor<int>::format(), /* Python struct-style format descriptor */
-            2,                                      /* Number of dimensions */
-            { m_size, m_size },                 /* Buffer dimensions */
-            { sizeof(int) ,            /* Strides (in bytes) for each index */
-              sizeof(int) * m_size}     /* nrutil is fortran order */
-        );
-    }
-private:
-    size_t m_size;
-    int ** m_data;
-};
-
-class DVectorView {
-public:
-    DVectorView(size_t nsize, double * data) : m_size(nsize+1), m_data(data) {};
-    double& operator[](size_t i) { return m_data[i]; };
-    py::buffer_info get_buffer_info() {
-        return py::buffer_info(
-            m_data,                                  /* Pointer to buffer */
-            sizeof(double),                          /* Size of one scalar */
-            py::format_descriptor<double>::format(), /* Python struct-style format descriptor */
-            1,                                      /* Number of dimensions */
-            { m_size },                             /* Buffer dimensions */
-            { sizeof(double) }
-        );
-    }
-private:
-    size_t m_size;
-    double * m_data;
-};
-
-template <typename T> class ObjVecView  
-{
-    public:
-    ObjVecView(size_t nsize, T ** data) : m_size(nsize), m_data(data) {};
-    ObjVecView(size_t nsize, T ** data, TOKAMAK * mach, void (*objfree)(T *, TOKAMAK *)) 
-        : m_size(nsize), m_data(data), m_machine(mach), m_free(objfree) {};
-
-    T*& operator[](size_t i) { 
-        if (i<0 || i>m_size)
-            throw std::out_of_range("Index out of range");
-        return m_data[i]; };
-    size_t size() {return m_size;};
-
-    void insert(size_t i, T* obj) {
-        if (i<0 || i>m_size)
-            throw std::out_of_range("Index out of range");
-        if (m_data[i] != NULL) {
-            if (m_free != NULL) {
-                m_free(m_data[i], m_machine);
-            } else {
-                free(m_data[i]);
-            }
-        }
-        m_data[i] = obj;
-    }
-    
-    private:
-    TOKAMAK *m_machine = NULL;
-    void (*m_free)(T *, TOKAMAK *) = NULL;
-    size_t m_size;
-    T ** m_data;
-};
 
 extern "C" {
     extern FILE *LogFile;
@@ -162,15 +82,6 @@ private:
     FILE *m_file;
 };
 
-enum class ModelType {
-    Std = Plasma_Std,
-    IsoNoFlow = Plasma_IsoNoFlow,
-    IsoFlow = Plasma_IsoFlow,
-    AnisoNoFlow = Plasma_AnisoNoFlow,
-    AnisoFlow = Plasma_AnisoFlow,
-    DipoleStd = Plasma_DipoleStd,
-    DipoleIntStable = Plasma_DipoleIntStable
-};
 
 // because nrutils suck and you can't just free a thing
 // really this all needs to be rewritten in C++ 
@@ -319,6 +230,8 @@ void set_NumSubCoils(COIL& self, int n) {
 
 
 PYBIND11_MODULE(_c, m) {
+    // the order of definitions is important because 
+    // pybind11-stubgen can't handle forward declarations
     static Logger logger;                    // initialize the logfile
     m.doc() = "Python bindings for DipolEq"; // optional module docstring
     
@@ -331,19 +244,299 @@ PYBIND11_MODULE(_c, m) {
     py::class_<IMatrixView>(m, "IMatrixView", py::buffer_protocol())
         .def_buffer(&IMatrixView::get_buffer_info)
     ;
-    py::class_<ObjVecView<COIL>>(m, "COILS")
-        .def("__getitem__", &ObjVecView<COIL>::operator[], 
-            py::return_value_policy::reference)
-        .def("__setitem__", &ObjVecView<COIL>::insert)
-        .def("__len__", [](ObjVecView<COIL>& self) {return self.size();})
-        .def("new_Coil", [](ObjVecView<COIL>& self, int n) { return new_Coil(n);}, 
-            py::return_value_policy::reference, "Add a new coil")
+
+    py::enum_<ModelType>(m, "ModelType")
+        .value("Std", ModelType::Std)
+        .value("IsoNoFlow", ModelType::IsoNoFlow)   
+        .value("IsoFlow", ModelType::IsoFlow)
+        .value("AnisoNoFlow", ModelType::AnisoNoFlow)
+        .value("AnisoFlow", ModelType::AnisoFlow)
+        .value("DipoleStd", ModelType::DipoleStd)
+        .value("DipoleIntStable", ModelType::DipoleIntStable)
     ;
-    py::class_<ObjVecView<SUBCOIL>>(m, "SUBCOILS")
+    py::class_<CPlasmaModel>(m, "CPlasmaModel")
+        .def("updateModel", &CPlasmaModel::UpdateModel, "Update the plasma model")
+    ;
+    py::class_<PLASMA>(m, "Plasma")
+        .def(py::init(&new_Plasma), "Create Plasma")
+        .def("init", &init_Plasma, "Initialize Plasma")
+        .def("plasmaP", &PlasmaP, "Calculate plasma pressure")
+        .def("plasmaPp", &PlasmaPp, "Calculate plasma Pprime")
+        .def("plasmaG", &PlasmaG, "Calculate plasma G")
+        .def("plasmaG2p", &PlasmaG2p, "Calculate plasma G2prime")
+        .def_readwrite("Nsize", &PLASMA::Nsize)
+        .def_property("ModelType", [](PLASMA& self) {return ModelType(self.ModelType);},
+            [](PLASMA& self, ModelType mtype) { self.ModelType = (int) mtype;},
+            "Plasma model type, see ModelType enum")
+        .def("Model", [](PLASMA& self) {return self.Model;}, py::return_value_policy::reference)
+        .def_readwrite("R0", &PLASMA::R0, "Reference major radius")
+        .def_readwrite("Z0", &PLASMA::Z0, "Reference vertical position")
+        .def_readwrite("B0", &PLASMA::B0, "Vacuum magnetic field at R0, Z0")
+        .def_readwrite("Ip0", &PLASMA::Ip0, "initial plasma current")
+        .def_readwrite("B0R0", &PLASMA::B0R0, "B0 * R0")
+        .def_readwrite("Jedge", &PLASMA::Jedge, "Edge current density")
+
+        .def_readwrite("NumBndMomts", &PLASMA::NumBndMomts)
+        .def_readwrite("NumPsiPts", &PLASMA::NumPsiPts)
+        .def_readwrite("PsiXmax", &PLASMA::PsiXmax, "Outermost normalized Psi from 0.0 to 1.0")
+
+        // results
+        .def_readonly("Ip", &PLASMA::Ip, "Plasma current")
+        .def_readonly("beta0", &PLASMA::beta0, "Vacuum toroidal beta at R0")
+        .def_readonly("beta", &PLASMA::beta, "Average toroidal beta")
+        .def_readonly("betap", &PLASMA::betap, "Poloidal beta")
+        .def_readonly("li", &PLASMA::li, "Normalized internal inductance")
+        .def_readonly("Ltotal", &PLASMA::Ltotal, "Total inductance")
+        .def_readonly("mu", &PLASMA::mu, "Normalized diamagnetism")
+        .def_readonly("Volume", &PLASMA::Volume, "Volume")
+        .def_readonly("CrossSection", &PLASMA::CrossSection, "Cross section")
+        .def_readonly("Perimeter", &PLASMA::Perimeter, "Perimeter")
+        .def_readonly("Diamag", &PLASMA::Diamag, "Diamagnetism")
+        .def_readonly("q0", &PLASMA::q0, "Central safety factor")
+        .def_readonly("qCircular", &PLASMA::qCircular, "qCircular")
+        .def_readonly("qStar", &PLASMA::qStar, "qStar")
+        .def_readonly("RMagAxis", &PLASMA::XMagAxis, "Magnetic axis R")
+        .def_readonly("ZMagAxis", &PLASMA::ZMagAxis, "Magnetic axis Z")
+        .def_readonly("PsiMagAxis", &PLASMA::PsiMagAxis, "Psi at magnetic axis")
+        .def_readonly("PsiAxis", &PLASMA::PsiAxis, "Psi at axis")
+        .def_readonly("PsiLim", &PLASMA::PsiLim, "Psi at plasma/vacuum boundary")
+        .def_readonly("HalfWidth", &PLASMA::HalfWidth, "Half width")
+        .def_readonly("Elongation", &PLASMA::Elongation, "Elongation")
+
+        .def_readonly("ChiSqr", &PLASMA::ChiSqr, "Chi squared")
+        .def_readonly("totKinEnergy", &PLASMA::TotKinEnergy, "Total kinetic energy")
+        .def_readonly("totMagEnergy", &PLASMA::TotMagEnergy, "Total agnetic energy")
+        .def_property_readonly("B2", [](PLASMA& self) {return DMatrixView(self.Nsize, self.B2);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("GradPsiX", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsiX);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("GradPsiZ", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsiZ);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("GradPsi2", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsi2);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Bt", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Bt);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("G", [](PLASMA& self) {return DMatrixView(self.Nsize, self.G);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Rho", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Rho);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Piso", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Piso);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Ppar", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Ppar);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Pper", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Pper);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Alpha", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Alpha);},
+            py::return_value_policy::reference_internal)
+    ;
+
+    py::class_<PSIGRID>(m, "PsiGrid")
+        .def(py::init(&new_PsiGrid), "Create PsiGrid")
+        .def("init", &init_PsiGrid, "Initialize PsiGrid")
+        .def("go_PDE", &GoPDE, "Solve the PDE on the PsiGrid")
+        .def("make_psi_symmetric", &MakePsiSymmetric, "Make Psi symmetric")
+        .def("get_new_residual", &GetNewResidual, "Get new residual")
+        .def("new_solution", &NewSolution, "Get new solution")
+        .def("new_M_solution", &NewMSolution, "Get new M solution")
+        .def("get_Psi", py::vectorize(&GetPsi), "Get Psi")
+        .def("get_IsPlasma", &GetIsPlasma, "Get IsPlasma")
+        .def("init_J", &InitJ, "Initialize J")
+        .def_readwrite("Nsize", &PSIGRID::Nsize)
+        .def_readwrite("Symmetric", &PSIGRID::Symmetric)
+        .def_readwrite("MaxRes", &PSIGRID::MaxRes)
+        .def_readwrite("PastMaxRes", &PSIGRID::PastMaxRes)
+        .def_readwrite("Rmax", &PSIGRID::Xmax)
+        .def_readwrite("Rmin", &PSIGRID::Xmin)
+        .def_readwrite("Zmax", &PSIGRID::Zmax)
+        .def_readwrite("Zmin", &PSIGRID::Zmin)
+        .def_readwrite("dr", &PSIGRID::dx)
+        .def_readwrite("dz", &PSIGRID::dz)
+        .def_readwrite("BoundError", &PSIGRID::BoundError)
+        .def_readwrite("BoundThreshold", &PSIGRID::BoundThreshold)
+        .def_readwrite("ResThreshold", &PSIGRID::ResThreshold)
+        .def_readwrite("UnderRelax1", &PSIGRID::UnderRelax1)
+        .def_readwrite("UnderRelax2", &PSIGRID::UnderRelax2)
+        .def_readwrite("PsiAxis", &PSIGRID::PsiAxis, "Psi at FCFS or Magnetic Axis")
+        .def_readwrite("PsiMagAxis", &PSIGRID::PsiMagAxis, "Psi at Magnetic Axis")
+        .def_readwrite("PsiLim", &PSIGRID::PsiLim, "Psi at plasma/vacuum boundary")
+        .def_readwrite("DelPsi", &PSIGRID::DelPsi)
+        .def_readwrite("RMagAxis", &PSIGRID::XMagAxis)
+        .def_readwrite("ZMagAxis", &PSIGRID::ZMagAxis)
+        .def_property_readonly("R", [](PSIGRID& self) {return DVectorView(self.Nsize, self.X);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Z", [](PSIGRID& self) {return DVectorView(self.Nsize, self.Z);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("IsPlasma", [](PSIGRID& self) {return IMatrixView(self.Nsize, self.IsPlasma);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Psi", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Psi);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Current", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Current);}, 
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Residual", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Residual);},
+            py::return_value_policy::reference_internal)
+    ;    
+
+    py::enum_<MeasType>(m, "MeasType")
+        .value("unk", MeasType::unk)
+        .value("bp", MeasType::bp)
+        .value("press", MeasType::press)
+        .value("pperp", MeasType::pperp)
+        .value("ppar", MeasType::ppar)
+        .value("flux", MeasType::flux)
+        .value("saddle", MeasType::saddle)
+        .value("circle", MeasType::circle)
+        .value("coilcur", MeasType::coilcur)
+        .value("plasmacur", MeasType::plasmacur)
+        .value("bt", MeasType::bt)
+        .value("diam", MeasType::diam)
+        .value("bangle", MeasType::bangle)
+        .value("flowt", MeasType::flowt)
+        .value("flowp", MeasType::flowp)
+        .value("ne", MeasType::ne)
+        .value("Te", MeasType::Te)
+        .value("Ti", MeasType::Ti)
+        .value("Zeff", MeasType::Zeff)
+        .value("rho", MeasType::rho)
+        .value("rot", MeasType::rot)
+        .value("ppsix", MeasType::ppsix)
+        .value("bpangle", MeasType::bangle)
+        .value("pnorm", MeasType::pnorm)
+        .value("J0", MeasType::J0)
+    ;
+
+    py::enum_<CircleType>(m, "CircleType")
+        .value("btcos", CircleType::btcos)
+        .value("brsin", CircleType::brsin)
+        .value("brcos", CircleType::brcos)
+    ;
+
+    py::class_<LIMITER>(m, "Limiter")
+        .def(py::init(&new_Limiter), "Create Limiter")
+        .def_readwrite("R1", &LIMITER::X1)
+        .def_readwrite("Z1", &LIMITER::Z1)
+        .def_readwrite("R2", &LIMITER::X2)
+        .def_readwrite("Z2", &LIMITER::Z2)
+        .def_readwrite("Enabled", &LIMITER::Enabled)
+        .def_readwrite("PsiMin", &LIMITER::PsiMin)
+        .def_readwrite("Rmin", &LIMITER::Xmin)
+        .def_readwrite("Zmin", &LIMITER::Zmin)
+        .def_property("Name", [](LIMITER& self) {return self.Name;},
+            [](LIMITER& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(LIMITER::Name)-1);
+            }, "Name of the limiter")
+    ;
+
+    py::class_<SUBCOIL>(m, "SubCoil")
+        .def(py::init(&new_SubCoil), "Create SubCoil")
+        .def_readwrite("R", &SUBCOIL::X)
+        .def_readwrite("Z", &SUBCOIL::Z)
+        .def_readwrite("Fraction", &SUBCOIL::CurrentFraction, "Fraction of current")
+        .def_property("Name", [](SUBCOIL& self) {return self.Name;},
+            [](SUBCOIL& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(COIL::Name)-1);
+            }, "Name of the subcoil")
+    ;
+
+    py::class_<COIL>(m, "Coil")
+        .def(py::init(&new_Coil), "Create Coil")
+        .def_readwrite("Enabled", &COIL::Enabled)
+        .def_property("Name", [](COIL& self) {return self.Name;},
+            [](COIL& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(COIL::Name)-1);
+            }, "Name of the coil")
+        .def_property_readonly("SubCoils", [](COIL& self) {
+            return ObjVecView<SUBCOIL>(self.NumSubCoils, self.SubCoils);},
+            py::return_value_policy::reference_internal, "Return vector of SubCoils")
+        .def_property("NumSubCoils", [](COIL& self) {return self.NumSubCoils;}, 
+            &set_NumSubCoils, "Number of subcoils, setting will erase old subcoils")
+        .def_readwrite("CoilCurrent", &COIL::CoilCurrent)
+    ;
+
+    py::class_<SUBSHELL>(m, "SubShell")
+        .def(py::init(&new_SubShell), "Create SubShell")
+        .def_property("Name", [](SUBSHELL& self) {return self.Name;},
+            [](SUBSHELL& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(SUBSHELL::Name)-1);
+            }, "Name of the subshell")
+        .def_readwrite("R", &SUBSHELL::X)
+        .def_readwrite("Z", &SUBSHELL::Z)
+        .def_readwrite("Radius", &SUBSHELL::Radius)
+        .def_readwrite("Current", &SUBSHELL::Current)
+    ;
+
+    py::class_<SHELL>(m, "Shell")
+        .def(py::init(&new_Shell), "Create Shell")
+        .def_readwrite("Enabled", &SHELL::Enabled)
+        .def_property("Name", [](SHELL& self) {return self.Name;},
+            [](SHELL& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(SHELL::Name)-1);
+            }, "Name of the shell")
+        .def_readonly("NumSubShells", &SHELL::NumSubShells)
+        .def("set_NumSubShells", &set_SHELL_NumSubShells, "Set the number of subshells")
+        .def_property_readonly("SubShells", 
+            [](SHELL& self) {return ObjVecView<SUBSHELL>(self.NumSubShells, self.SubShells);},
+             "Return vector of SubShells")
+    ;
+
+    py::class_<SEPARATRIX>(m, "Separatrix")
+        .def(py::init(&new_Separatrix), "Create Separatrix")
+        .def_property("Name", [](SEPARATRIX& self) {return self.Name;},
+            [](SEPARATRIX& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(SEPARATRIX::Name)-1);
+            }, "Name of the separatrix")
+        .def_readwrite("Enabled", &SEPARATRIX::Enabled)
+        .def_readwrite("IsSeparatrix", &SEPARATRIX::IsSeparatrix)
+        .def_readwrite("R1", &SEPARATRIX::X1, "Box to search for separatrix")
+        .def_readwrite("Z1", &SEPARATRIX::Z1, "Box to search for separatrix")
+        .def_readwrite("R2", &SEPARATRIX::X2, "Box to search for separatrix")
+        .def_readwrite("Z2", &SEPARATRIX::Z2, "Box to search for separatrix")
+        .def_readwrite("RC", &SEPARATRIX::XC, "Center of plasma from Sep")
+        .def_readwrite("ZC", &SEPARATRIX::ZC, "Center of plasma from Sep")
+        .def_readonly("Psi", &SEPARATRIX::PsiSep, "Value of Psi at separatrix")
+        .def_readonly("Rs", &SEPARATRIX::Xs, "R of separatrix")
+        .def_readonly("Zs", &SEPARATRIX::Zs, "Z of separatrix")
+    ;
+
+    py::class_<MEAS>(m, "Measure")
+        .def(py::init(&new_Measure), "Create Measurement")
+        .def_property("Name", [](MEAS& self) {return self.Name;},
+            [](MEAS& self, std::string name){
+                strncpy(self.Name, name.c_str(), sizeof(MEAS::Name)-1);
+            }, "Name of the measurement")
+        .def_property("Type", [](MEAS& self){ return MeasType(self.mType);},
+            [](MEAS& self, MeasType type){self.mType = (int) type;}, "Type of the measurement")
+        .def_readwrite("R", &MEAS::X)
+        .def_readwrite("Z", &MEAS::Z)
+        .def_readwrite("Value", &MEAS::Value)
+        .def_readwrite("StdDev", &MEAS::StdDev)
+        .def_readwrite("Fit", &MEAS::Fit)
+        .def_readwrite("Now", &MEAS::Now)
+        // fixme: check for the right type
+        .def_property("Angle", [](MEAS& self) {return self.parm.bp.Angle;},
+            [](MEAS& self, double angle){self.parm.bp.Angle = angle;}, "Angle")
+        .def_property("Radius", [](MEAS& self) {return self.parm.circle.Radius;},
+            [](MEAS& self, double radius){self.parm.circle.Radius = radius;}, "Radius")
+        .def_property("Number", [](MEAS& self) {return self.parm.circle.Number;},
+            [](MEAS& self, int number){self.parm.circle.Number = number;}, "Number")
+        .def_property("CircleType", [](MEAS& self) {return CircleType(self.parm.circle.CircleType);},
+            [](MEAS& self, CircleType ct){self.parm.circle.CircleType = (int) ct;}, "CircleType")
+        .def_property("CoilNum", [](MEAS& self) {return self.parm.coilcur.CoilNum;},
+            [](MEAS& self, int num){self.parm.coilcur.CoilNum = num;}, "CoilNum")
+        .def_property("R1", [](MEAS& self) {return self.parm.saddle.X1;},
+            [](MEAS& self, double x1){self.parm.saddle.X1 = x1;}, "Saddle Loop R1")
+        .def_property("Z1", [](MEAS& self) {return self.parm.saddle.Z1;},
+            [](MEAS& self, double z1){self.parm.saddle.Z1 = z1;}, "Saddle Loop Z1")
+        .def_property("R2", [](MEAS& self) {return self.parm.saddle.X2;},
+            [](MEAS& self, double x2){self.parm.saddle.X2 = x2;}, "Saddle Loop R2")
+        .def_property("Z2", [](MEAS& self) {return self.parm.saddle.Z2;},
+            [](MEAS& self, double z2){self.parm.saddle.Z2 = z2;}, "Saddle Loop Z2")
+    ;
+
+    py::class_<ObjVecView<SUBCOIL>>(m, "SubCoils")
         .def("__getitem__", &ObjVecView<SUBCOIL>::operator[], 
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<SUBCOIL>& self, size_t i, SUBCOIL* c) {
-            if (i<0 || i>self.size())
+            if (i<0 || i>=self.size())
                 throw std::out_of_range("Index out of range");
             self[i] = c;
         })
@@ -353,11 +546,19 @@ PYBIND11_MODULE(_c, m) {
             return c;
         }, py::return_value_policy::reference_internal, "Add a new subcoil")
     ;
-    py::class_<ObjVecView<LIMITER>>(m, "LIMITERS")
+    py::class_<ObjVecView<COIL>>(m, "Coils")
+        .def("__getitem__", &ObjVecView<COIL>::operator[], 
+            py::return_value_policy::reference)
+        .def("__setitem__", &ObjVecView<COIL>::insert)
+        .def("__len__", [](ObjVecView<COIL>& self) {return self.size();})
+        .def("new_Coil", [](ObjVecView<COIL>& self, int n) { return new_Coil(n);}, 
+            py::return_value_policy::reference, "Add a new coil")
+    ;
+    py::class_<ObjVecView<LIMITER>>(m, "Limiters")
         .def("__getitem__", &ObjVecView<LIMITER>::operator[], 
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<LIMITER>& self, size_t i, LIMITER* c) {
-            if (i<0 || i>self.size())
+            if (i<0 || i>=self.size())
                 throw std::out_of_range("Index out of range");
             self[i] = c;
         })
@@ -367,11 +568,11 @@ PYBIND11_MODULE(_c, m) {
             return c;
         }, py::return_value_policy::reference_internal, "Add a new limiter")    
     ;
-    py::class_<ObjVecView<SEPARATRIX>>(m, "SEPARATRICIES")
+    py::class_<ObjVecView<SEPARATRIX>>(m, "Separatricies")
         .def("__getitem__", &ObjVecView<SEPARATRIX>::operator[], 
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<SEPARATRIX>& self, size_t i, SEPARATRIX* c) {
-            if (i<0 || i>self.size())
+            if (i<0 || i>=self.size())
                 throw std::out_of_range("Index out of range");
             self[i] = c;
         })
@@ -381,11 +582,11 @@ PYBIND11_MODULE(_c, m) {
             return c;
         }, py::return_value_policy::reference, "Add a new separatrix")
     ;
-    py::class_<ObjVecView<MEAS>>(m, "MEASUREMENTS")
+    py::class_<ObjVecView<MEAS>>(m, "Measures")
         .def("__getitem__", &ObjVecView<MEAS>::operator[], 
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<MEAS>& self, size_t i, MEAS* c) {
-            if (i<0 || i>self.size())
+            if (i<0 || i>=self.size())
                 throw std::out_of_range("Index out of range");
             self[i] = c;
         })
@@ -396,16 +597,7 @@ PYBIND11_MODULE(_c, m) {
         }, py::return_value_policy::reference, "Add a new measurement of type mtype")
     ;
 
-    py::class_<ObjVecView<SHELL>>(m, "SHELLS")
-        .def("__getitem__", &ObjVecView<SHELL>::operator[], 
-            py::return_value_policy::reference)
-        .def("__setitem__", &ObjVecView<SHELL>::insert)
-        .def("__len__", [](ObjVecView<SHELL>& self) {return self.size();})
-        .def("new_shell", [](ObjVecView<SHELL>& self) { return new_Shell(0);}, 
-            py::return_value_policy::reference, "Add a new shell")
-    ;
-
-    py::class_<ObjVecView<SUBSHELL>>(m, "SUBSHELLS")
+    py::class_<ObjVecView<SUBSHELL>>(m, "SubShells")
         .def("__getitem__", &ObjVecView<SUBSHELL>::operator[], 
             py::return_value_policy::reference)
         .def("__len__", [](ObjVecView<SUBSHELL>& self) {return self.size();})
@@ -415,18 +607,28 @@ PYBIND11_MODULE(_c, m) {
         //    py::return_value_policy::reference, "Add a new subshell")
     ;
 
-    py::class_<TOKAMAK>(m, "MACHINE")
-        .def(py::init(&new_Tokamak), "Return new MACHINE struct")
+    py::class_<ObjVecView<SHELL>>(m, "Shells")
+        .def("__getitem__", &ObjVecView<SHELL>::operator[], 
+            py::return_value_policy::reference)
+        .def("__setitem__", &ObjVecView<SHELL>::insert)
+        .def("__len__", [](ObjVecView<SHELL>& self) {return self.size();})
+        .def("new_shell", [](ObjVecView<SHELL>& self) { return new_Shell(0);}, 
+            py::return_value_policy::reference, "Add a new shell")
+    ;
+ 
+    // and finally the Machine!
+    py::class_<TOKAMAK>(m, "Machine")
+        .def(py::init(&new_Tokamak), "Return new Machine struct")
         .def("init", [](TOKAMAK& self) {init_Tokamak(&self);},
-            "Initialize MACHINE")
+            "Initialize Machine")
         .def("set_coil_NumSubCoils", 
                 [](TOKAMAK& self, int i, int n) {
                     if (self.Coils[i] != NULL)
                         free_Coil(self.Coils[i], self.PsiGrid->Nsize);
                     self.Coils[i] = new_Coil(n);
                 },"Set the number of subcoils for a coil")
-        .def(py::init(&FileInput), "Initialize MACHINE with a file")
-        .def("__del__", &free_Tokamak, "Free MACHINE and what is below it")
+        .def(py::init(&FileInput), "Initialize Machine with a file")
+        .def("__del__", &free_Tokamak, "Free Machine and what is below it")
         .def("set_start_time", &SetStartTime, "Set the start time")
         .def("set_stop_time", &SetStopTime, "Set the end time")
         .def("read_restart", [](TOKAMAK& self)  { ReadRestart(self.RSname, &self); }, "Read the restart file")
@@ -539,203 +741,4 @@ PYBIND11_MODULE(_c, m) {
             &set_NumSeps, "Number of separatrixes, setting will erase old separatrixes")
     ;
 
-    py::class_<PSIGRID>(m, "PSIGRID")
-        .def(py::init(&new_PsiGrid), "Create PSIGRID")
-        .def("init", &init_PsiGrid, "Initialize PSIGRID")
-        .def("go_PDE", &GoPDE, "Solve the PDE on the PSIGRID")
-        .def("make_psi_symmetric", &MakePsiSymmetric, "Make Psi symmetric")
-        .def("get_new_residual", &GetNewResidual, "Get new residual")
-        .def("new_solution", &NewSolution, "Get new solution")
-        .def("new_M_solution", &NewMSolution, "Get new M solution")
-        .def("get_Psi", py::vectorize(&GetPsi), "Get Psi")
-        .def("get_IsPlasma", &GetIsPlasma, "Get IsPlasma")
-        .def("init_J", &InitJ, "Initialize J")
-        .def_readwrite("Nsize", &PSIGRID::Nsize)
-        .def_readwrite("Symmetric", &PSIGRID::Symmetric)
-        .def_readwrite("MaxRes", &PSIGRID::MaxRes)
-        .def_readwrite("PastMaxRes", &PSIGRID::PastMaxRes)
-        .def_readwrite("Rmax", &PSIGRID::Xmax)
-        .def_readwrite("Rmin", &PSIGRID::Xmin)
-        .def_readwrite("Zmax", &PSIGRID::Zmax)
-        .def_readwrite("Zmin", &PSIGRID::Zmin)
-        .def_readwrite("dr", &PSIGRID::dx)
-        .def_readwrite("dz", &PSIGRID::dz)
-        .def_readwrite("BoundError", &PSIGRID::BoundError)
-        .def_readwrite("BoundThreshold", &PSIGRID::BoundThreshold)
-        .def_readwrite("ResThreshold", &PSIGRID::ResThreshold)
-        .def_readwrite("UnderRelax1", &PSIGRID::UnderRelax1)
-        .def_readwrite("UnderRelax2", &PSIGRID::UnderRelax2)
-        .def_readwrite("PsiAxis", &PSIGRID::PsiAxis, "Psi at FCFS or Magnetic Axis")
-        .def_readwrite("PsiMagAxis", &PSIGRID::PsiMagAxis, "Psi at Magnetic Axis")
-        .def_readwrite("PsiLim", &PSIGRID::PsiLim, "Psi at plasma/vacuum boundary")
-        .def_readwrite("DelPsi", &PSIGRID::DelPsi)
-        .def_readwrite("RMagAxis", &PSIGRID::XMagAxis)
-        .def_readwrite("ZMagAxis", &PSIGRID::ZMagAxis)
-        .def_property_readonly("R", [](PSIGRID& self) {return DVectorView(self.Nsize, self.X);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Z", [](PSIGRID& self) {return DVectorView(self.Nsize, self.Z);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("IsPlasma", [](PSIGRID& self) {return IMatrixView(self.Nsize, self.IsPlasma);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Psi", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Psi);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Current", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Current);}, 
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Residual", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Residual);},
-            py::return_value_policy::reference_internal)
-    ;    
-
-    py::class_<CPlasmaModel>(m, "CPlasmaModel")
-        .def("updateModel", &CPlasmaModel::UpdateModel, "Update the plasma model")
-    ;
-
-    py::class_<PLASMA>(m, "PLASMA")
-        .def(py::init(&new_Plasma), "Create PLASMA")
-        .def("init", &init_Plasma, "Initialize PLASMA")
-        .def("plasmaP", &PlasmaP, "Calculate plasma pressure")
-        .def("plasmaPp", &PlasmaPp, "Calculate plasma Pprime")
-        .def("plasmaG", &PlasmaG, "Calculate plasma G")
-        .def("plasmaG2p", &PlasmaG2p, "Calculate plasma G2prime")
-        .def_readwrite("Nsize", &PLASMA::Nsize)
-        .def_readwrite("ModelType", &PLASMA::ModelType)
-        .def("Model", [](PLASMA& self) {return self.Model;}, py::return_value_policy::reference)
-        .def_readwrite("R0", &PLASMA::R0, "Reference major radius")
-        .def_readwrite("Z0", &PLASMA::Z0, "Reference vertical position")
-        .def_readwrite("B0", &PLASMA::B0, "Vacuum magnetic field at R0, Z0")
-        .def_readwrite("Ip0", &PLASMA::Ip0, "initial plasma current")
-        .def_readwrite("B0R0", &PLASMA::B0R0, "B0 * R0")
-        .def_readwrite("Jedge", &PLASMA::Jedge, "Edge current density")
-
-        .def_readwrite("NumBndMomts", &PLASMA::NumBndMomts)
-        .def_readwrite("NumPsiPts", &PLASMA::NumPsiPts)
-        .def_readwrite("PsiXmax", &PLASMA::PsiXmax, "Outermost normalized Psi from 0.0 to 1.0")
-
-        // results
-        .def_readonly("Ip", &PLASMA::Ip, "Plasma current")
-        .def_readonly("beta0", &PLASMA::beta0, "Vacuum toroidal beta at R0")
-        .def_readonly("beta", &PLASMA::beta, "Average toroidal beta")
-        .def_readonly("betap", &PLASMA::betap, "Poloidal beta")
-        .def_readonly("li", &PLASMA::li, "Normalized internal inductance")
-        .def_readonly("Ltotal", &PLASMA::Ltotal, "Total inductance")
-        .def_readonly("mu", &PLASMA::mu, "Normalized diamagnetism")
-        .def_readonly("Volume", &PLASMA::Volume, "Volume")
-        .def_readonly("CrossSection", &PLASMA::CrossSection, "Cross section")
-        .def_readonly("Perimeter", &PLASMA::Perimeter, "Perimeter")
-        .def_readonly("Diamag", &PLASMA::Diamag, "Diamagnetism")
-        .def_readonly("q0", &PLASMA::q0, "Central safety factor")
-        .def_readonly("qCircular", &PLASMA::qCircular, "qCircular")
-        .def_readonly("qStar", &PLASMA::qStar, "qStar")
-        .def_readonly("RMagAxis", &PLASMA::XMagAxis, "Magnetic axis R")
-        .def_readonly("ZMagAxis", &PLASMA::ZMagAxis, "Magnetic axis Z")
-        .def_readonly("PsiMagAxis", &PLASMA::PsiMagAxis, "Psi at magnetic axis")
-        .def_readonly("PsiAxis", &PLASMA::PsiAxis, "Psi at axis")
-        .def_readonly("PsiLim", &PLASMA::PsiLim, "Psi at plasma/vacuum boundary")
-        .def_readonly("HalfWidth", &PLASMA::HalfWidth, "Half width")
-        .def_readonly("Elongation", &PLASMA::Elongation, "Elongation")
-
-        .def_readonly("ChiSqr", &PLASMA::ChiSqr, "Chi squared")
-        .def_readonly("totKinEnergy", &PLASMA::TotKinEnergy, "Total kinetic energy")
-        .def_readonly("totMagEnergy", &PLASMA::TotMagEnergy, "Total agnetic energy")
-        .def_property_readonly("B2", [](PLASMA& self) {return DMatrixView(self.Nsize, self.B2);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("GradPsiX", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsiX);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("GradPsiZ", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsiZ);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("GradPsi2", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsi2);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Bt", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Bt);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("G", [](PLASMA& self) {return DMatrixView(self.Nsize, self.G);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Rho", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Rho);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Piso", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Piso);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Ppar", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Ppar);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Pper", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Pper);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Alpha", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Alpha);},
-            py::return_value_policy::reference_internal)
-        ;
-
-    py::enum_<ModelType>(m, "ModelType")
-        .value("Std", ModelType::Std)
-        .value("IsoNoFlow", ModelType::IsoNoFlow)   
-        .value("IsoFlow", ModelType::IsoFlow)
-        .value("AnisoNoFlow", ModelType::AnisoNoFlow)
-        .value("AnisoFlow", ModelType::AnisoFlow)
-        .value("DipoleStd", ModelType::DipoleStd)
-        .value("DipoleIntStable", ModelType::DipoleIntStable)
-        .export_values()
-    ;
-
-    py::class_<LIMITER>(m, "LIMITER")
-        .def(py::init(&new_Limiter), "Create LIMITER")
-        .def_readwrite("R1", &LIMITER::X1)
-        .def_readwrite("Z1", &LIMITER::Z1)
-        .def_readwrite("R2", &LIMITER::X2)
-        .def_readwrite("Z2", &LIMITER::Z2)
-        .def_readwrite("Enabled", &LIMITER::Enabled)
-        .def_readwrite("PsiMin", &LIMITER::PsiMin)
-        .def_readwrite("Rmin", &LIMITER::Xmin)
-        .def_readwrite("Zmin", &LIMITER::Zmin)
-        .def_property("Name", [](LIMITER& self) {return self.Name;},
-            [](LIMITER& self, std::string name){
-                strncpy(self.Name, name.c_str(), sizeof(LIMITER::Name)-1);
-            }, "Name of the limiter")
-    ;
-
-    py::class_<SUBCOIL>(m, "SUBCOIL")
-        .def(py::init(&new_SubCoil), "Create SUBCOIL")
-        .def_readwrite("R", &SUBCOIL::X)
-        .def_readwrite("Z", &SUBCOIL::Z)
-        .def_readwrite("Fraction", &SUBCOIL::CurrentFraction, "Fraction of current")
-        .def_property("Name", [](SUBCOIL& self) {return self.Name;},
-            [](SUBCOIL& self, std::string name){
-                strncpy(self.Name, name.c_str(), sizeof(COIL::Name)-1);
-            }, "Name of the subcoil")
-    ;
-
-    py::class_<COIL>(m, "COIL")
-        .def(py::init(&new_Coil), "Create COIL")
-        .def_readwrite("Enabled", &COIL::Enabled)
-        .def_property("Name", [](COIL& self) {return self.Name;},
-            [](COIL& self, std::string name){
-                strncpy(self.Name, name.c_str(), sizeof(COIL::Name)-1);
-            }, "Name of the coil")
-        .def_property_readonly("SubCoils", [](COIL& self) {
-            return ObjVecView<SUBCOIL>(self.NumSubCoils, self.SubCoils);},
-            py::return_value_policy::reference_internal, "Return vector of SubCoils")
-        .def_property("NumSubCoils", [](COIL& self) {return self.NumSubCoils;}, 
-            &set_NumSubCoils, "Number of subcoils, setting will erase old subcoils")
-        .def_readwrite("CoilCurrent", &COIL::CoilCurrent)
-    ;
-
-    py::class_<SUBSHELL>(m, "SUBSHELL")
-        .def(py::init(&new_SubShell), "Create SUBSHELL")
-        .def_property("Name", [](SUBSHELL& self) {return self.Name;},
-            [](SUBSHELL& self, std::string name){
-                strncpy(self.Name, name.c_str(), sizeof(SUBSHELL::Name)-1);
-            }, "Name of the subshell")
-        .def_readwrite("R", &SUBSHELL::X)
-        .def_readwrite("Z", &SUBSHELL::Z)
-        .def_readwrite("Radius", &SUBSHELL::Radius)
-        .def_readwrite("Current", &SUBSHELL::Current)
-    ;
-
-    py::class_<SHELL>(m, "SHELL")
-        .def(py::init(&new_Shell), "Create SHELL")
-        .def_readwrite("Enabled", &SHELL::Enabled)
-        .def_property("Name", [](SHELL& self) {return self.Name;},
-            [](SHELL& self, std::string name){
-                strncpy(self.Name, name.c_str(), sizeof(SHELL::Name)-1);
-            }, "Name of the shell")
-        .def_readonly("NumSubShells", &SHELL::NumSubShells)
-        .def("set_NumSubShells", &set_SHELL_NumSubShells, "Set the number of subshells")
-        .def_property_readonly("SubShells", 
-            [](SHELL& self) {return ObjVecView<SUBSHELL>(self.NumSubShells, self.SubShells);},
-             "Return vector of SubShells")
-    ;
 }

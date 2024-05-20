@@ -3,10 +3,10 @@ Forward solve the dipole equilibrium
 This is the same as SimDipEq, but in python
 """
 
-from dipoleq import MACHINE
+from . import Machine
 
 
-def do_free_boundary(m: MACHINE, makeFit: bool = False, isFirst: bool = True):
+def do_free_boundary(m: Machine, makeFit: bool = False, isFirst: bool = True):
     """do the free boundary solution for the grad-shafranov equation
     with a single iteration of solving the fixed boundary solution
     and then determining the plasma boundary and then updating the
@@ -38,7 +38,7 @@ def do_free_boundary(m: MACHINE, makeFit: bool = False, isFirst: bool = True):
         m.find_J()
 
 
-def do_fixed_boundary(m: MACHINE, makeFit: bool = False):
+def do_fixed_boundary(m: Machine, makeFit: bool = False):
     """do the fixed boundary solution for the grad-shafranov equation
     assume the edge is fixed
     (not sure about the effect of the shells in this case)
@@ -57,7 +57,7 @@ def do_fixed_boundary(m: MACHINE, makeFit: bool = False):
         m.find_J()
 
 
-def iterate_solution(m: MACHINE, makeFit: bool = False):
+def iterate_solution(m: Machine, makeFit: bool = False):
     """Iterate free_boundary and then some fixed_boundaries
     to find the overall solution when the boundary error is
     below the threshold
@@ -75,11 +75,11 @@ def iterate_solution(m: MACHINE, makeFit: bool = False):
             break
 
 
-def solve(m: MACHINE):
+def solve(m: Machine):
     """Solve the Grad-Shafranov equation for the machine m
 
     Args:
-        m (MACHINE): Complete machine object with all the necessary
+        m (Machine): Complete machine object with all the necessary
             parameters set.
     """
     m.set_start_time()

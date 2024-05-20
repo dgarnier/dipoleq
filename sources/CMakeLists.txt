@@ -78,7 +78,7 @@ endif()
 
 if (BUILD_WITH_HDF5)
     list(APPEND dipoleq_SOURCES HDF5Output.c)
-    list(APPEND dipoleq_LIBS hdf5::hdf5 hdf5::hdf5_hl)
+    list(APPEND dipoleq_LIBS HDF5::HDF5 hdf5::hdf5_hl)
     list(APPEND dipoleq_DEFS HDFOUTPUT=1)
 endif()
 
@@ -87,7 +87,7 @@ if (BUILD_WITH_CLIBPDF)
     list(APPEND dipoleq_LIBS clibpdf)
 endif()
 
-add_library(DipolEqLib STATIC ${dipoleq_SOURCES})
+add_library(DipolEqLib STATIC EXCLUDE_FROM_ALL ${dipoleq_SOURCES})
 
 # TSPACK?
 # target_compile_definitions(DipolEqLib PRIVATE _USE_TSPACK_=1)
@@ -102,7 +102,7 @@ target_compile_definitions(DipolEqLib PRIVATE ${dipoleq_DEFS})
 
 # Python bindings library for pydipoleq target
 if (BUILD_PYTHON_BINDINGS)
-    add_library(pydipoleqlib STATIC ${pydipoleqlib_SOURCES})
+    add_library(pydipoleqlib EXCLUDE_FROM_ALL STATIC ${pydipoleqlib_SOURCES})
     target_include_directories(pydipoleqlib PUBLIC ${CMAKE_SOURCE_DIR}/includes)
     target_compile_definitions(pydipoleqlib PRIVATE PYBIND11=1)
     if(CMAKE_SYSTEM_NAME STREQUAL "Linux")

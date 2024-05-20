@@ -93,9 +93,10 @@ if (BUILD_WITH_HDF4)
 endif()
 
 if (BUILD_WITH_HDF5)
-    find_package(HDF5 COMPONENTS C HL NO_MODULE)
-    if(HDF5::HDF5)
-        dump_cmake_variables(HDF5)
+    set(HDF5_USE_STATIC_LIBRARIES ON CACHE BOOL " " FORCE)
+    find_package(HDF5 COMPONENTS C HL)
+    if(HDF5_FOUND)
+        message(STATUS "HDF5 found: ${HDF5_VERSION}")
     else()
         include(get_cpm)
         CPMAddPackage(
@@ -124,7 +125,9 @@ if (BUILD_WITH_HDF5)
                 "HDF5_EXTERNALLY_CONFIGURED ON"
         )
 
-        add_library(hdf5::hdf5 ALIAS hdf5-static)
+        # yes, this looks weird, but it matches
+        # what needs happening from FindHDF5.cmake
+        add_library(HDF5::HDF5 ALIAS hdf5-static)
         add_library(hdf5::hdf5_hl ALIAS hdf5_hl-static)
 
     endif()
@@ -151,7 +154,7 @@ if (BUILD_PYTHON_BINDINGS)
                 "PYBIND11_FINDPYTHON OFF"
         )
         find_package(pybind11 GLOBAL REQUIRED)
-        dump_cmake_variables(pybind11)
+        # dump_cmake_variables(pybind11)
     endif()
 endif()
 
