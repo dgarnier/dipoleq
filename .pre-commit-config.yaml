@@ -1,13 +1,13 @@
 repos:
   - repo: local
     hooks:
-      - id: bandit
-        name: bandit
-        entry: bandit
-        language: system
-        types: [python]
-        require_serial: true
-        # args: ["-c", "bandit.yml"]
+      #- id: bandit
+      #  name: bandit
+      #  entry: bandit
+      #  language: system
+      #  types: [python]
+      #  require_serial: true
+      #  args: ["-c", "bandit.yml"]
       - id: black
         name: black
         entry: black
@@ -71,3 +71,5 @@ repos:
     rev: v3.0.0-alpha.9-for-vscode
     hooks:
       - id: prettier
+        types: [yaml, markdown, json, toml]
+

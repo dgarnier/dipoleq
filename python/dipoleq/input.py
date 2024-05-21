@@ -5,13 +5,12 @@ dipoleq input file schema using pydantic for validation
 import enum
 from itertools import chain
 from re import M
-from typing import Any, List, Optional, Tuple, Union
+from typing import Annotated, Any, List, Literal, Optional, Tuple, Union
 from unittest.mock import Base
 
 from numpy import isin
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
-from typing import Annotated, Literal
 
 from .core import (CircleType, Coil, CPlasmaModel, Limiter, Machine, MeasType,
                    Measure, ModelType, Plasma, PsiGrid, Separatrix, Shell,
