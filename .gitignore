@@ -10,3 +10,4 @@ __pycache__
 dist
 python/dipole/_c.so
 *.so
+.coverage
