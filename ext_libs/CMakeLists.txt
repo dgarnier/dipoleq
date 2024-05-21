@@ -94,7 +94,7 @@ endif()
 
 if (BUILD_WITH_HDF5)
     set(HDF5_USE_STATIC_LIBRARIES ON CACHE BOOL " " FORCE)
-    find_package(HDF5 COMPONENTS C HL)
+    find_package(HDF5 GLOBAL COMPONENTS C HL)
     if(HDF5_FOUND)
         message(STATUS "HDF5 found: ${HDF5_VERSION}")
         if (NOT TARGET HDF5::HDF5)

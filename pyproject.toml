@@ -52,7 +52,7 @@ build-dir = "build/{wheel_tag}"
 
 [tool.scikit-build.cmake.define]
 BUILD_PYTHON_BINDINGS = "ON"
-CMAKE_OSX_DEPLOYMENT_TARGET = "10.10"
+CMAKE_OSX_DEPLOYMENT_TARGET = "10.15"  # macOS 10.15 Catalina
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.regex"

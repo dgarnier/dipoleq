@@ -16,12 +16,6 @@ add_subdirectory(ext_libs EXCLUDE_FROM_ALL)
 include_directories("${CMAKE_SOURCE_DIR}/includes")
 
 add_compile_definitions(DIPOLE=1)
-if (BUILD_WITH_HDF4)
-    include(FindHDF4)
-endif()
-if (BUILD_WITH_HDF5)
-    find_package(HDF5 COMPONENTS C HL)
-endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_compile_options(-fsanitize=address)
