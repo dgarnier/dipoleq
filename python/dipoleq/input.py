@@ -8,8 +8,20 @@ from typing import Annotated, Any, Literal, Union
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
-from .core import (Coil, Limiter, Machine, MeasType, Measure, ModelType,
-                   Plasma, PsiGrid, Separatrix, Shell, SubCoil, SubShell)
+from .core import (
+    Coil,
+    Limiter,
+    Machine,
+    MeasType,
+    Measure,
+    ModelType,
+    Plasma,
+    PsiGrid,
+    Separatrix,
+    Shell,
+    SubCoil,
+    SubShell,
+)
 
 MU0 = 4.0e-7 * 3.14159265358979323846
 
