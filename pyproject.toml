@@ -34,10 +34,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest"]
-wheels = ["cmake", "ninja; sys_platform!='win32'"]
+test = ["pytest", "pyyaml"]
+wheels = ["cmake", "pyyaml", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
-       "numpy", "pybind11"]
+       "numpy", "pybind11", "pyyaml"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
