@@ -39,13 +39,14 @@ Plasma:
   NumPsiPts: 25
   PsiXmax: 0.995
   Jedge: 0.00
-  ModelType: 6  # 6 = DipoleStdInt
-  RPeak: 0.8
-  ZPeak: 0.00
-  PEdge: 2
-  PsiFlat: .999
-  NSurf: 125
-  fCrit: 1
+  Model:
+    Type: 6          # DipoleStdInt
+    RPeak: 0.8
+    ZPeak: 0.00
+    PEdge: 2.0
+    PsiFlat: .999
+    NSurf: 125
+    fCrit: 1.0
   
 Limiters:
   - Limiter:

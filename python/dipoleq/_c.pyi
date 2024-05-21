@@ -5,9 +5,12 @@ from __future__ import annotations
 import numpy
 import typing
 __all__ = ['CPlasmaModel', 'CircleType', 'Coil', 'Coils', 'IMatrixView', 'Limiter', 'Limiters', 'Machine', 'MatrixView', 'MeasType', 'Measure', 'Measures', 'ModelType', 'Plasma', 'PsiGrid', 'Separatricies', 'Separatrix', 'Shell', 'Shells', 'SubCoil', 'SubCoils', 'SubShell', 'SubShells', 'VectorView']
-
 class CPlasmaModel:
-    def updateModel(self, arg0: Machine) -> None:
+    def model_input(self, arg0: str, arg1: str, arg2: str) -> None:
+        """
+        Input model parameters
+        """
+    def update_model(self, arg0: Machine) -> None:
         """
         Update the plasma model
         """
@@ -58,6 +61,10 @@ class Coil:
         """
         Create Coil
         """
+    def compute_SubCoils(self, arg0: PsiGrid) -> None:
+        """
+        Compute subcoils
+        """
     @property
     def Name(self) -> str:
         """
@@ -75,10 +82,42 @@ class Coil:
     def NumSubCoils(self, arg1: int) -> None:
         ...
     @property
+    def R(self) -> float:
+        """
+        Coil centroid R
+        """
+    @R.setter
+    def R(self, arg0: float) -> None:
+        ...
+    @property
     def SubCoils(self) -> SubCoils:
         """
         Return vector of SubCoils
         """
+    @property
+    def Z(self) -> float:
+        """
+        Coil centroid Z
+        """
+    @Z.setter
+    def Z(self, arg0: float) -> None:
+        ...
+    @property
+    def dR(self) -> float:
+        """
+        Coil radial width
+        """
+    @dR.setter
+    def dR(self, arg0: float) -> None:
+        ...
+    @property
+    def dZ(self) -> float:
+        """
+        Coil vertical width
+        """
+    @dZ.setter
+    def dZ(self, arg0: float) -> None:
+        ...
 class Coils:
     def __getitem__(self, arg0: int) -> Coil:
         ...
@@ -225,7 +264,7 @@ class Machine:
         """
         Set the number of subcoils for a coil
         """
-    def set_coil_NumSubCoils(self, i: int, n: int) -> None:
+    def set_coil_NumSubCoils(self, arg0: int, arg1: int) -> None:
         """
         Set the number of subcoils for a coil
         """
@@ -608,7 +647,7 @@ class Measures:
         ...
     def __setitem__(self, arg0: int, arg1: Measure) -> None:
         ...
-    def new_meas(self, arg0: int) -> Measure:
+    def new_meas(self, arg0: MeasType) -> Measure:
         """
         Add a new measurement of type mtype
         """
@@ -665,11 +704,16 @@ class ModelType:
     def value(self) -> int:
         ...
 class Plasma:
+    G2pTerms: int
+    HTerms: int
     Nsize: int
     NumBndMomts: int
     NumPsiPts: int
-    def Model(self) -> CPlasmaModel:
-        ...
+    PpTerms: int
+    RotTerms: int
+    SisoTerms: int
+    SparTerms: int
+    SperTerms: int
     def __init__(self) -> None:
         """
         Create Plasma
@@ -743,6 +787,9 @@ class Plasma:
     def G(self) -> MatrixView:
         ...
     @property
+    def G2p(self) -> VectorView:
+        ...
+    @property
     def GradPsi2(self) -> MatrixView:
         ...
     @property
@@ -750,6 +797,9 @@ class Plasma:
         ...
     @property
     def GradPsiZ(self) -> MatrixView:
+        ...
+    @property
+    def H(self) -> VectorView:
         ...
     @property
     def HalfWidth(self) -> float:
@@ -783,6 +833,9 @@ class Plasma:
         Total inductance
         """
     @property
+    def Model(self) -> CPlasmaModel:
+        ...
+    @property
     def ModelType(self) -> ModelType:
         """
         Plasma model type, see ModelType enum
@@ -797,6 +850,9 @@ class Plasma:
         """
     @property
     def Piso(self) -> MatrixView:
+        ...
+    @property
+    def Pp(self) -> VectorView:
         ...
     @property
     def Ppar(self) -> MatrixView:
@@ -842,6 +898,18 @@ class Plasma:
         """
     @property
     def Rho(self) -> MatrixView:
+        ...
+    @property
+    def Rot(self) -> VectorView:
+        ...
+    @property
+    def Siso(self) -> VectorView:
+        ...
+    @property
+    def Spar(self) -> VectorView:
+        ...
+    @property
+    def Sper(self) -> VectorView:
         ...
     @property
     def Volume(self) -> float:

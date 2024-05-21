@@ -34,6 +34,7 @@
 #include "Restart.h"
 #include "measurement.h"
 
+#include "FileInput.h"
 #include "PyDipoleEq.hpp"
 
 
@@ -253,9 +254,14 @@ PYBIND11_MODULE(_c, m) {
         .value("AnisoFlow", ModelType::AnisoFlow)
         .value("DipoleStd", ModelType::DipoleStd)
         .value("DipoleIntStable", ModelType::DipoleIntStable)
+        // .export_values() // make these unscoped
+        //.def_property_readonly_static("__iter__", [](py::object) {
+        //    return py::make_iterator(
+        //      }
     ;
     py::class_<CPlasmaModel>(m, "CPlasmaModel")
-        .def("updateModel", &CPlasmaModel::UpdateModel, "Update the plasma model")
+        .def("update_model", &CPlasmaModel::UpdateModel, "Update the plasma model")
+        .def("model_input", &CPlasmaModel::ModelInput, "Input model parameters")    
     ;
     py::class_<PLASMA>(m, "Plasma")
         .def(py::init(&new_Plasma), "Create Plasma")
@@ -268,17 +274,39 @@ PYBIND11_MODULE(_c, m) {
         .def_property("ModelType", [](PLASMA& self) {return ModelType(self.ModelType);},
             [](PLASMA& self, ModelType mtype) { self.ModelType = (int) mtype;},
             "Plasma model type, see ModelType enum")
-        .def("Model", [](PLASMA& self) {return self.Model;}, py::return_value_policy::reference)
+        .def_property_readonly("Model", [](PLASMA& self) {return self.Model;}, py::return_value_policy::reference)
         .def_readwrite("R0", &PLASMA::R0, "Reference major radius")
         .def_readwrite("Z0", &PLASMA::Z0, "Reference vertical position")
         .def_readwrite("B0", &PLASMA::B0, "Vacuum magnetic field at R0, Z0")
         .def_readwrite("Ip0", &PLASMA::Ip0, "initial plasma current")
         .def_readwrite("B0R0", &PLASMA::B0R0, "B0 * R0")
         .def_readwrite("Jedge", &PLASMA::Jedge, "Edge current density")
-
         .def_readwrite("NumBndMomts", &PLASMA::NumBndMomts)
         .def_readwrite("NumPsiPts", &PLASMA::NumPsiPts)
         .def_readwrite("PsiXmax", &PLASMA::PsiXmax, "Outermost normalized Psi from 0.0 to 1.0")
+
+        // old plasma terms
+        .def_readwrite("G2pTerms", &PLASMA::G2pTerms)
+        .def_readwrite("HTerms", &PLASMA::HTerms)
+        .def_readwrite("PpTerms", &PLASMA::PpTerms)
+        .def_readwrite("RotTerms", &PLASMA::RotTerms)
+        .def_readwrite("SisoTerms", &PLASMA::SisoTerms)
+        .def_readwrite("SparTerms", &PLASMA::SparTerms)
+        .def_readwrite("SperTerms", &PLASMA::SperTerms)
+        .def_property_readonly("G2p", [](PLASMA& self) {return DVectorView(self.G2pTerms, self.G2p);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("H", [](PLASMA& self) {return DVectorView(self.HTerms, self.H);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Pp", [](PLASMA& self) {return DVectorView(self.PpTerms, self.Pp);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Rot", [](PLASMA& self) {return DVectorView(self.RotTerms, self.Rot);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Siso", [](PLASMA& self) {return DVectorView(self.SisoTerms, self.Siso);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Spar", [](PLASMA& self) {return DVectorView(self.SparTerms, self.Spar);},
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("Sper", [](PLASMA& self) {return DVectorView(self.SperTerms, self.Sper);},
+            py::return_value_policy::reference_internal)
 
         // results
         .def_readonly("Ip", &PLASMA::Ip, "Plasma current")
@@ -436,6 +464,20 @@ PYBIND11_MODULE(_c, m) {
                 strncpy(self.Name, name.c_str(), sizeof(COIL::Name)-1);
             }, "Name of the subcoil")
     ;
+    py::class_<ObjVecView<SUBCOIL>>(m, "SubCoils")
+        .def("__getitem__", &ObjVecView<SUBCOIL>::operator[], 
+            py::return_value_policy::reference)
+        .def("__setitem__", [](ObjVecView<SUBCOIL>& self, size_t i, SUBCOIL* c) {
+            if (i<0 || i>=self.size())
+                throw std::out_of_range("Index out of range");
+            self[i] = c;
+        })
+        .def("__len__", [](ObjVecView<SUBCOIL>& self) {return self.size();})
+        .def("new_subcoil", [](ObjVecView<SUBCOIL>& self) {
+            SUBCOIL *c = new_SubCoil();
+            return c;
+        }, py::return_value_policy::reference_internal, "Add a new subcoil")
+    ;
 
     py::class_<COIL>(m, "Coil")
         .def(py::init(&new_Coil), "Create Coil")
@@ -450,6 +492,11 @@ PYBIND11_MODULE(_c, m) {
         .def_property("NumSubCoils", [](COIL& self) {return self.NumSubCoils;}, 
             &set_NumSubCoils, "Number of subcoils, setting will erase old subcoils")
         .def_readwrite("CoilCurrent", &COIL::CoilCurrent)
+        .def_readwrite("R", &COIL::X, "Coil centroid R")
+        .def_readwrite("dR", &COIL::dX, "Coil radial width")
+        .def_readwrite("Z", &COIL::Z, "Coil centroid Z")
+        .def_readwrite("dZ", &COIL::dZ, "Coil vertical width")
+        .def("compute_SubCoils", &compute_SubCoils, "Compute subcoils")
     ;
 
     py::class_<SUBSHELL>(m, "SubShell")
@@ -462,6 +509,16 @@ PYBIND11_MODULE(_c, m) {
         .def_readwrite("Z", &SUBSHELL::Z)
         .def_readwrite("Radius", &SUBSHELL::Radius)
         .def_readwrite("Current", &SUBSHELL::Current)
+    ;
+
+    py::class_<ObjVecView<SUBSHELL>>(m, "SubShells")
+        .def("__getitem__", &ObjVecView<SUBSHELL>::operator[], 
+            py::return_value_policy::reference)
+        .def("__len__", [](ObjVecView<SUBSHELL>& self) {return self.size();})
+        // .def("__setitem__", &ObjVecView<SUBSHELL>::insert)
+        // this doesn't work because the free operation can't be passed in
+        // .def("new_subshell", [](ObjVecView<SUBSHELL>& self) { return new_SubShell();}, 
+        //    py::return_value_policy::reference, "Add a new subshell")
     ;
 
     py::class_<SHELL>(m, "Shell")
@@ -532,20 +589,6 @@ PYBIND11_MODULE(_c, m) {
             [](MEAS& self, double z2){self.parm.saddle.Z2 = z2;}, "Saddle Loop Z2")
     ;
 
-    py::class_<ObjVecView<SUBCOIL>>(m, "SubCoils")
-        .def("__getitem__", &ObjVecView<SUBCOIL>::operator[], 
-            py::return_value_policy::reference)
-        .def("__setitem__", [](ObjVecView<SUBCOIL>& self, size_t i, SUBCOIL* c) {
-            if (i<0 || i>=self.size())
-                throw std::out_of_range("Index out of range");
-            self[i] = c;
-        })
-        .def("__len__", [](ObjVecView<SUBCOIL>& self) {return self.size();})
-        .def("new_subcoil", [](ObjVecView<SUBCOIL>& self) {
-            SUBCOIL *c = new_SubCoil();
-            return c;
-        }, py::return_value_policy::reference_internal, "Add a new subcoil")
-    ;
     py::class_<ObjVecView<COIL>>(m, "Coils")
         .def("__getitem__", &ObjVecView<COIL>::operator[], 
             py::return_value_policy::reference)
@@ -591,20 +634,10 @@ PYBIND11_MODULE(_c, m) {
             self[i] = c;
         })
         .def("__len__", [](ObjVecView<MEAS>& self) {return self.size();})
-        .def("new_meas", [](ObjVecView<MEAS>& self, int mtype) {
-            MEAS *c = new_Measure(0);
+        .def("new_meas", [](ObjVecView<MEAS>& self, MeasType mtype) {
+            MEAS *c = new_Measure((int) mtype);
             return c;
         }, py::return_value_policy::reference, "Add a new measurement of type mtype")
-    ;
-
-    py::class_<ObjVecView<SUBSHELL>>(m, "SubShells")
-        .def("__getitem__", &ObjVecView<SUBSHELL>::operator[], 
-            py::return_value_policy::reference)
-        .def("__len__", [](ObjVecView<SUBSHELL>& self) {return self.size();})
-        // .def("__setitem__", &ObjVecView<SUBSHELL>::insert)
-        // this doesn't work because the free operation can't be passed in
-        // .def("new_subshell", [](ObjVecView<SUBSHELL>& self) { return new_SubShell();}, 
-        //    py::return_value_policy::reference, "Add a new subshell")
     ;
 
     py::class_<ObjVecView<SHELL>>(m, "Shells")

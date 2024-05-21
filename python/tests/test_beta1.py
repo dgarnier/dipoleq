@@ -4,7 +4,9 @@ from pytest import approx
 
 from dipoleq import Machine, MachineIn, solve, read_dotin
 
-
+def props(x):
+    return dict((key, getattr(x, key)) for key in dir(x) 
+                if not callable(getattr(x, key)) and not key.startswith('__'))
 
 def test_FileInput():
     # see if we can read the file and get the right number of coils

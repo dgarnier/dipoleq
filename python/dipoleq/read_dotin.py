@@ -5,6 +5,7 @@
         dict: The data from the *.in file
 """
 from typing import Any
+from .input import MachineIn, PlasmaIn
 
 
 def read_dotin(file_path: str) -> dict[str, Any]:
@@ -62,4 +63,27 @@ def read_dotin(file_path: str) -> dict[str, Any]:
 
     return top_dict
 
+
+def input_from_dotin(filepath: str) -> MachineIn:
+    """Read the input file and return a dictionary of the input data
+    Args:
+        filepath (str): The path to the input file
+    Returns:
+        dict: The input data
+    """
+    info = read_dotin(filepath)
+
+    # demote plasma model data to sub dictionary...  matches new machine input
+    pl = info['Plasma']
+    model = {}
+    keys_to_move = [key for key in pl if key not in PlasmaIn.model_fields]
+    for key in keys_to_move:
+        model[key] = pl.pop(key)
+
+    if 'ModelType' in model:
+        model['Type'] = model.pop('ModelType')
+
+    pl['Model'] = model
+
+    return MachineIn(**info)
 
