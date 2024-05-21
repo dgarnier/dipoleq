@@ -109,7 +109,7 @@ void		quick_Int_Step(double x, double z, double dummy, int flag)
 	static double 	Xlast, Zlast, IntLast;
 	double 			Integrand, hx, hz, dS;
 	int				ix, iz;
-	
+
 	ix = (int) floor((x - gXmin) / gdx);
 	iz = (int) floor((z - gZmin) / gdz);
 	hx = (x - gXmin) / gdx - ix;
@@ -120,7 +120,7 @@ void		quick_Int_Step(double x, double z, double dummy, int flag)
 				 + hx * hz * gIntegrand[ix + 1][iz + 1]
 				 + (1.0 - hx) * hz * gIntegrand[ix][iz + 1]);
 
-	
+
 	switch (flag) {
 	  case CONTOUR_START:
 	  	  gIntegral = gPathInt = 0;
@@ -133,7 +133,7 @@ void		quick_Int_Step(double x, double z, double dummy, int flag)
 		  break;
 	}
 
-	
+
 	IntLast = Integrand;
 	Xlast = x;
 	Zlast = z;
@@ -145,7 +145,7 @@ void		find_Min_Step(double x, double z, double dummy, int flag)
 {
 	double 			Integrand, hx, hz;
 	int				ix, iz;
-	
+
 	ix = (int) floor((x - gXmin) / gdx);
 	iz = (int) floor((z - gZmin) / gdz);
 	hx = (x - gXmin) / gdx - ix;
@@ -156,22 +156,22 @@ void		find_Min_Step(double x, double z, double dummy, int flag)
 				 + hx * hz * gIntegrand[ix + 1][iz + 1]
 				 + (1.0 - hx) * hz * gIntegrand[ix][iz + 1]);
 
-	
+
 	switch (flag) {
 	  case CONTOUR_START:
 	  	  gIntMin = Integrand;
 	  	  		  break;
 	  case CONTOUR_TRACE:
 	  case CONTOUR_STOP:
-	  	 
+
 		  break;
 	}
-	
+
 	if (Integrand <= gIntMin) {
  		gIntMin = Integrand;
  		gXimin = x;
  		gZimin = z;
-	} 
+	}
 }
 
 double        quick_Int(PSIGRID * pg, double PsiX, int average)
@@ -180,7 +180,7 @@ double        quick_Int(PSIGRID * pg, double PsiX, int average)
 	double      **Psi;
 	double       *X, *Z;
 	double        PsiBnd;
-    
+
     MULTI;
 	nmax = pg->Nsize;
 	Psi = pg->Psi;
@@ -205,7 +205,7 @@ double        find_Min(PSIGRID * pg, double PsiX)
 	double      **Psi;
 	double       *X, *Z;
 	double        PsiBnd;
-    
+
     MULTI;
 	nmax = pg->Nsize;
 	Psi = pg->Psi;
@@ -215,7 +215,7 @@ double        find_Min(PSIGRID * pg, double PsiX)
 
 	contour(X, Z, Psi, 0, nmax, 0, nmax, PsiBnd, CONTOUR_ONLY_CLOSED,
 			CONTOUR_MIDPOINT, find_Min_Step);
-			
+
 	return gIntMin;
 
 }
@@ -352,9 +352,9 @@ double        compute_Int(PSIGRID * pg, double PsiX)
 	double        dXdt, dZdt, dIdt;
 	double        PsiBnd;
 	double        q;
-    
+
     MULTI;
-    
+
 	nmax = pg->Nsize;
 	Psi = pg->Psi;
 	X = pg->X;
@@ -599,9 +599,9 @@ void          GetFluxParameters(TOKAMAK * td)
 
         for (i = 0; i < npts; i++) {
             ppsi[i] = i * pl->PsiXMax / (npts - 1.0);
-            GetRandV(td, pl->XMagAxis, pl->ZMagAxis, npts, ppsi, xpsi, zpsi, vpsi); 
+            GetRandV(td, pl->XMagAxis, pl->ZMagAxis, npts, ppsi, xpsi, zpsi, vpsi);
 #endif
-        
+
 	/* A L L O C A T E   S O M E   M E M O R Y */
 
 	gIntegrand = dmatrix(0, nmax, 0, nmax);
@@ -682,7 +682,7 @@ void          GetFluxParameters(TOKAMAK * td)
 			}
 #ifndef DIPOLE
 	for (i = 1; i < npts; i++) {
-#else 
+#else
     for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
@@ -726,7 +726,7 @@ void          GetFluxParameters(TOKAMAK * td)
 			}
 #ifndef DIPOLE
 	for (i = 1; i < npts; i++) {
-#else 
+#else
     for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
@@ -734,8 +734,8 @@ void          GetFluxParameters(TOKAMAK * td)
 	}
 
 	/* F L U X   T U B E   A V G   O F   B E T A */
-	
-	
+
+
 	pl->Beta_pr = dvector(0, npts - 1);
 
 	for (ix = 1; ix < nmax; ix++)
@@ -749,7 +749,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	pl->Beta_pr[0] = 2*pl->Piso[ixa][iza]/pl->B2[ixa][iza];	/* beta on axis */
 
 	for (i = 1; i < npts; i++) {
-#else 
+#else
     for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
@@ -758,7 +758,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	}
 
     /* F I N D   M A X   B E T A   P O S I T I O N */
-    
+
     pl->BetaMax_pr  = dvector(0, npts - 1);
 	pl->XBetaMax_pr = dvector(0, npts - 1);
 	pl->ZBetaMax_pr = dvector(0, npts - 1);
@@ -769,15 +769,15 @@ void          GetFluxParameters(TOKAMAK * td)
 			if (NearPlasma(pg->IsPlasma, ix, iz)) {
 				gIntegrand[ix][iz] = pl->B2[ix][iz];
 			}
-		
+
 #ifndef DIPOLE
     pl->BetaMax_pr[0] = pl->Beta_pr[0];
     pl->XBetaMax_pr[0] = pg->X[ixa];
     pl->ZBetaMax_pr[0] = pg->Z[iza];
     pl->BBetaMax_pr[0] = sqrt(pg->B2[ixa][iza]);
-    
+
 	for (i = 1; i < npts; i++) {
-#else 
+#else
     for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
@@ -789,7 +789,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	}
 
     /* F I N D   M A X   F I E L D   P O S I T I O N */
-    
+
         pl->BMax_pr = dvector(0, npts - 1);
 	pl->XBMax_pr = dvector(0, npts - 1);
 	pl->ZBMax_pr = dvector(0, npts - 1);
@@ -799,14 +799,14 @@ void          GetFluxParameters(TOKAMAK * td)
 			if (NearPlasma(pg->IsPlasma, ix, iz)) {
 				gIntegrand[ix][iz] = 1.0/pl->B2[ix][iz];
 			}
-		
+
 #ifndef DIPOLE
     pl->XBMax_pr[0] = pg->X[ixa];
     pl->ZBMax_pr[0] = pg->Z[iza];
     pl->BMax_pr[0] = sqrt(pg->B2[ixa][iza]);
-    
+
 	for (i = 1; i < npts; i++) {
-#else 
+#else
     for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
@@ -831,7 +831,7 @@ void          GetFluxParameters(TOKAMAK * td)
 			}
 #ifndef DIPOLE
 	for (i = 1; i < npts; i++) {
-#else 
+#else
     for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
@@ -851,7 +851,7 @@ void          GetFluxParameters(TOKAMAK * td)
 			}
 #ifndef DIPOLE
 	for (i = 1; i < npts; i++) {
-#else 
+#else
     for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
@@ -863,10 +863,10 @@ void          GetFluxParameters(TOKAMAK * td)
 		pl->Well_pr[i] = 0.0;
 
 	t1 = pl->PsiXmax / (npts - 1.0);	/* del PsiX between profile points */
-	for (i = 1; i < npts; i++) 
+	for (i = 1; i < npts; i++)
 		switch (pl->ModelType) {
 		  case Plasma_Std:
-		  case Plasma_IsoNoFlow: 
+		  case Plasma_IsoNoFlow:
 		  case Plasma_DipoleStd:
 		  case Plasma_DipoleIntStable:
 			  t2 = MU0 * (Pp[i + 1] - Pp[i - 1]) / t1;	/* Pressure gradient */

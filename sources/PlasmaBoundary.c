@@ -116,7 +116,7 @@ double        get_dxdz(double **Psi, int ix, int iz)
 **	FindAllFlats
 **
 **	This function creates an array filled with information
-**	concerning the location of all separatricies and all
+**	concerning the location of all separatrices and all
 **	magnetic axes.
 **
 **	A separatrix or magnetic axis is defined when
@@ -252,8 +252,8 @@ MULTI;
 				zFlat += pg->Z[iz];
 			}
 			if ((IsMagAxis || IsSeparatrix) && (i == MAX_FLATNUM)) {
-				printf("ERROR:	Too many separatricies and axes!\n");
-				fprintf(LogFile, "ERROR:	Too many separatricies and axes!\n");
+				printf("ERROR:	Too many separatrices and axes!\n");
+				fprintf(LogFile, "ERROR:	Too many separatrices and axes!\n");
 				break;
 			}
 			if (IsMagAxis) {
@@ -282,7 +282,7 @@ MULTI;
 **	FindValidFlats
 **
 **	This function creates an array filled with information
-**	concerning the location of all separatricies and all
+**	concerning the location of all separatrices and all
 **	magnetic axes.
 **
 **	A separatrix or magnetic axis is defined when
@@ -302,7 +302,7 @@ MULTI;
 **		FLAT		*fl		==> array of FLATs to hold results
 **
 **
-**	DTG 12/9/98... I don't really care about magnetic axis and I 
+**	DTG 12/9/98... I don't really care about magnetic axis and I
 **  only want to find seperatricies in valid regions.
 */
 void          FindValidFlats(TOKAMAK * td, FLAT * fl)
@@ -413,8 +413,8 @@ void          FindValidFlats(TOKAMAK * td, FLAT * fl)
                 zFlat += pg->Z[iz];
             }
             if ((IsMagAxis || IsSeparatrix) && (i == MAX_FLATNUM)) {
-                printf("ERROR:	Too many separatricies and axes!\n");
-                fprintf(LogFile, "ERROR:	Too many separatricies and axes!\n");
+                printf("ERROR:	Too many separatrices and axes!\n");
+                fprintf(LogFile, "ERROR:	Too many separatrices and axes!\n");
                 break;
             }
             if (IsMagAxis) {
@@ -442,7 +442,7 @@ void          FindValidFlats(TOKAMAK * td, FLAT * fl)
                             sp->Xs 	= xFlat;
                             sp->Zs 	= zFlat;
                         }
-                        
+
                         i++;
 
                         printf("		[Sep  found at (X = %.3f, Z = %.3f) Psi = %g]\n",
@@ -474,7 +474,7 @@ void          FindValidFlats(TOKAMAK * td, FLAT * fl)
 **	MarkDivertors
 **
 **
-**	This function examines all valid separatricies and sets
+**	This function examines all valid separatrices and sets
 **	a flag in the divertor array if the location is within a
 **	divertor region of a separatrix.
 */
@@ -565,9 +565,9 @@ void          FinalCheckIsPlasma(PSIGRID * pg)
 	iza = (int) floor((pg->ZMagAxis - pg->Zmin) / (pg->dz));
 
 	for (ix = 1; ix < nmax; ix++) {
-	
+
 MULTI;
-	
+
 		for (iz = 1; iz < nmax; iz++) {
 			if (ip[ix][iz])
 				ip[ix][iz] = IsTruePlasma(pg, ix, iz, ixa, iza);
@@ -639,8 +639,8 @@ void          FindMinPsiLimiter(PSIGRID * pg, LIMITER * lm, int **div)
 		xL = x1 + i * dxl;
 		zL = z1 + i * dzl;
 		Psi = GetPsi(pg, xL, zL);
-		if ((Psi < lm->PsiMin) && 
-		    !CheckIsDivertor(pg, div, xL, zL) && 
+		if ((Psi < lm->PsiMin) &&
+		    !CheckIsDivertor(pg, div, xL, zL) &&
 		    ((lm->Enabled < 2) || (Psi > GetPsi(pg,xL-dzl,zL+dxl)))) {
 			lm->PsiMin = Psi;
 			lm->Xmin = xL;
@@ -712,14 +712,14 @@ void          FindMaxPsiLimiter(PSIGRID * pg, LIMITER * lm, int **dummy)
 **		J(edge) = - Pi*(R B0)^2 * (dG2/dPsi)
 **
 */
-void SetEdgeCurrent(TOKAMAK *td) 
+void SetEdgeCurrent(TOKAMAK *td)
 {
 	PLASMA	*pl;
 	PSIGRID *pg;
-	
+
 	pg = td->PsiGrid;
 	pl = td->Plasma;
-	
+
 	switch (pl->ModelType) {
 	  case Plasma_Std:
 		  /* no edge current yet */
@@ -748,12 +748,12 @@ void SetEdgeCurrent(TOKAMAK *td)
 **
 ** 	Added S. Jardin's suggestions on Saturday, January 27, 1990 11:06:46 AM.
 **
-** FIRST, we find any and all magnetic axes and separatricies.
+** FIRST, we find any and all magnetic axes and separatrices.
 **
 ** SECOND, we check the limiters...chosing PsiLim to be the smallest
 ** Psi value that is not within a divertor region.  We do not check
 ** that there may be a SEPARATRIX within a SEPARATRIX, although the user
-** will be able to control where one looks for separatricies.
+** will be able to control where one looks for separatrices.
 **
 ** FINALLY, we set IsPlasma = TRUE whenever Psi < PsiLim and it is
 ** not within a LIMITER region.
@@ -776,7 +776,7 @@ void SetEdgeCurrent(TOKAMAK *td)
 **
 ** Steve Jardin's suggestions:
 **
-** Separatricies:	For a SEPARATRIX, eliminate all PLASMA away from magnetic axis
+** Separatrices:	For a SEPARATRIX, eliminate all PLASMA away from magnetic axis
 ** 					add to the outside of a line perpendicular to the line from the
 ** 					axis to the separatirx.
 **
@@ -786,7 +786,7 @@ void SetEdgeCurrent(TOKAMAK *td)
 ** These give the STEPS:
 **
 ** 	STEP 1: Initialize
-** 	STEP 2: Find all magnetic axes and separatricies
+** 	STEP 2: Find all magnetic axes and separatrices
 ** 	STEP 3: Find minimum Psi along a LIMITER not within a divertor region
 ** 	STEP 4: Erase PLASMA from divertor regions.
 **	STEP 5: Recheck all points for the "bean-ing problem".
@@ -833,7 +833,7 @@ void          PlasmaBoundary(TOKAMAK * td)
                     PsiMax = Psi[ix][iz];
                 if (PsiMin > Psi[ix][iz])
                     PsiMin = Psi[ix][iz];
-                    
+
 //			PsiMax = MAX(Psi[ix][iz], PsiMax);
 //			PsiMin = MIN(Psi[ix][iz], PsiMin);
             }
@@ -852,7 +852,7 @@ void          PlasmaBoundary(TOKAMAK * td)
 
 /*
         FindAllFlats(pg, flats);
-	
+
 	//                 Assign magnetic axes  //
 	for (j = 0; j < MAX_FLATNUM; j++)
 		if ((flats[j].fType == FLAT_AXIS) && (flats[j].Psi < pg->PsiAxis)) {
@@ -889,14 +889,14 @@ void          PlasmaBoundary(TOKAMAK * td)
 		td->Plasma->PsiMagAxis = pg->PsiMagAxis = PsiAxis;
 
 
-        // all other flats have been assigned to separatricies...
+        // all other flats have been assigned to separatrices...
         for (i = 1; i < MAX_FLATNUM; i++) {
             if (flats[i].fType == FLAT_SEP) {
                 if (PsiMinS > flats[i].Psi)
                     PsiMinS = flats[i].Psi;
             }
 	}
- 
+
 	/*                 Mark divertor regions  */
 	IsDivertor = imatrix(0, nmax, 0, nmax);
 	MarkDivertors(td, IsDivertor);
@@ -923,9 +923,9 @@ MULTI;
 	** limiters of the floating coil.  I've saved it till last to
 	** keep the old checks there... now I want to exclude the innermost region.
 	*/
-	
+
 	PsiMaxD  = PsiAxis;
-	
+
    for (i = 0; i < td->NumLimiters; i++) {
 		lm = td->Limiters[i];
 		if (lm->Enabled < 0) {
@@ -947,16 +947,16 @@ MULTI;
 	** and set the actual PsiLim to be the 0.999 flux surface?
 	*/
 
-  /* DTG 6/98 I think this is a bug in the code... It should be the .999 
+  /* DTG 6/98 I think this is a bug in the code... It should be the .999
   ** normalized flux surface.  This actually does the opposite of what one
-  ** desires... 
-  
+  ** desires...
+
 	// pg->PsiLim = 0.999 * PsiMinL;  */
-	
+
 	pg->PsiLim = PsiMinL;
 
 #ifdef DIPOLE
-	pg->PsiAxis = PsiMaxD;  
+	pg->PsiAxis = PsiMaxD;
 #endif /* DIPOLE */
 
 	pg->DelPsi = pg->PsiLim - pg->PsiAxis;
@@ -971,7 +971,7 @@ MULTI;
 		for (iz = 0; iz < nmax; iz++)
 			pg->IsPlasma[ix][iz] = (Psi[ix][iz] < pg->PsiLim) && !IsDivertor[ix][iz] &&
 								   (Psi[ix][iz] > pg->PsiAxis);
-			
+
 
 	free_imatrix(IsDivertor, 0, nmax, 0, nmax);
 
@@ -982,12 +982,12 @@ MULTI;
 	**
 	** This would help, for example, with bean-shaped tokamaks.
 	*/
-	
+
     MULTI;
 
 	FinalCheckIsPlasma(pg);
-	
-	
+
+
 	#ifndef IDL
 	printf("		[PsiLim = %f, PsiAxis = %f]\n", pg->PsiLim, pg->PsiAxis);
 	fprintf(LogFile, "		[PsiLim = %f, PsiAxis = %f]\n", pg->PsiLim, pg->PsiAxis);

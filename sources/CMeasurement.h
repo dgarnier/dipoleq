@@ -32,25 +32,23 @@ public:
     virtual void            FindFit(TOKAMAK *td) = 0;
     virtual void            FindNow(TOKAMAK *td) = 0;
     virtual void            FindL(TOKAMAK *td, double *L) = 0;
-    
+
     // read and create measurement from file!
     static CMeasurement *   CreateWithType(char *);
     static CMeasurement *   CreateWithType(int);
     virtual void            SetParameter(char *, char *);
-    
+
     static void             FindAllGreens(CMeasurementList &mlist);
     static void             FindAllFit(CMeasurementList &mlist);
     static void             FindAllNow(CMeasurementList &mlist);
     static void             FindAllL(CMeasurementList &mlist);
     static void             FreeAll(CMeasurementList &mlist);
-    
+
     // destructor
     virtual ~CMeasurement(void);
     // virtual constructors!
-    virtual CMeasurement * create() const = 0; 
+    virtual CMeasurement * create() const = 0;
     virtual CMeasurement * clone() const = 0;
 };
 
 #endif // _CMeasurement_h_
-
-

@@ -35,7 +35,7 @@ void do_contour_pt_open(double x, double y, double dummy, int ccode)
 			cpdf_moveto(curPDF,(float) x, (float) y);
 /*			if (doFill==FILL) {
 				cpdf_fillAndStroke(curPDF);
-			} else 
+			} else
 				cpdf_stroke(curPDF);
 */			break;
 		}
@@ -54,7 +54,7 @@ void do_contour_pt_closed(double x, double y, double dummy, int ccode)
 /*		    cpdf_closepath(curPDF);
 			if (doFill==FILL) {
 				cpdf_fillAndStroke(curPDF);
-			} else 
+			} else
 				cpdf_stroke(curPDF);
 */
 			break;
@@ -67,18 +67,18 @@ void  plot_contour(CPDFdoc *pdf, int flags, double *xarg, double *yarg, double *
 {
 	curPDF = pdf;
 	doFill = flags & FILL;
-	
+
 	cpdf_newpath(pdf);
 
-	contour(xarg, yarg, zarg, nx1, nx2, ny1, ny2, level, 
+	contour(xarg, yarg, zarg, nx1, nx2, ny1, ny2, level,
 			CONTOUR_ONLY_OPEN,!(flags & MIDPT), do_contour_pt_open);
-	contour(xarg, yarg, zarg, nx1, nx2, ny1, ny2, level, 
+	contour(xarg, yarg, zarg, nx1, nx2, ny1, ny2, level,
 			CONTOUR_ONLY_CLOSED,!(flags & MIDPT), do_contour_pt_closed);
-		    
+
 	cpdf_closepath(curPDF);
 	if (doFill==FILL) {
 		cpdf_fillAndStroke(curPDF);
-	} else 
+	} else
 		cpdf_stroke(curPDF);
-		
+
 }

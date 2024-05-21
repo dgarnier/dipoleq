@@ -41,9 +41,9 @@ struct CPlasmaModel;
 **
 */
 
-typedef struct plasma {		         
+typedef struct plasma {
 	int					Nsize;				/* The arrays are Nsize x Nsize */
-	int					ModelType;			/* profile type */ 
+	int					ModelType;			/* profile type */
 	struct CPlasmaModel	*Model;
 	int 				G2pTerms;
 	int					HTerms;
@@ -52,11 +52,11 @@ typedef struct plasma {
 	int					SisoTerms;
 	int					SparTerms;
 	int					SperTerms;
-	
+
 	/***
 	* The next quantities are the polynomial expansions of the flux functions.
 	***/
-	
+
 	double				*G2p;		/* gradient of square of toroidal flux */
 	double				*H;			/* Bernouilli function */
 	double 				*Pp;		/* gradient of isotropic pressure */
@@ -64,12 +64,12 @@ typedef struct plasma {
 	double				*Siso;		/* Adiabatic flux function for isotropic pressure */
 	double				*Spar;		/* Parallel flux function */
 	double				*Sper;		/* Perpendicular flux function */
-	
+
 	/***
 	* The next five quantities are the measurable quantities that we can derive from
 	* the last five flux functions.
 	***/
-	
+
 	double				**B2;				/* Square of the total field strength */
 	double				**GradPsiX;			/* �Psi/�x                 */
 	double				**GradPsiZ;			/* �Psi/dz                 */
@@ -85,7 +85,7 @@ typedef struct plasma {
 
 	double 				StndP;				/* when a fixed profile is used */
 	double  			StndG;
-	
+
 	double				Jedge;				/* an approximate edge current density */
 
 	double  			ChiSqr;				/* the quality of the fit */
@@ -116,7 +116,7 @@ typedef struct plasma {
     double              *XBMax_pr;/* X at max B on flux tube. */
     double              *ZBMax_pr;/* Z at max B flux tube. */
 
-    
+
 	double  			Ip;		/* the output plasma current */
 	double  			beta0;	/* the vaccuum toroidal beta at R0*/
 	double  			beta;	/* the average toroidal beta*/
@@ -127,7 +127,7 @@ typedef struct plasma {
 
 	double  			Volume;
 	double				CrossSection;	/* area of flux surface */
-	double				Perimeter;	
+	double				Perimeter;
 	double              Diamag;
 	double              q0;				/* central safety factor */
 	double  			qCircular;		/* 5 a^2 B0 / Rp Ip     */
@@ -142,7 +142,7 @@ typedef struct plasma {
 	double  			RCentroid;		/* Current centroid */
 	double  			RCenter;		/* Center of outer flux surface */
 	double  			RSurfaceAvg;	/* Surface average major radius */
-	
+
 	double				R_vr;			/* Energy-weighted radius */
 	double				Alpha_vr;		/* elongation parameter */
 	double				S1_vr,S2_vr,S3_vr;	/* Virial moments of plasma boundary */

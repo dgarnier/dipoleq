@@ -179,8 +179,8 @@ void          free_CoilGreen(COILGREEN * cg, int nmax)
 	free(cg);
 }
 
-/*   routine to calculate a new subcoil set based on the coil information. 
-**   added because I hated adding these in the input file and I wanted the  
+/*   routine to calculate a new subcoil set based on the coil information.
+**   added because I hated adding these in the input file and I wanted the
 **   the best possible use of subcoils on the grid, which is variable.
 **
 **   if I was really clever I could make a class of coil and get rid of this
@@ -198,35 +198,35 @@ void compute_SubCoils(COIL *c, PSIGRID * pg)
 	int	   isc, ix, ix1, ix2, iz, iz1, iz2, nSub = 0;
 	double fx, fx1, fx2, fxn, fz, fz1, fz2, fzn, jcur, jtot;
 	SUBCOIL **sca;
-	
+
 	/* free old subcoil array */
-	
+
 	if ((c->NumSubCoils != 0) && (c->SubCoils != NULL)) {
 		for (isc = 0 ; isc > c->NumSubCoils; isc++)
 		if (c->SubCoils[isc])
 			free(c->SubCoils[isc]);
 		free(c->SubCoils);
 	}
-	
+
 	gdx = pg->dx;
 	gdz = pg->dz;
 	gxm = pg->Xmin;
 	gzm = pg->Zmin;
-	
+
 	cdx = c->dX;
 	cdz = c->dZ;
 	cxm = c->X-cdx/2.0;
 	czm = c->Z-cdz/2.0;
-	
+
 	jcur = gdx*gdz/(cdx*cdz);
 
 	ix1 = (int) floor((cxm-gxm)/gdx + 0.5);
 	ix2 = (int) floor((cxm+cdx-gxm)/gdx + 0.5);
 	iz1 = (int) floor((czm-gzm)/gdz + 0.5);
 	iz2 = (int) floor((czm+cdz-gzm)/gdz + 0.5);
-	
+
 	nSub = (1+ix2-ix1)*(1+iz2-iz1);
-	
+
 	c->SubCoils = (SUBCOIL **) malloc((size_t) nSub * sizeof(SUBCOIL *));
 	if (c->SubCoils == NULL)
 		nrerror("ERROR: Allocation error2 in compute_SubCoils.");
@@ -235,11 +235,11 @@ void compute_SubCoils(COIL *c, PSIGRID * pg)
 	c->NumSubCoils = nSub;
 	jtot=0;
 	sca = c->SubCoils;
-	
+
 	fx1 = (cxm-gxm)/gdx - ix1;
 	fx2 = (cxm+cdx-gxm)/gdx - ix2;
 	fxn = fx1;
-	
+
 	fz1 = (czm-gzm)/gdz - iz1;
 	fz2 = (czm+cdz-gzm)/gdz - iz2;
 	fzn = fz1;
@@ -266,5 +266,5 @@ void compute_SubCoils(COIL *c, PSIGRID * pg)
 			sca++;
 			jtot+=fx*fz*jcur;   /* if you get this calc right, ftot should be 1 */
 		}
-	}	
+	}
 }

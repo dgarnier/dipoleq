@@ -3,7 +3,7 @@ Forward solve the dipole equilibrium
 This is the same as SimDipEq, but in python
 """
 
-from . import Machine
+from .core import Machine
 
 
 def do_free_boundary(m: Machine, makeFit: bool = False, isFirst: bool = True):

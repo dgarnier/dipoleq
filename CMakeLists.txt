@@ -55,6 +55,3 @@ if (SKBUILD)
     message(STATUS "SKBUILD STATUS = ${SKBUILD_STATE}")
     install(TARGETS pydipoleq LIBRARY DESTINATION dipoleq COMPONENT python)
 endif()
-
-
-

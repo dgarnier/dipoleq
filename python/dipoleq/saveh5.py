@@ -1,19 +1,23 @@
 """Save the solved equilibrium data to an HDF5 file
 
 """
-    
-from pyparsing import C
-from . import MACHINE
-import hdf5
+
 from enum import Enum
 
+import h5py
+from pyparsing import C
+
+from .core import Machine
+
 # github copilot translation from C++ to Python
+
 
 class Groups(Enum):
     GRID_GROUP = "/Grid"
     BOUND_GROUP = "/Boundaries"
     FLUX_GROUP = "/FluxFunctions"
     SCALAR_GROUP = "/Scalars"
+
 
 class DataSets(Enum):
     CUR_NAME = "Current"
@@ -64,37 +68,24 @@ class DataSets(Enum):
     OLIM_NAME = "olim"
     ILIM_NAME = "ilim"
 
-definitions = {
-    "Groups": Groups,
-    "DataSets": DataSets
-}
+
+definitions = {"Groups": Groups, "DataSets": DataSets}
 
 
+def save_to_hdf5(m: Machine, filename: str = None):
 
-def save_to_hdf5(m: MACHINE, filename: str = None)
-    
     if filename is None:
-        filename = m.Oname + '.h5'
-    
+        filename = m.Oname + ".h5"
+
     # create the file.. (truncae if exists)
-    
-    with h5py.File(filename, 'w') as h5f:
+
+    with h5py.File(filename, "w") as h5f:
         # put some info into the file
-        h5f.attrs['Title'] = "Equilibrium data from dipoleq"
-        h5f.attts['Version'] = "0.1"
-        
+        h5f.attrs["Title"] = "Equilibrium data from dipoleq"
+        h5f.attts["Version"] = "0.1"
+
         # create the groups
         grid = h5f.create_group(Groups.GRID_GROUP.value)
         bound = h5f.create_group(Groups.BOUND_GROUP.value)
         flux = h5f.create_group(Groups.FLUX_GROUP.value)
         scal = h5f.create_group(Groups.SCALAR_GROUP.value)
-        
-        
-        
-        
-        
-    
-    
-    
-    
-    

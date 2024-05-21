@@ -31,4 +31,3 @@ void 	PlasmaBoundary(TOKAMAK *td);
 }   // extern "C"
 #endif
 #endif
-

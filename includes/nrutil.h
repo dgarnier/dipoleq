@@ -1,6 +1,6 @@
 /*
 **
-** 	Utility Routines 
+** 	Utility Routines
 ** 	from Numerical Recipies in C, W. Press, et al, Cambridge 1988.
 **
 **	Second edition
@@ -73,7 +73,7 @@ int **imatrix(long nrl, long nrh, long ncl, long nch);
 
 float **submatrix(float **a, long oldrl, long oldrh, long oldcl, long oldch,
 	long newrl, long newcl);
-	
+
 float **convert_matrix(float *a, long nrl, long nrh, long ncl, long nch);
 
 float ***f3tensor(long nrl, long nrh, long ncl, long nch, long ndl, long ndh);
@@ -93,8 +93,8 @@ void free_f3tensor(float ***t, long nrl, long nrh, long ncl, long nch,
 	long ndl, long ndh);
 void free_d3tensor(double ***t, long nrl, long nrh, long ncl, long nch,
 	long ndl, long ndh);
-	
-	
+
+
 #ifdef __cplusplus
 
 }

@@ -25,15 +25,15 @@
 
 
 /*
-** COILGREEN 
-** 
+** COILGREEN
+**
 ** This stores the LH Green's Function for a coil set.
-** It contains four arrays for the top, bottom, inside, and 
+** It contains four arrays for the top, bottom, inside, and
 ** outside of the computational grid.
 **
 */
 
-typedef struct coilgreen {	
+typedef struct coilgreen {
 	double		*Top;
 	double		*Bot;
 	double		*In;
@@ -43,13 +43,13 @@ typedef struct coilgreen {
 
 /*
 **
-** SUBCOIL  
+** SUBCOIL
 **
 ** This is a particular winding of a coil set.
 **
 */
 
-typedef struct subcoil {	
+typedef struct subcoil {
     char		Name[32];				/* the subcoil name */
 	double		X,Z;					/* the location of the subcoil */
 	double		CurrentFraction;		/* the fraction of the total current */
@@ -58,7 +58,7 @@ typedef struct subcoil {
 
 /*
 **
-** COIL  
+** COIL
 **
 ** A coil set is a PF coil system with a particular measured current.
 **
@@ -66,7 +66,7 @@ typedef struct subcoil {
 **
 */
 
-typedef struct coil {		
+typedef struct coil {
 	int				Enabled;		/* if non-zero, then use this coil */
 	double			CoilCurrent;	/* the current flowing through the coil set */
     char			Name[32];		/* the name of this coil set */

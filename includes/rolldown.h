@@ -1,4 +1,4 @@
-/* 
+/*
 **
 **   rolldown.c
 **
@@ -20,12 +20,12 @@
 extern "C" {
 #endif
 
-void RollDownHill(TOKAMAK *td, double r0, double z0, 
+void RollDownHill(TOKAMAK *td, double r0, double z0,
                   int n, double *psi, double *rr, double *zz);
 /* psi, r, and z should be vectors that are already set up going from 0 - n-1 */
 /* r0 and z0 are the initial positions */
 
-void GetRandV(TOKAMAK *td, double r0, double z0, 
+void GetRandV(TOKAMAK *td, double r0, double z0,
                   int n, double *psi, double *rr, double *zz, double *vv);
 /* psi, r, and z should be vectors that are already set up going from 0 - n-1 */
 /* r0 and z0 are the initial positions */

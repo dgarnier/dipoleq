@@ -3,7 +3,7 @@
 **
 ** meas_bpangle.c
 **
-** Source file for local poloidal field measurements as expressed by a 
+** Source file for local poloidal field measurements as expressed by a
 ** LINEAR poloidal field angle.  That is the deviation of the toroidal
 ** field from its vacuum value is IGNORED.  Thus, bpangle = atan(Bz,Bt).
 **
@@ -78,7 +78,7 @@ double        g_bpangle(double x, double z, double xc, double zc)
 /*
 **	meas_bpangle_Green
 **
-**  Note:  This simply stores the Green's functions needed to find the 
+**  Note:  This simply stores the Green's functions needed to find the
 ** 			vertical component of the poloidal field.
 */
 void          meas_bpangle_Green(TOKAMAK * td, MEAS * m)
@@ -174,9 +174,9 @@ void          meas_bpangle_Fit(TOKAMAK * td, MEAS * m)
 	ip = pg->IsPlasma;
 
 	meas_mag_Fit(td, m);	/* This computes the poloidal field */
-	
+
 	/* Compute the toroidal magnetic field */
-	
+
 	switch (pl->ModelType) {
 	  case Plasma_Std:
 		  Psi = GetPsi(pg, m->X, m->Z);
@@ -226,9 +226,9 @@ void          meas_bpangle_Now(TOKAMAK * td, MEAS * m)
 	ip = pg->IsPlasma;
 
 	meas_mag_Now(td, m);	/* This computes the poloidal field */
-	
+
 	/* Compute the toroidal magnetic field */
-	
+
 	switch (pl->ModelType) {
 	  case Plasma_Std:
 		  Psi = GetPsi(pg, m->X, m->Z);
@@ -266,7 +266,7 @@ void          meas_bpangle_Now(TOKAMAK * td, MEAS * m)
 **  Note:  We assume in this routine that meas->Now has already been
 **			computed correctly.  We use this value in computing L.
 **
-**	Note:  The Green's function only specify the vertical component of 
+**	Note:  The Green's function only specify the vertical component of
 **			the poloidal field.
 **
 */
@@ -284,14 +284,14 @@ void          meas_bpangle_L(TOKAMAK * td, MEAS * m, double *L)
 	pl = td->Plasma;
 	pg = td->PsiGrid;
 	ip = pg->IsPlasma;
-	
+
 	gt = pl->G2pTerms;
 
 	for (iu = 1; iu <= td->NumUnkns; iu++)
 		L[iu] = 0.0;
 
 	/* Compute the toroidal magnetic field */
-	
+
 	switch (pl->ModelType) {
 	  case Plasma_Std:
 		  Psi = GetPsi(pg, m->X, m->Z);
@@ -337,11 +337,11 @@ void          meas_bpangle_L(TOKAMAK * td, MEAS * m, double *L)
 				L[iu] += PlGrn[ix][iz] * meas_dJdy[iu][ix][iz];
 		L[iu] *= td->PsiGrid->dx * td->PsiGrid->dz;
 	}
-	
+
 	/* C O I L   U N K N O W N S */
 	for (iu = iup + 1; iu <= td->NumUnkns; iu++)
 		L[iu] = CGrn[iu - iup - 1];
-		
+
 	/* A D D   T O R O I D A L   F I E L D   D E P E N D E N C I E S */
 	switch (pl->ModelType) {
 	  case Plasma_Std:
@@ -353,7 +353,7 @@ void          meas_bpangle_L(TOKAMAK * td, MEAS * m, double *L)
 		  if ((CHECK_PLASMA) && (PsiX < 1.0)) {
 			  /* --------   G2p[i] ------- */
 			  c4 = pow(PsiX, gt);
-			  for (iu = 1; iu <= gt; iu++) 
+			  for (iu = 1; iu <= gt; iu++)
 				  L[iu] += 0.5*(Bz/Bt/Bt)*DelPsi * ((1.0 - pow(PsiX, iu)) / iu -
 								   (1.0 - pow(PsiX, gt + 1)) / (gt + 1));
 		  }

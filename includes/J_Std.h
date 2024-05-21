@@ -32,4 +32,3 @@ double J_Std_Loc(TOKAMAK * , int , int , double , double );
 #endif
 
 #endif
-

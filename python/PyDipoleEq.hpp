@@ -55,6 +55,7 @@ enum class CircleType {
 
 class DMatrixView {
 public:
+    // matrix is actually nsize+1 x nsize+1
     DMatrixView(size_t nsize, double ** data) : m_size(nsize+1), m_data(data) {};
     double& operator()(size_t i, size_t j) { return m_data[i][j]; };
     py::buffer_info get_buffer_info() {
@@ -67,6 +68,11 @@ public:
             { sizeof(double) ,            /* Strides (in bytes) for each index */
               sizeof(double) * m_size }   /* nrutil is fortran order */
         );
+    }
+    static py::object create(size_t nsize, double ** data) {
+        if (data == NULL)
+            return py::none();
+        return py::cast(new DMatrixView(nsize, data));
     }
 private:
     size_t m_size;
@@ -88,6 +94,11 @@ public:
               sizeof(int) * m_size}     /* nrutil is fortran order */
         );
     }
+    static py::object create(size_t nsize, int ** data) {
+        if (data == NULL)
+            return py::none();
+        return py::cast(new IMatrixView(nsize, data));
+    }
 private:
     size_t m_size;
     int ** m_data;
@@ -95,7 +106,8 @@ private:
 
 class DVectorView {
 public:
-    DVectorView(size_t nsize, double * data) : m_size(nsize+1), m_data(data) {};
+    // vector size is truthfully nsize
+    DVectorView(size_t nsize, double * data) : m_size(nsize), m_data(data) {};
     double& operator[](size_t i) { return m_data[i]; };
     py::buffer_info get_buffer_info() {
         return py::buffer_info(
@@ -107,19 +119,24 @@ public:
             { sizeof(double) }
         );
     }
+    static py::object create(size_t nsize, double * data) {
+        if (data == NULL)
+            return py::none();
+        return py::cast(new DVectorView(nsize, data));
+    }
 private:
     size_t m_size;
     double * m_data;
 };
 
-template <typename T> class ObjVecView  
+template <typename T> class ObjVecView
 {
     public:
     ObjVecView(size_t nsize, T ** data) : m_size(nsize), m_data(data) {};
-    ObjVecView(size_t nsize, T ** data, TOKAMAK * mach, void (*objfree)(T *, TOKAMAK *)) 
+    ObjVecView(size_t nsize, T ** data, TOKAMAK * mach, void (*objfree)(T *, TOKAMAK *))
         : m_size(nsize), m_data(data), m_machine(mach), m_free(objfree) {};
 
-    T*& operator[](size_t i) { 
+    T*& operator[](size_t i) {
         if (i<0 || i>=m_size)
             throw std::out_of_range("Index out of range");
         return m_data[i]; };
@@ -137,12 +154,10 @@ template <typename T> class ObjVecView
         }
         m_data[i] = obj;
     }
-    
+
     private:
     TOKAMAK *m_machine = NULL;
     void (*m_free)(T *, TOKAMAK *) = NULL;
     size_t m_size;
     T ** m_data;
 };
-
-

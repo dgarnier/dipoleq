@@ -3,7 +3,7 @@
 **
 ** GetPlasmaParameters.h
 **
-** 
+**
 **
 ** File:		GetPlasmaParameters.h
 ** Date:		March 31, 1993

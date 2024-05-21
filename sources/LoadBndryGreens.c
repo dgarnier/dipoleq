@@ -41,7 +41,7 @@
 extern FILE  *LogFile;
 
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -57,7 +57,7 @@ void          MakeShellGreenSymmetric(PSIGRID * pg, SHELL * s);
 
 
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 
@@ -445,7 +445,7 @@ MULTI;
 			c = fread(lhv->Out, sizeof(double), nmax + 1, fi);
 			cchk(c, nmax);
 		}
-MULTI;		
+MULTI;
 		for (i = nmax; i >= 0; i--) {
 			lhv = lhpg->Bot[i];
 			c = fread(lhv->Top, sizeof(double), nmax + 1, fi);
@@ -528,7 +528,7 @@ void          RewriteBndryGreens(TOKAMAK * td)
 			MakeCoilGreenSymmetric(td->PsiGrid, aCoil);
 	}
     MULTI;
-    
+
 	if (td->NumShells > 0) {
 		printf("INFO:	Finding Shell Boundary Greens...\n");
 		fprintf(LogFile, "INFO:	Finding Shell Boundary Greens...\n");

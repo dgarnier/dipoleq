@@ -42,7 +42,7 @@ void          FindMeasFit(TOKAMAK * td)
 #if DEBUG_MEASURES
 		if (m->Now > 1e10) {
 			fprintf(stderr,"OOPS!: ");
-		}		
+		}
 #endif
 		(*(m->FindFit)) (td, m);
 #if DEBUG_MEASURES

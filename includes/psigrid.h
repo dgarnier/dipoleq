@@ -31,7 +31,7 @@
 
 /*
 **
-** PsiGrid Data Structure 
+** PsiGrid Data Structure
 **
 */
 
@@ -41,7 +41,7 @@ typedef	struct psigrid { 	/* the poloidal flux and the toroidal current */
 	double 		MaxRes;			/* the maximum residual */
 	double 		PastMaxRes; 	/* fMaxRes from previous iteration */
 	double		Xmax,Xmin;		/* the computational extent */
-	double		Zmax,Zmin;		
+	double		Zmax,Zmin;
 	double 		dx;				/* radial grid spacing */
 	double		dz;				/* vertical grid spacing */
 	double		BoundError;		/* size of error in boundary */
@@ -79,13 +79,13 @@ extern "C" {
  PSIGRID *new_PsiGrid();
  void init_PsiGrid(PSIGRID *);
  void free_PsiGrid(PSIGRID *);
- 
+
  void MakePsiSymmetric(PSIGRID *);
  void GetNewResidual(PSIGRID *);
  void NewSolution(PSIGRID *);
  void NewMSolution(PSIGRID *);
  void GoPDE(PSIGRID *);
- 
+
  double GetPsi(PSIGRID *,double ,double );
  double GetIsPlasma(PSIGRID *,double ,double );
 

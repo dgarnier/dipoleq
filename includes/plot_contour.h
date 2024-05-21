@@ -13,7 +13,7 @@
 #ifndef _PLOT_CONTOUR_H_
 #define _PLOT_CONTOUR_H_ 1
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -25,7 +25,7 @@ extern "C" {
 void  plot_contour(CPDFdoc *pdf, int fill, double *xarg, double *yarg, double **zarg, double level,
 	  int nx1, int nx2, int ny1, int ny2);
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 

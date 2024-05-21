@@ -1,4 +1,4 @@
-/* Dipole 
+/* Dipole
 **
 **  CDipoleIntStable.h
 **

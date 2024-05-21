@@ -10,7 +10,7 @@
 **
 ** Revisions:
 **
-**		
+**
 **
 **
 ** (c) D. Garnier -- Columbia University
@@ -48,13 +48,13 @@ double		Pp_DipoleStd_Loc(TOKAMAK *td, double Psi)
 	double      PsiDipole, PsiWall;
 	PSIGRID     *pg;
 	double      *Pp;
-	
+
 	pg = td->PsiGrid;
 	PsiDipole = pg->PsiAxis;
 	PsiWall   = pg->PsiAxis;
 	Pp        = td->Plasma->Pp;
 	Psi_0     = GetPsi(pg, Pp[0], Pp[1]);
-	
+
 	if (Psi <= Psi_0) {
 		dT_dPsiX = (PI/2) / (Psi_0 - PsiDipole);
 		theta = dT_dPsiX * (Psi - PsiDipole);
@@ -63,7 +63,7 @@ double		Pp_DipoleStd_Loc(TOKAMAK *td, double Psi)
 		dPress = Pp[2]/Psi_0*Pp[3]*pow( Psi/Psi_0 , Pp[3] - 1);
 	}
 
-	return dPress;	
+	return dPress;
 }
 
 double		P_DipoleStd_Loc(TOKAMAK *td, double Psi)
@@ -74,21 +74,21 @@ double		P_DipoleStd_Loc(TOKAMAK *td, double Psi)
 	double      PsiDipole, PsiWall;
 	PSIGRID     *pg;
 	double      *Pp;
-	
+
 	pg = td->PsiGrid;
 	PsiDipole = pg->PsiAxis;
 	PsiWall   = pg->PsiAxis;
 	Pp        = td->Plasma->Pp;
 	Psi_0     = GetPsi(pg, Pp[0], Pp[1]);
-	
+
 	if (Psi <= Psi_0) {
 		theta = (PI/2) * (Psi - PsiDipole) / (Psi_0 - PsiDipole);
-		Press = Pp[2]*sin(theta)*sin(theta); 
+		Press = Pp[2]*sin(theta)*sin(theta);
 	} else {
 		Press = Pp[2]*pow( Psi/Psi_0 , Pp[3]);
 	}
 
-	return Press;	
+	return Press;
 
 }
 
@@ -113,7 +113,7 @@ void          J_DipoleStd(TOKAMAK * td, double **J)
 	double        PsiAxis, PsiLim;
 	double        Ptemp, Gtemp;
 	double        dPress;
-	double        dG2;	
+	double        dG2;
 
 	pg = td->PsiGrid;
 	pl = td->Plasma;
@@ -128,7 +128,7 @@ void          J_DipoleStd(TOKAMAK * td, double **J)
 		J[ix][0] = J[ix][nmax] = 0.0;
 	for (iz = 0; iz <= nmax; iz++)
 		J[0][iz] = J[nmax][iz] = 0.0;
-		
+
 	/* Calculate the current... */
 	for (ix = 1; ix < nmax; ix++) {
 		Gtemp = -PI * DSQR(pl->B0R0) / X[ix];
@@ -153,7 +153,7 @@ double       J_DipoleStd_Loc(TOKAMAK * td, int ix, int iz)
 	double        Ptemp, Gtemp;
 	double        dPress;
 	double        dG2;
-	double		  J=0.0;	
+	double		  J=0.0;
 
 	pg = td->PsiGrid;
 	pl = td->Plasma;

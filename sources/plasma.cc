@@ -126,7 +126,7 @@ PLASMA       *new_Plasma()
 	p->TotKinEnergy = 1.0e6;
 	p->TotMagEnergy = 1.0e6;
 	p->RStar = p->R0;
-	
+
 	return p;
 }
 
@@ -202,13 +202,13 @@ void          init_Plasma(PLASMA * p)
 	** The computed plasma parameters
 	**
 	*/
-	p->B2 = dmatrix(0, nmax, 0, nmax);
-	p->GradPsiX = dmatrix(0, nmax, 0, nmax);
-	p->GradPsiZ = dmatrix(0, nmax, 0, nmax);
-	p->GradPsi2 = dmatrix(0, nmax, 0, nmax);
+	p->B2 = dmatrix0(0, nmax, 0, nmax);
+	p->GradPsiX = dmatrix0(0, nmax, 0, nmax);
+	p->GradPsiZ = dmatrix0(0, nmax, 0, nmax);
+	p->GradPsi2 = dmatrix0(0, nmax, 0, nmax);
 
-	p->Bt = dmatrix(0, nmax, 0, nmax);
-	p->G = dmatrix(0, nmax, 0, nmax);
+	p->Bt = dmatrix0(0, nmax, 0, nmax);
+	p->G = dmatrix0(0, nmax, 0, nmax);
 
 	switch (p->ModelType) {
 	  case Plasma_Std:
@@ -244,91 +244,91 @@ void          init_Plasma(PLASMA * p)
 double PlasmaP(PLASMA *pl, double Psi)
 {
 	double PsiX, DelPsi;
-	
+
 	switch (pl->ModelType) {
 		case Plasma_Std:
 			DelPsi =  pl->PsiLim - pl->PsiAxis;
 		    PsiX = (Psi - pl->PsiAxis)/DelPsi;
 			return (-DelPsi * pl->Pp[1] * pow(1.0 - PsiX, pl->StndP) / pl->StndP);
 		break;
-		
+
 		case  Plasma_IsoNoFlow:
 			DelPsi =  pl->PsiLim - pl->PsiAxis;
 		    PsiX = (Psi - pl->PsiAxis)/DelPsi;
-			return ( fpoly_int(pl->Pp, PsiX, pl->PpTerms, DelPsi, P_EDGE) );	
+			return ( fpoly_int(pl->Pp, PsiX, pl->PpTerms, DelPsi, P_EDGE) );
 		break;
-		
-		default : 
+
+		default :
 		    if (pl->Model) return ( pl->Model->P(Psi) );
 	}
-	return (0);	
+	return (0);
 }
 
 double PlasmaPp(PLASMA *pl, double Psi)
 {
 	double PsiX, DelPsi;
-	
+
 	switch (pl->ModelType) {
 		case Plasma_Std:
 			DelPsi =  pl->PsiLim - pl->PsiAxis;
 		    PsiX = (Psi - pl->PsiAxis)/DelPsi;
 			return ( pl->Pp[1] * pow(1.0 - PsiX, pl->StndP - 1.0));
 		break;
-		
+
 		case  Plasma_IsoNoFlow:
 			DelPsi =  pl->PsiLim - pl->PsiAxis;
 		    PsiX = (Psi - pl->PsiAxis)/DelPsi;
-			return ( fpoly(pl->Pp, PsiX, pl->PpTerms) );	
+			return ( fpoly(pl->Pp, PsiX, pl->PpTerms) );
 		break;
-		
-		default : 
+
+		default :
 		    if (pl->Model) return ( pl->Model->Pp(Psi) );
 	}
-	return (0);	
+	return (0);
 }
 
 double PlasmaG(PLASMA *pl, double Psi)
 {
 	double PsiX, DelPsi;
-	
+
 	switch (pl->ModelType) {
 		case Plasma_Std:
 			DelPsi =  pl->PsiLim - pl->PsiAxis;
 		    PsiX = (Psi - pl->PsiAxis)/DelPsi;
 			return (1.0 - DelPsi * pl->G2p[1] * pow(1.0 - PsiX, pl->StndG) / pl->StndG);
 		break;
-		
+
 		case  Plasma_IsoNoFlow:
 			DelPsi =  pl->PsiLim - pl->PsiAxis;
 		    PsiX = (Psi - pl->PsiAxis)/DelPsi;
-			return ( fpoly_int(pl->G2p, PsiX, pl->G2pTerms, DelPsi, 1.0));	
+			return ( fpoly_int(pl->G2p, PsiX, pl->G2pTerms, DelPsi, 1.0));
 		break;
-		
-		default : 
+
+		default :
 		    if (pl->Model) return ( pl->Model->G2(Psi) );
 	}
-	return (0);	
+	return (0);
 }
 
 double PlasmaG2p(PLASMA *pl, double Psi)
 {
 	double PsiX, DelPsi;
-	
+
 	switch (pl->ModelType) {
 		case Plasma_Std:
 			DelPsi =  pl->PsiLim - pl->PsiAxis;
 		    PsiX = (Psi - pl->PsiAxis)/DelPsi;
 			return (pl->G2p[1] * pow(1.0 - PsiX, pl->StndG - 1.0));
 		break;
-		
+
 		case  Plasma_IsoNoFlow:
 			DelPsi =  pl->PsiLim - pl->PsiAxis;
 		    PsiX = (Psi - pl->PsiAxis)/DelPsi;
-			return ( fpoly(pl->G2p, PsiX, pl->G2pTerms) );	
+			return ( fpoly(pl->G2p, PsiX, pl->G2pTerms) );
 		break;
-		
-		default : 
+
+		default :
 		    if (pl->Model) return ( pl->Model->G2p(Psi) );
 	}
-	return (0);	
+	return (0);
 }

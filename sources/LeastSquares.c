@@ -80,7 +80,7 @@ void          SVDFitOutput(TOKAMAK * td, double **L, double *w, double *uold, do
 	fprintf(fi, "Unknowns     uOld       uNew      +-err  +-PerCent   sing val\n");
 	for (iu = 1; iu <= td->NumUnkns; iu++)
 		fprintf(fi, " %3d   %10.3g %10.3g %10.3g %10.3g %10.3g\n",
-				iu, uold[iu], unew[iu], sqrt(Covar[iu][iu]), 
+				iu, uold[iu], unew[iu], sqrt(Covar[iu][iu]),
 				100.0 * sqrt(Covar[iu][iu]) / fabs(unew[iu]), w[iu]);
 	fprintf(fi, "\n");
 
@@ -127,9 +127,9 @@ void	CopyUnknowns(TOKAMAK *td, double *UnknOld)
 {
 	PLASMA	*pl;
 	int		idx = 0,i;
-	
+
 	pl = td->Plasma;
-	
+
 	/* F I L L   P R E S E N T   U N K N O W N S */
 	switch (pl->ModelType) {
 	  case Plasma_Std:
@@ -203,9 +203,9 @@ void		RewriteUnknowns(TOKAMAK *td, double *UnknNew)
 {
 	PLASMA	*pl;
 	int		idx = 0,i;
-	
+
 	pl = td->Plasma;
-	
+
 	/* U P D A T E    P L A S M A    V A L U E S */
 	switch (pl->ModelType) {
 	  case Plasma_Std:
@@ -270,7 +270,7 @@ void		RewriteUnknowns(TOKAMAK *td, double *UnknNew)
 	for (i = 0; i < td->NumCoils; i++)
 		td->Coils[i]->CoilCurrent = UnknNew[i + 1 + idx];
 }
-		
+
 /*
 **	LeastSquares
 **
@@ -389,7 +389,7 @@ void          LeastSquares(TOKAMAK * td, int IsFirstTime)
 
 	/* C O V A R I A N C E   M A T R I X */
 	svdvar(V, td->NumUnkns, w, td->Covar);
-	
+
 	/* C o p y   U n k n V e c t o r s */
 	for (i=1; i<= td->NumUnkns; i++) {
 		td->SValues[i] = w[i];
@@ -403,10 +403,10 @@ void          LeastSquares(TOKAMAK * td, int IsFirstTime)
 	* Probably the most important of these are the principle axis of the
 	* chisq confidence ellipses in the space of the unknowns.
 	***/
-	
+
 	/* U N D E R  R E L A X   U N K N O W N S */
 	if (!IsFirstTime)
-		for (iu=1; i<= td->NumUnkns; iu++) 
+		for (iu=1; i<= td->NumUnkns; iu++)
 			UnknNew[iu] = (1.0 - pg->UnderRelax2)*UnknNew[iu] + pg->UnderRelax2*UnknOld[iu];
 
 	/* U P D A T E    P L A S M A    V A L U E S */

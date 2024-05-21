@@ -19,7 +19,7 @@
 
 #include "tokamak.h"
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 

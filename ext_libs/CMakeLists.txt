@@ -47,7 +47,7 @@ if(NOT JPEG_FOUND)
         IMPORTED_LINK_INTERFACE_LANGUAGES "C"
     )
     add_library(JPEG::JPEG ALIAS LOCAL_JPEG)
-    
+
 endif()
 # dump_cmake_variables(JPEG)
 
@@ -139,7 +139,7 @@ if (BUILD_WITH_HDF5)
         add_library(hdf5::hdf5_hl ALIAS hdf5_hl-static)
 
     endif()
-    
+
 endif()
 
 if (BUILD_PYTHON_BINDINGS)
@@ -181,6 +181,3 @@ else()
     FetchContent_MakeAvailable(ClibPDF)
     find_package(ClibPDF REQUIRED)
 endif()
-
-
-

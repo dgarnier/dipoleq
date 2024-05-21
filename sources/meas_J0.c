@@ -64,26 +64,26 @@ void          meas_J0_Fit(TOKAMAK * td, MEAS * m)
 	Ptemp = -TWOPI * pl->XMagAxis;
 
 	switch (pl->ModelType) {
-		
+
 	  case Plasma_Std:
 			dPress = pl->Pp[1];
 			dG2 = pl->G2p[1];
 			break;
-			
+
 	  case Plasma_IsoNoFlow:
 			dPress = fpoly(pl->Pp, 0.0, pl->PpTerms);
 			dG2 = fpoly(pl->G2p, 0.0, pl->G2pTerms);
 			break;
-			
+
 	  case Plasma_IsoFlow:
 		  	break;
-		  	
+
 	  case Plasma_AnisoNoFlow:
 		  	break;
-		  	
+
 	  case Plasma_AnisoFlow:
 		  	break;
-		  	
+
 	}
 
 	m->Fit = (Ptemp * dPress + Gtemp * dG2)/MU0;	/* on-axis current in A/m^2 */
@@ -125,30 +125,30 @@ void          meas_J0_L(TOKAMAK * td, MEAS *dummy, double *L)
 	Ptemp = -TWOPI * pl->XMagAxis;
 
 	switch (pl->ModelType) {
-		
+
 	  case Plasma_Std:
 			/* --------  L[1] = G2p[1] ------- */
 			L[1] = Gtemp;
 			/* --------   L[2] = Pp[1]  ------- */
 			L[2] = Ptemp;
 			break;
-		  
+
 	  case Plasma_IsoNoFlow:
 			/* --------  G2p[i] ------- */
 			L[1] = Gtemp;
 			/* --------   Pp[i] ------- */
 			L[1+gt] = Ptemp;
 			break;
-		  
+
 	  case Plasma_IsoFlow:
 		  break;
-		  
+
 	  case Plasma_AnisoNoFlow:
 		  break;
-		  
+
 	  case Plasma_AnisoFlow:
 		  break;
-		  
+
 	}
 
 	for (iu = 1; iu <= td->NumUnkns; iu++)

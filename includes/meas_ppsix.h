@@ -6,7 +6,7 @@
 ** Header file for local poloidal field measurements.
 **
 ** Every measurement must define the following subroutines:
-**				
+**
 **				meas_ppsix_Fit(TOKAMAK *td, MEAS *m)
 **
 **				meas_ppsix_L(TOKAMAK *td, MEAS *m, double *L)

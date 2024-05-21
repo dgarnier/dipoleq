@@ -21,8 +21,8 @@
 void NimrodOutput(TOKAMAK *td)
 {
 	int ipts, jpts, i, j;
-	
-	double **P, **Psi, *R, *Z, **dPr, **dPz, **J ; 
+
+	double **P, **Psi, *R, *Z, **dPr, **dPz, **J ;
 
 	PSIGRID *pg;
 	PLASMA 	*pl;
@@ -30,7 +30,7 @@ void NimrodOutput(TOKAMAK *td)
 	char	fname[256];
 	FILE	*fi;
 	int		outset = 0;
-	
+
 	pl = td->Plasma;
 	pg = td->PsiGrid;
 
@@ -45,7 +45,7 @@ void NimrodOutput(TOKAMAK *td)
 	dPz = pl->GradPsiZ;
 	P = pl->Piso;
 	J = pg->Current;
-	
+
 	fi = fopen(fname, "w");
     if (!fi)
             nrerror("ERROR:	Could not open file for writing.");
@@ -54,16 +54,14 @@ void NimrodOutput(TOKAMAK *td)
 		fprintf(fi,"%12d\t\tNumber of R points\n",jpts);
 
 	fprintf(fi,"         R      \t     Z      \t  Psi   \t  dPsi/dx    \t  dPsi/dz    \t      P      \t      J\n");
-	
+
 	for (i=0;i<ipts;i++) {
 		for (j=0;j<jpts;j++) {
 			fprintf(fi,"%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\n",R[i],Z[j],
-			    Psi[i][j], 
+			    Psi[i][j],
 			    dPr[i][j],  dPz[i][j],
 			    P[i][j], J[i][j]/MU0);
 		}
 	}
 	fclose(fi);
 }
-
-

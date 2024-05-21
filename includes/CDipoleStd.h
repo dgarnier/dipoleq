@@ -1,4 +1,4 @@
-/* Dipole 
+/* Dipole
 **
 **  CDipoleStd.h
 **

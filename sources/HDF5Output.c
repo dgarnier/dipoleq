@@ -196,13 +196,13 @@ void          HDFPsiGrid(PSIGRID * pg, char *Oname)
 	HDFWrite0D(&pg->PsiAxis, PSIFCFS_0D, "Wb", g0d);
 	HDFWrite0D(&pg->PsiLim, PSILCFS_0D, "Wb", g0d);
 
-	
+
 
 
 	/* Do Residuals */
 	ScaleArray(a, pg->Residual, nmax, 1.0 / MU0);
 	HDFWrite2D(a, RES_NAME, "A/m^2", g2d, dsp2d, dsc1, dsc2);
-	
+
 
 	/* Close the file */
 	H5CHK(H5Dclose(dsc1));
@@ -252,31 +252,31 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 	H5CHK(dsc2 = H5Dopen2(g2d, DIMZ_NAME, H5P_DEFAULT));
 
 
-	TELL_FOLDER("Opened 2nd time");	
+	TELL_FOLDER("Opened 2nd time");
 	/* 0D values */
 	HDFWrite0D(&pl->R0, R0_0D, "m", g0d);
 	HDFWrite0D(&pl->Z0, Z0_0D, "m", g0d);
 	HDFWrite0D(&pl->B0, BT_0D, "T", g0d);
 	HDFWrite0D(&pl->Ip, IP_0D, "A", g0d);
-	
+
 	/* B 2 */
 	MULTI;
 	ScaleArray(a, pl->B2, nmax, 1.0);
 	HDFWrite2D(a, MODB_NAME, "T^2", g2d, dsp2d, dsc1, dsc2);
-	
+
 	/* Bp_x */
 	MULTI;
 	ap = a;
 	ITER_IJ(ix, iz, 0, nmax) *ap++ = pl->GradPsiZ[ix][iz] / TWOPI / pg->X[ix];
 	HDFWrite2D(a, BpX_NAME, "T", g2d, dsp2d, dsc1, dsc2);
-	
+
 	/* Bp_z */
 	MULTI;
 	ap = a;
 	ITER_IJ(ix, iz, 0, nmax) *ap++ = -pl->GradPsiX[ix][iz] / TWOPI / pg->X[ix];
 
 	HDFWrite2D(a, BpZ_NAME, "T", g2d, dsp2d, dsc1, dsc2);
-	
+
 	/* G */
 	MULTI;
 	ScaleArray(a, pl->G, nmax, 1.0);
@@ -299,7 +299,7 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 
 		  break;
 	}
-	
+
 	/* B E T A */
 	MULTI;
 	switch (pl->ModelType) {
@@ -328,7 +328,7 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 	H5CHK(H5Fclose(file));
 
 	free(a);
-	
+
 }
 
 /*
@@ -336,9 +336,9 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 **
 **
 */
-void	HDFFluxFuncs(char *Oname, int npts, double *PsiX, 
-					double *Psi, double *P, double *G, double *Pp, double *G2p, 
-					double *q, double *dVdpsi, double *Vol, double *Shear, 
+void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
+					double *Psi, double *P, double *G, double *Pp, double *G2p,
+					double *q, double *dVdpsi, double *Vol, double *Shear,
 					double *Well, double *Jave, double *B2ave, double *Beta,
 					double *BetaMax, double *XBetaMax, double *ZBetaMax, double *BBetaMax,
 					double *BMax, double *XBMax, double *ZBMax)
@@ -378,7 +378,7 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 	/* Pressure */
 	MULTI;
 	HDFWrite1D(P, PRESS_1D, "Pa", g1d, dims, dsrho);
-	
+
 	/* G */
 	MULTI;
 	HDFWrite1D(G, G_1D, "1", g1d, dims, dsrho);
@@ -406,7 +406,7 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 	/* Shear */
 	MULTI;
 	HDFWrite1D(Shear, SHEAR_1D, "1/m^2", g1d, dims, dsrho);
-	
+
 	/* Well */
 	MULTI;
 	HDFWrite1D(Well, WELL_1D, "Wb", g1d, dims, dsrho);
@@ -443,8 +443,8 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 
 }
 
-/* 
-** HDFLimiters 
+/*
+** HDFLimiters
 **
 */
 
@@ -511,19 +511,19 @@ void	HDFLimiters(const char *Oname, LIMITER **lims, int nlims)
 		H5CHK(H5LTset_attribute_string(gbd, ILIM_NAME, "FORMAT", "F7.4"));
 		free(a);
 	}
-	
+
 	/* Close the file */
 	H5CHK(H5Gclose(gbd));
 	H5CHK(H5Fclose(file));
 
-	TELL_FOLDER("After closing file");	
+	TELL_FOLDER("After closing file");
 }
 
 /*
 **	HDFBoundary
 **
 */
-void    HDFBoundary(const char *Oname, const char *Vname, double psiLabel, 
+void    HDFBoundary(const char *Oname, const char *Vname, double psiLabel,
                      double *X, double *Z, int len)
 {
 	char fname[FILENAME_MAX] = "";
@@ -569,12 +569,9 @@ void    HDFBoundary(const char *Oname, const char *Vname, double psiLabel,
 
 	free(a);
 
-	TELL_FOLDER("After closing file");	
-	
+	TELL_FOLDER("After closing file");
+
 	MULTI;
 
 	TELL_FOLDER("Just reset the folder");
 }
-
-
-

@@ -7,6 +7,11 @@
 from typing import Any
 from .input import MachineIn, PlasmaIn
 
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
 
 def read_dotin(file_path: str) -> dict[str, Any]:
     """Load the data from the cli tool *.in file
@@ -18,9 +23,9 @@ def read_dotin(file_path: str) -> dict[str, Any]:
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
 
-    top_dict: dict[str, Any] = dict(PsiGrid={}, Plasma={},
+    top_dict: dict[str, Any] = dict(Iname=file_path, PsiGrid={}, Plasma={},
                                     Limiters=[], Coils=[], Shells=[],
-                                    Separatricies=[], Measures=[])
+                                    Separatrices=[], Measures=[])
     cur_dict: dict[str, Any] = {}
     cur_coil = {}
     cur_shell = {}
@@ -46,7 +51,7 @@ def read_dotin(file_path: str) -> dict[str, Any]:
                 case 'SubShell':
                     cur_shell['SubShells'].append(cur_dict)
                 case 'Separatrix':
-                    top_dict['Separatricies'].append(cur_dict)
+                    top_dict['Separatrices'].append(cur_dict)
                 case 'Measure':
                     top_dict['Measures'].append(cur_dict)
                 case 'Limiter':
@@ -69,7 +74,7 @@ def input_from_dotin(filepath: str) -> MachineIn:
     Args:
         filepath (str): The path to the input file
     Returns:
-        dict: The input data
+        MachineIn: the verfied input data
     """
     info = read_dotin(filepath)
 
@@ -87,3 +92,19 @@ def input_from_dotin(filepath: str) -> MachineIn:
 
     return MachineIn(**info)
 
+
+def input_from_yaml(filepath: str) -> MachineIn:
+    """Read the input file and return a dictionary of the input data
+    Args:
+        filepath (str): The path to the input file
+    Returns:
+        MachineIn: the verfied input data
+    """
+    if yaml is None:
+        raise ImportError('pyyaml is required to read yaml files')
+
+    with open(filepath, 'r', encoding='utf-8') as stream:
+        info = yaml.safe_load(stream)
+
+    info['Iname'] = filepath
+    return MachineIn(**info)

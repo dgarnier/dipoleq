@@ -142,7 +142,7 @@ void          InValuesOutput(TOKAMAK * td)
 		  fprintf(fi, "    Plasma_AnisoFlow with H, G2, Sper, Spar, Rot Terms = %d, %d, %d, %d, %d\n",
 				  pl->HTerms, pl->G2pTerms, pl->SperTerms, pl->SparTerms, pl->RotTerms);
 		  break;
-	  default : 
+	  default :
 	  	  pl->Model->ModelDescription(fi);
 //	  case Plasma_DipoleStd:
 //		  fprintf(fi, "    Plasma_DipoleStd with %d PpTerms %d G2Terms\n",
@@ -160,7 +160,7 @@ void          InValuesOutput(TOKAMAK * td)
 		fprintf(fi, "    PsiGrid is not up-down symmetric.\n");
 	fprintf(fi, "    Thresholds for boundary = %g, residual = %g\n",
 			pg->BoundThreshold, pg->ResThreshold);
-	fprintf(fi, "    The under relaxation parameters are %g, %g\n\n", 
+	fprintf(fi, "    The under relaxation parameters are %g, %g\n\n",
 		pg->UnderRelax1, pg->UnderRelax2);
 
 	/* L I M I T E R S */
@@ -532,7 +532,7 @@ void          PlasmaOutput(TOKAMAK * td)
 		fprintf(fi, "\n");
 	}
 
-	if (pl->Model) 
+	if (pl->Model)
 		pl->Model->ModelOutput(fi);
 
 	fclose(fi);
@@ -560,7 +560,7 @@ void          FluxProfileOutput(TOKAMAK * td)
 	if (!fi)
 		nrerror("ERROR:	Could not open file for writing in FluxProfileOutput.");
 
-	
+
 	/*  H E A D E R */
 	fprintf(fi, "TokaMac Flux Profile Output. From Input FileName: %s\n", td->Iname);
 	fprintf(fi, "    RunName: %s. Info: %s\n", td->Name, td->Info);
@@ -577,7 +577,7 @@ void          FluxProfileOutput(TOKAMAK * td)
 	npts = pl->NumPsiPts;
 	PsiXmax = pl->PsiXmax;
 	DelPsi = pl->PsiLim - pl->PsiAxis;
-	
+
 	PsiV  = dvector(0, npts-1);
 	PsiXV = dvector(0, npts-1);
 	PV    = dvector(0, npts-1);
@@ -585,10 +585,10 @@ void          FluxProfileOutput(TOKAMAK * td)
 	PpV   = dvector(0, npts-1);
 	G2V   = dvector(0, npts-1);
 
-#ifndef DIPOLE	
+#ifndef DIPOLE
 	/*          12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 */
 	fprintf(fi, "i         PsiX         Psi           q           P           G          Pp         G2p        dVol         Vol          S         Well         <J>        <B2>\n");
-#else 
+#else
 	fprintf(fi, "i         PsiX         Psi           P           Pp        dVol         Vol        <J>        <B2>        <Beta>     BetaMax     RBetaMax    ZBetaMax    BBetaMax	BMax         RBMax       ZBMax\n");
 #endif
 	for (i = 0; i < npts; i++) {
@@ -596,21 +596,21 @@ void          FluxProfileOutput(TOKAMAK * td)
 		Psi = PsiV[i] = pl->PsiAxis + PsiX * DelPsi;
 		Pp = P = 0.0;
 		switch (pl->ModelType) {
-			case Plasma_Std: 		
+			case Plasma_Std:
 				P = -DelPsi * pl->Pp[1] * pow(1.0 - PsiX, pl->StndP) / pl->StndP;
 				G = 1.0 - DelPsi * pl->G2p[1] * pow(1.0 - PsiX, pl->StndG) / pl->StndG;
 				Pp = pl->Pp[1] * pow(1.0 - PsiX, pl->StndP - 1.0);
 				G2p = pl->G2p[1] * pow(1.0 - PsiX, pl->StndG - 1.0);
 			break;
-			
+
 			case  Plasma_IsoNoFlow:
 				P = fpoly_int(pl->Pp, PsiX, pl->PpTerms, DelPsi, P_EDGE);
 				G = fpoly_int(pl->G2p, PsiX, pl->G2pTerms, DelPsi, 1.0);
 				Pp = fpoly(pl->Pp, PsiX, pl->PpTerms);
 				G2p = fpoly(pl->G2p, PsiX, pl->G2pTerms);
 			break;
-			
-			default : 
+
+			default :
 			    if (pl->Model) {
 			    	P   = pl->Model->P(Psi);
 			    	Pp  = pl->Model->Pp(Psi);
@@ -623,7 +623,7 @@ void          FluxProfileOutput(TOKAMAK * td)
 //				G   = G2_DipoleStd_Loc (td,Psi);
 //				G2p = G2p_DipoleStd_Loc(td,Psi);
 //				break;
-				
+
 		}
 		GV[i]  = G  = sqrt(G);
 		PV[i]  = P  = P / MU0;
@@ -633,10 +633,10 @@ void          FluxProfileOutput(TOKAMAK * td)
 		fprintf(fi, "%02d %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g\n",
 				i, PsiX, Psi, pl->q_pr[i], P, G, Pp, G2p, pl->Volp_pr[i], pl->Vol_pr[i],
 				pl->S_pr[i], pl->Well_pr[i], pl->J_pr[i], pl->B2_pr[i]);
-#else 
+#else
 		fprintf(fi, "%02d %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g\n",
 				i, PsiX, Psi, P, Pp, pl->Volp_pr[i], pl->Vol_pr[i],
-			 pl->J_pr[i], pl->B2_pr[i], pl->Beta_pr[i], 
+			 pl->J_pr[i], pl->B2_pr[i], pl->Beta_pr[i],
 			 pl->BetaMax_pr[i], pl->XBetaMax_pr[i], pl->ZBetaMax_pr[i], pl->BBetaMax_pr[i],
                          pl->BMax_pr[i],pl->XBMax_pr[i],pl->ZBMax_pr[i]);
 
@@ -645,8 +645,8 @@ void          FluxProfileOutput(TOKAMAK * td)
 	fprintf(fi, "\n");
 
 	fclose(fi);
-#ifdef HDFOUTPUT	
-	HDFFluxFuncs(td->Oname,npts,PsiXV,PsiV,PV,GV,PpV,G2V,pl->q_pr,pl->Volp_pr, pl->Vol_pr, 
+#ifdef HDFOUTPUT
+	HDFFluxFuncs(td->Oname,npts,PsiXV,PsiV,PV,GV,PpV,G2V,pl->q_pr,pl->Volp_pr, pl->Vol_pr,
 			pl->S_pr, pl->Well_pr, pl->J_pr, pl->B2_pr, pl->Beta_pr,
 			pl->BetaMax_pr, pl->XBetaMax_pr, pl->ZBetaMax_pr, pl->BBetaMax_pr,
                          pl->BMax_pr,pl->XBMax_pr,pl->ZBMax_pr);
@@ -677,7 +677,7 @@ void          MeasOutput(TOKAMAK * td)
 	fi = fopen(fname, "w");
 	if (!fi)
 		nrerror("ERROR:	Could not open file for writing in MeasOutput.");
-		
+
 	deg_freedom = td->NumMeasures - td->NumUnkns;
 
 	/*  H E A D E R */
@@ -690,7 +690,7 @@ void          MeasOutput(TOKAMAK * td)
 		fprintf(fi, "    Run was initialized internally.\n");
 	fprintf(fi, "    The final value of chisq = %g; BoundError = %g\n",
 			td->Plasma->ChiSqr, td->PsiGrid->BoundError);
-        if (deg_freedom >= 1) 
+        if (deg_freedom >= 1)
 	fprintf(fi, "    The chi-square probability, Q = %g.\n",
 		gammq(0.5*deg_freedom,0.5*td->Plasma->ChiSqr));
 	fprintf(fi, "    Run ended at   %s\n\n", td->Stop);
@@ -763,7 +763,7 @@ void          BndMomentsOutput(TOKAMAK * td)
 
 	fprintf(fi, "\n");
         fclose(fi);
-        
+
 
 #ifdef HDFOUTPUT
         {
@@ -794,7 +794,7 @@ void          BndMomentsOutput(TOKAMAK * td)
 
 	free_dvector(Zm, 0, nmomts);
 	free_dvector(Xm, 0, nmomts);
-	
+
 }
 
 /*
@@ -991,18 +991,18 @@ void          DCONOutput(TOKAMAK * td)
 	PsiXmax = pl->PsiXmax;
 	DelPsi = pl->PsiLim - pl->PsiAxis;
 	PsiAxis = pl->PsiAxis;
-	
+
 	Nsize = pg->Nsize;
-	
+
 	/* Grid Size */
 	fprintf(fi, " %6d %6d %6d\n",Nsize+1,Nsize+1,npts);
 	fprintf(fi, " %14.7e %14.7e %14.7e %14.7e\n",pg->Xmin,pg->Xmax,pg->Zmin,pg->Zmax);
 	fprintf(fi, " %14.7e\n",pl->beta);
 	fprintf(fi, " %14.7e\n\n",pl->betap);
-	
+
 	/* PsiGrid */
-	for (iz = 0; iz <= Nsize; iz++) 
-		for (ix = 0; ix <= Nsize; ix++) 
+	for (iz = 0; iz <= Nsize; iz++)
+		for (ix = 0; ix <= Nsize; ix++)
 			fprintf(fi, " %14.7e\n", pg->Psi[ix][iz]);
 	fprintf(fi, "\n");
 
@@ -1013,7 +1013,7 @@ void          DCONOutput(TOKAMAK * td)
 		fprintf(fi, " %14.7e\n", Psi);
 	}
 	fprintf(fi, "\n");
-	
+
 	/* F(ipsi) */
 	for (i = 0; i < npts; i++) {
 		PsiX = i * PsiXmax / (npts - 1);
@@ -1027,7 +1027,7 @@ void          DCONOutput(TOKAMAK * td)
 		fprintf(fi, " %14.7e\n", G);
 	}
 	fprintf(fi, "\n");
-	
+
 	/* P(ipsi) */
 	for (i = 0; i < npts; i++) {
 		PsiX = i * PsiXmax / (npts - 1);
@@ -1041,13 +1041,13 @@ void          DCONOutput(TOKAMAK * td)
 		fprintf(fi, " %14.7e\n", P);
 	}
 	fprintf(fi, "\n");
-	
+
 	/* q(ipsi) */
 	for (i = 0; i < npts; i++) {
 		fprintf(fi, " %14.7e\n", pl->q_pr[i]);
 	}
 	fprintf(fi, "\n");
-	
+
 	fclose(fi);
 }
 
@@ -1076,10 +1076,10 @@ void GS2Output(TOKAMAK * td)
 	PsiFCFS = pl->PsiAxis;
         PsiLCFS = pl->PsiLim;
         PsiNorm = 1.0;  /* what should this be?  2*PI*Current... what for? */
-	
+
 	Nsize = pg->Nsize;
-	
-        
+
+
 	/* Grid Size */
         /* write(7,200) nr, nz, nrho */
 	fprintf(fi, " %6d %6d %6d\n",Nsize+1,Nsize+1,npts);
@@ -1089,7 +1089,7 @@ void GS2Output(TOKAMAK * td)
         /* write(7,210) 1., 0. */
         fprintf(fi, " %14.7e %14.7e\n",pg->Xmin,pg->Zmin);
         /* Psi_FCFS, Psi_LCFS, not normalized and 2*pi*current */
-        fprintf(fi, " %14.7e %14.7e %14.7e\n", PsiFCFS, PsiLCFS, PsiNorm);          
+        fprintf(fi, " %14.7e %14.7e %14.7e\n", PsiFCFS, PsiLCFS, PsiNorm);
         /* Pressure profile p(psi_norm)  n_psi_norm = nrho ?? or nr ??? */
         /* priyanka has this as nr... but with no good reason. */
         np = Nsize+1;
@@ -1110,16 +1110,15 @@ void GS2Output(TOKAMAK * td)
             if (!(++k % 5)) fprintf(fi,"\n");
         }
         if (k % 5) fprintf(fi,"\n");
-            
+
         /* write(7,210) (rho_mid(i), i=1,nrho) */
-        
+
         /* write(7,210) (psi_mid(i), i=1,nrho) */
 	/*  100 format (4(1x,e12.5))
             200 format (5(1x,i5))
             210 format (5(e16.8)) */
- 
+
 	fclose(fi);
 
 
 }
-

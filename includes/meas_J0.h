@@ -6,7 +6,7 @@
 ** Header file for local poloidal field measurements.
 **
 ** Every measurement must define the following subroutines:
-**				
+**
 **				meas_J0_Fit(TOKAMAK *td, MEAS *m)
 **
 **				meas_J0_L(TOKAMAK *td, MEAS *m, double *L)

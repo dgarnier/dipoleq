@@ -1,9 +1,9 @@
-/* 
+/*
  *  DipoleEq python bindings
  *
  *  Author: Darren Garnier <darren@openstar.nz>
  *
- * 
+ *
  */
 
 
@@ -85,7 +85,7 @@ private:
 
 
 // because nrutils suck and you can't just free a thing
-// really this all needs to be rewritten in C++ 
+// really this all needs to be rewritten in C++
 // with std::vector and eigen
 
 void free_COIL(COIL * c, TOKAMAK *m) {
@@ -230,12 +230,12 @@ void set_NumSubCoils(COIL& self, int n) {
 }
 
 
-PYBIND11_MODULE(_c, m) {
-    // the order of definitions is important because 
+PYBIND11_MODULE(core, m) {
+    // the order of definitions is important because
     // pybind11-stubgen can't handle forward declarations
     static Logger logger;                    // initialize the logfile
     m.doc() = "Python bindings for DipolEq"; // optional module docstring
-    
+
     py::class_<DMatrixView>(m, "MatrixView", py::buffer_protocol())
         .def_buffer(&DMatrixView::get_buffer_info)
     ;
@@ -248,7 +248,7 @@ PYBIND11_MODULE(_c, m) {
 
     py::enum_<ModelType>(m, "ModelType")
         .value("Std", ModelType::Std)
-        .value("IsoNoFlow", ModelType::IsoNoFlow)   
+        .value("IsoNoFlow", ModelType::IsoNoFlow)
         .value("IsoFlow", ModelType::IsoFlow)
         .value("AnisoNoFlow", ModelType::AnisoNoFlow)
         .value("AnisoFlow", ModelType::AnisoFlow)
@@ -261,7 +261,7 @@ PYBIND11_MODULE(_c, m) {
     ;
     py::class_<CPlasmaModel>(m, "CPlasmaModel")
         .def("update_model", &CPlasmaModel::UpdateModel, "Update the plasma model")
-        .def("model_input", &CPlasmaModel::ModelInput, "Input model parameters")    
+        .def("model_input", &CPlasmaModel::ModelInput, "Input model parameters")
     ;
     py::class_<PLASMA>(m, "Plasma")
         .def(py::init(&new_Plasma), "Create Plasma")
@@ -274,7 +274,9 @@ PYBIND11_MODULE(_c, m) {
         .def_property("ModelType", [](PLASMA& self) {return ModelType(self.ModelType);},
             [](PLASMA& self, ModelType mtype) { self.ModelType = (int) mtype;},
             "Plasma model type, see ModelType enum")
-        .def_property_readonly("Model", [](PLASMA& self) {return self.Model;}, py::return_value_policy::reference)
+        .def_property_readonly("Model", [](PLASMA& self)->py::object {
+            if (self.Model == NULL) return py::none();
+            return py::cast(self.Model);})
         .def_readwrite("R0", &PLASMA::R0, "Reference major radius")
         .def_readwrite("Z0", &PLASMA::Z0, "Reference vertical position")
         .def_readwrite("B0", &PLASMA::B0, "Vacuum magnetic field at R0, Z0")
@@ -334,28 +336,59 @@ PYBIND11_MODULE(_c, m) {
         .def_readonly("ChiSqr", &PLASMA::ChiSqr, "Chi squared")
         .def_readonly("totKinEnergy", &PLASMA::TotKinEnergy, "Total kinetic energy")
         .def_readonly("totMagEnergy", &PLASMA::TotMagEnergy, "Total agnetic energy")
-        .def_property_readonly("B2", [](PLASMA& self) {return DMatrixView(self.Nsize, self.B2);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("GradPsiX", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsiX);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("GradPsiZ", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsiZ);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("GradPsi2", [](PLASMA& self) {return DMatrixView(self.Nsize, self.GradPsi2);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Bt", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Bt);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("G", [](PLASMA& self) {return DMatrixView(self.Nsize, self.G);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Rho", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Rho);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Piso", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Piso);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Ppar", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Ppar);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Pper", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Pper);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Alpha", [](PLASMA& self) {return DMatrixView(self.Nsize, self.Alpha);},
-            py::return_value_policy::reference_internal)
+        .def_property_readonly("B2", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.B2);})
+        .def_property_readonly("GradPsiR", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.GradPsiX);})
+        .def_property_readonly("GradPsiZ", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.GradPsiZ);})
+        .def_property_readonly("GradPsi2", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.GradPsi2);})
+        .def_property_readonly("Bt", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.Bt);})
+        .def_property_readonly("G", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.G);})
+        .def_property_readonly("Rho", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.Rho);})
+        .def_property_readonly("Piso", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.Piso);})
+        .def_property_readonly("Ppar", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.Ppar);})
+        .def_property_readonly("Pper", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.Pper);})
+        .def_property_readonly("Alpha", [](PLASMA& self)->py::object {
+            return DMatrixView::create(self.Nsize, self.Alpha);})
+
+        .def_property_readonly("q_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.q_pr);})
+        .def_property_readonly("Volp_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.Volp_pr);})
+        .def_property_readonly("Vol_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.Vol_pr);})
+        .def_property_readonly("S_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.S_pr);})
+        .def_property_readonly("B2_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.B2_pr);})
+        .def_property_readonly("Well_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.Well_pr);})
+        .def_property_readonly("J_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.J_pr);})
+        .def_property_readonly("Beta_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.Beta_pr);})
+        .def_property_readonly("BetaMax_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.BetaMax_pr);})
+        .def_property_readonly("RBetaMax_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.XBetaMax_pr);})
+        .def_property_readonly("ZBetaMax_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.ZBetaMax_pr);})
+        .def_property_readonly("BBetaMax_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.BBetaMax_pr);})
+        .def_property_readonly("BMax_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.BMax_pr);})
+        .def_property_readonly("RBMax_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.XBMax_pr);})
+        .def_property_readonly("ZBMax_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.ZBMax_pr);})
     ;
 
     py::class_<PSIGRID>(m, "PsiGrid")
@@ -390,19 +423,19 @@ PYBIND11_MODULE(_c, m) {
         .def_readwrite("DelPsi", &PSIGRID::DelPsi)
         .def_readwrite("RMagAxis", &PSIGRID::XMagAxis)
         .def_readwrite("ZMagAxis", &PSIGRID::ZMagAxis)
-        .def_property_readonly("R", [](PSIGRID& self) {return DVectorView(self.Nsize, self.X);},
+        .def_property_readonly("R", [](PSIGRID& self) {return DVectorView(self.Nsize + 1, self.X);},
             py::return_value_policy::reference_internal)
-        .def_property_readonly("Z", [](PSIGRID& self) {return DVectorView(self.Nsize, self.Z);},
+        .def_property_readonly("Z", [](PSIGRID& self) {return DVectorView(self.Nsize + 1, self.Z);},
             py::return_value_policy::reference_internal)
         .def_property_readonly("IsPlasma", [](PSIGRID& self) {return IMatrixView(self.Nsize, self.IsPlasma);},
             py::return_value_policy::reference_internal)
         .def_property_readonly("Psi", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Psi);},
             py::return_value_policy::reference_internal)
-        .def_property_readonly("Current", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Current);}, 
+        .def_property_readonly("Current", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Current);},
             py::return_value_policy::reference_internal)
         .def_property_readonly("Residual", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Residual);},
             py::return_value_policy::reference_internal)
-    ;    
+    ;
 
     py::enum_<MeasType>(m, "MeasType")
         .value("unk", MeasType::unk)
@@ -465,7 +498,7 @@ PYBIND11_MODULE(_c, m) {
             }, "Name of the subcoil")
     ;
     py::class_<ObjVecView<SUBCOIL>>(m, "SubCoils")
-        .def("__getitem__", &ObjVecView<SUBCOIL>::operator[], 
+        .def("__getitem__", &ObjVecView<SUBCOIL>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<SUBCOIL>& self, size_t i, SUBCOIL* c) {
             if (i<0 || i>=self.size())
@@ -489,7 +522,7 @@ PYBIND11_MODULE(_c, m) {
         .def_property_readonly("SubCoils", [](COIL& self) {
             return ObjVecView<SUBCOIL>(self.NumSubCoils, self.SubCoils);},
             py::return_value_policy::reference_internal, "Return vector of SubCoils")
-        .def_property("NumSubCoils", [](COIL& self) {return self.NumSubCoils;}, 
+        .def_property("NumSubCoils", [](COIL& self) {return self.NumSubCoils;},
             &set_NumSubCoils, "Number of subcoils, setting will erase old subcoils")
         .def_readwrite("CoilCurrent", &COIL::CoilCurrent)
         .def_readwrite("R", &COIL::X, "Coil centroid R")
@@ -512,12 +545,12 @@ PYBIND11_MODULE(_c, m) {
     ;
 
     py::class_<ObjVecView<SUBSHELL>>(m, "SubShells")
-        .def("__getitem__", &ObjVecView<SUBSHELL>::operator[], 
+        .def("__getitem__", &ObjVecView<SUBSHELL>::operator[],
             py::return_value_policy::reference)
         .def("__len__", [](ObjVecView<SUBSHELL>& self) {return self.size();})
         // .def("__setitem__", &ObjVecView<SUBSHELL>::insert)
         // this doesn't work because the free operation can't be passed in
-        // .def("new_subshell", [](ObjVecView<SUBSHELL>& self) { return new_SubShell();}, 
+        // .def("new_subshell", [](ObjVecView<SUBSHELL>& self) { return new_SubShell();},
         //    py::return_value_policy::reference, "Add a new subshell")
     ;
 
@@ -530,7 +563,7 @@ PYBIND11_MODULE(_c, m) {
             }, "Name of the shell")
         .def_readonly("NumSubShells", &SHELL::NumSubShells)
         .def("set_NumSubShells", &set_SHELL_NumSubShells, "Set the number of subshells")
-        .def_property_readonly("SubShells", 
+        .def_property_readonly("SubShells",
             [](SHELL& self) {return ObjVecView<SUBSHELL>(self.NumSubShells, self.SubShells);},
              "Return vector of SubShells")
     ;
@@ -590,15 +623,15 @@ PYBIND11_MODULE(_c, m) {
     ;
 
     py::class_<ObjVecView<COIL>>(m, "Coils")
-        .def("__getitem__", &ObjVecView<COIL>::operator[], 
+        .def("__getitem__", &ObjVecView<COIL>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", &ObjVecView<COIL>::insert)
         .def("__len__", [](ObjVecView<COIL>& self) {return self.size();})
-        .def("new_Coil", [](ObjVecView<COIL>& self, int n) { return new_Coil(n);}, 
+        .def("new_Coil", [](ObjVecView<COIL>& self, int n) { return new_Coil(n);},
             py::return_value_policy::reference, "Add a new coil")
     ;
     py::class_<ObjVecView<LIMITER>>(m, "Limiters")
-        .def("__getitem__", &ObjVecView<LIMITER>::operator[], 
+        .def("__getitem__", &ObjVecView<LIMITER>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<LIMITER>& self, size_t i, LIMITER* c) {
             if (i<0 || i>=self.size())
@@ -609,10 +642,10 @@ PYBIND11_MODULE(_c, m) {
         .def("new_limiter", [](ObjVecView<LIMITER>& self) {
             LIMITER *c = new_Limiter();
             return c;
-        }, py::return_value_policy::reference_internal, "Add a new limiter")    
+        }, py::return_value_policy::reference_internal, "Add a new limiter")
     ;
-    py::class_<ObjVecView<SEPARATRIX>>(m, "Separatricies")
-        .def("__getitem__", &ObjVecView<SEPARATRIX>::operator[], 
+    py::class_<ObjVecView<SEPARATRIX>>(m, "Separatrices")
+        .def("__getitem__", &ObjVecView<SEPARATRIX>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<SEPARATRIX>& self, size_t i, SEPARATRIX* c) {
             if (i<0 || i>=self.size())
@@ -626,7 +659,7 @@ PYBIND11_MODULE(_c, m) {
         }, py::return_value_policy::reference, "Add a new separatrix")
     ;
     py::class_<ObjVecView<MEAS>>(m, "Measures")
-        .def("__getitem__", &ObjVecView<MEAS>::operator[], 
+        .def("__getitem__", &ObjVecView<MEAS>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<MEAS>& self, size_t i, MEAS* c) {
             if (i<0 || i>=self.size())
@@ -641,27 +674,32 @@ PYBIND11_MODULE(_c, m) {
     ;
 
     py::class_<ObjVecView<SHELL>>(m, "Shells")
-        .def("__getitem__", &ObjVecView<SHELL>::operator[], 
+        .def("__getitem__", &ObjVecView<SHELL>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", &ObjVecView<SHELL>::insert)
         .def("__len__", [](ObjVecView<SHELL>& self) {return self.size();})
-        .def("new_shell", [](ObjVecView<SHELL>& self) { return new_Shell(0);}, 
+        .def("new_shell", [](ObjVecView<SHELL>& self) { return new_Shell(0);},
             py::return_value_policy::reference, "Add a new shell")
     ;
- 
+
     // and finally the Machine!
     py::class_<TOKAMAK>(m, "Machine")
-        .def(py::init(&new_Tokamak), "Return new Machine struct")
+        .def(py::init(&new_Tokamak), "Return new Machine struct",
+            py::return_value_policy::reference)
+        .def(py::init(&FileInput), "Initialize Machine with a file",
+            py::return_value_policy::reference)
         .def("init", [](TOKAMAK& self) {init_Tokamak(&self);},
             "Initialize Machine")
-        .def("set_coil_NumSubCoils", 
+        .def("set_coil_NumSubCoils",
                 [](TOKAMAK& self, int i, int n) {
                     if (self.Coils[i] != NULL)
                         free_Coil(self.Coils[i], self.PsiGrid->Nsize);
                     self.Coils[i] = new_Coil(n);
                 },"Set the number of subcoils for a coil")
-        .def(py::init(&FileInput), "Initialize Machine with a file")
-        .def("__del__", &free_Tokamak, "Free Machine and what is below it")
+        // This should be used, but when defined causes "double free" errors
+        //.def("__del__", [](TOKAMAK& self) {printf("freeing %zu", (size_t)&self);
+        //                                 free_Tokamak(&self);},
+        //    "Free the machine")
         .def("set_start_time", &SetStartTime, "Set the start time")
         .def("set_stop_time", &SetStopTime, "Set the end time")
         .def("read_restart", [](TOKAMAK& self)  { ReadRestart(self.RSname, &self); }, "Read the restart file")
@@ -699,7 +737,7 @@ PYBIND11_MODULE(_c, m) {
         .def_readonly("Start", &TOKAMAK::Start)
         .def_readonly("Stop",  &TOKAMAK::Stop)
 
-        .def_readonly("PsiGrid", &TOKAMAK::PsiGrid, 
+        .def_readonly("PsiGrid", &TOKAMAK::PsiGrid,
             py::return_value_policy::reference_internal)
         .def_readonly("Plasma", &TOKAMAK::Plasma,
             py::return_value_policy::reference_internal)
@@ -720,6 +758,10 @@ PYBIND11_MODULE(_c, m) {
             [](TOKAMAK& self, std::string name){
                 strncpy(self.Oname, name.c_str(), sizeof(TOKAMAK::Oname)-1);
             }, "Output name")
+        .def_property("Iname", [](TOKAMAK& self) {return self.Iname;},
+            [](TOKAMAK& self, std::string name){
+                strncpy(self.Iname, name.c_str(), sizeof(TOKAMAK::Iname)-1);
+            }, "Input name")
         .def_property("LHname", [](TOKAMAK& self) {return self.LHname;},
             [](TOKAMAK& self, std::string name){
                 strncpy(self.LHname, name.c_str(), sizeof(TOKAMAK::LHname)-1);
@@ -741,9 +783,9 @@ PYBIND11_MODULE(_c, m) {
                 strncpy(self.RSname, name.c_str(), sizeof(TOKAMAK::RSname)-1);
             }, "RS name")
         .def_property_readonly("Coils", [](TOKAMAK& self) {
-            return ObjVecView<COIL>(self.NumCoils, self.Coils, &self, free_COIL);}, 
+            return ObjVecView<COIL>(self.NumCoils, self.Coils, &self, free_COIL);},
             "Array of COILS")
-        .def_property("NumCoils", [](TOKAMAK& self) {return self.NumCoils;}, 
+        .def_property("NumCoils", [](TOKAMAK& self) {return self.NumCoils;},
                     &set_NumCoils, "Number of coils, setting will erase old coils")
         .def("set_NumSubcoils", [](TOKAMAK& self, int i, int n) {
                 if (self.Coils[i] != NULL)
@@ -753,19 +795,19 @@ PYBIND11_MODULE(_c, m) {
         .def_property_readonly("Limiters", [](TOKAMAK& self) {
             return ObjVecView<LIMITER>(self.NumLimiters, self.Limiters);
             }, "Get the limiters")
-        .def_property("NumLimiters", [](TOKAMAK& self) {return self.NumLimiters;}, 
+        .def_property("NumLimiters", [](TOKAMAK& self) {return self.NumLimiters;},
             &set_NumLimiters, "Number of limiters, setting will erase old limiters")
         .def_property_readonly("Shells", [](TOKAMAK& self) {
             return ObjVecView<SHELL>(self.NumShells, self.Shells, &self, free_SHELL);
             }, "Get the shells")
-        .def_property("NumShells", [](TOKAMAK& self) {return self.NumShells;}, 
+        .def_property("NumShells", [](TOKAMAK& self) {return self.NumShells;},
             &set_NumShells, "Number of shells, setting will erase old shells")
-        .def("set_NumSubShells", &set_TOKAMAK_NumSubShells, 
+        .def("set_NumSubShells", &set_TOKAMAK_NumSubShells,
             "Set the number of subshells of shell i to n")
         .def_property_readonly("Measures", [](TOKAMAK& self) {
             return ObjVecView<MEAS>(self.NumMeasures, self.Measures, &self, free_MEAS);
             }, "Get the measurements")
-        .def_property("NumMeasures", [](TOKAMAK& self) {return self.NumMeasures;}, 
+        .def_property("NumMeasures", [](TOKAMAK& self) {return self.NumMeasures;},
             &set_NumMeasures, "Number of measurements, setting will erase old measurements")
         .def_property_readonly("Seps", [](TOKAMAK& self) {
             return ObjVecView<SEPARATRIX>(self.NumSeps, self.Seps);

@@ -46,7 +46,7 @@ FILE         *LogFile;
 
 #ifdef IDL
 void          nrerror(char error_text[])
-{	
+{
 	IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, error_text);
 }
 

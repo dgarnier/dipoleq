@@ -64,8 +64,8 @@ const double  ROFF = 0.0100 / (64 * 64) / 3.0;
 ** This uses the definition of elliptic functions in Abromowitz and Segun.
 */
 
-/* 
-** DTG 1/12/98 -- added fix for zero x 
+/*
+** DTG 1/12/98 -- added fix for zero x
 */
 
 double        Green(double x, double z, double xc, double zc)
@@ -75,7 +75,7 @@ double        Green(double x, double z, double xc, double zc)
 
 	denom =  ((x + xc) * (x + xc) + (z - zc) * (z - zc));
 	k2 = 4.0 * x * xc / denom;
-	
+
 	if (k2 > (1.0 - ROFF))
 		k2 = 1.0 - ROFF;
 	m1 = 1.0 - k2;

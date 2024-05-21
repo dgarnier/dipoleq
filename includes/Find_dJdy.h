@@ -34,4 +34,3 @@ void Find_dJdy(TOKAMAK *, double ***);
 #endif
 
 #endif
-

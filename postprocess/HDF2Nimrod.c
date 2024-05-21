@@ -42,8 +42,8 @@ int 	GetContour(PSIGRID *pg, double Psi, double **X, double **Z);
 int main(int argc, char **argv)
 {
 	int ipts, jpts, i, j;
-	
-	double **P, **Psi, *R, *Z, **dPr, **dPz, **J ; 
+
+	double **P, **Psi, *R, *Z, **dPr, **dPz, **J ;
 
 	PSIGRID 	*pg;
 	PLASMA 		*pl;
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
                     strncpy(fn,argv[i],256);
                     continue;
                 }
-            for ( ; i < argc; i++) 
+            for ( ; i < argc; i++)
                 if (argv[i][0] != '-') {
                     strncpy(on,argv[i],256);
                     if (strchr(on,'.') == NULL) strcat(on,".dat");
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 	dPz = pl->GradPsiZ;
 	P = pl->Piso;
 	J = pg->Current;
-	
+
         fi = fopen(on, "w");
         if (!fi)
             nrerror("ERROR:	Could not open file for writing.");
@@ -169,11 +169,11 @@ int main(int argc, char **argv)
 		fprintf(fi,"%12d\t\tNumber of R points\n",jpts);
 
 	fprintf(fi,"         R      \t     Z      \t  Psi   \t  dPsi/dx    \t  dPsi/dz    \t      P      \t      J\n");
-	
+
 	for (i=0;i<ipts;i++) {
 		for (j=0;j<jpts;j++) {
 			fprintf(fi,"%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\t%21.15e\n",R[i],Z[j],
-			    Psi[i][j], 
+			    Psi[i][j],
 			    dPr[i][j],  dPz[i][j],
 			    P[i][j], J[i][j]/MU0);
 		}
@@ -182,5 +182,3 @@ int main(int argc, char **argv)
 	printf("We are out of here!\n");
 	return 0;
 }
-
-

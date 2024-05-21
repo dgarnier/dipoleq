@@ -1,8 +1,8 @@
 set(dipoleq_SOURCES)
-list(APPEND dipoleq_SOURCES 
-    AddCoilJ.c 
-    AddShellJ.c 
-    CDipoleIntStable.cc 
+list(APPEND dipoleq_SOURCES
+    AddCoilJ.c
+    AddShellJ.c
+    CDipoleIntStable.cc
     CDipoleStd.cc
     CPlasmaModel.cc
     DelChiSqr.c
@@ -94,8 +94,8 @@ add_library(DipolEqLib STATIC EXCLUDE_FROM_ALL ${dipoleq_SOURCES})
 
 target_link_libraries(DipolEqLib PRIVATE ${dipoleq_LIBS})
 
-target_include_directories(DipolEqLib 
-                            PUBLIC 
+target_include_directories(DipolEqLib
+                            PUBLIC
                                 ${CMAKE_SOURCE_DIR}/includes
                             )
 target_compile_definitions(DipolEqLib PRIVATE ${dipoleq_DEFS})

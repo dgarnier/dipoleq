@@ -1,7 +1,7 @@
 /*
 **	dUnkn.h
 **
-**	Computes a random vector representing the unknowns of 
+**	Computes a random vector representing the unknowns of
 **	a least-squares data fitting problem.
 **
 **	October 18, 1993

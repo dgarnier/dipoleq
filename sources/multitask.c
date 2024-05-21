@@ -1,7 +1,7 @@
 #include "multitask.h"
 
 #if MULTITASK
-#ifdef __MWERKS__ 
+#ifdef __MWERKS__
 #include <MacTypes.h>
 //#include <Quickdraw.h>
 #include <Events.h>
@@ -33,16 +33,16 @@ void doMultiTask( long sleepTime )
       		SetThemeCursor( kThemeArrowCursor );
       		/* Restore arrow while we're handling a real event */
       //		SetCursor(NULL);
-      		
+
       		/* Need to do something with the event if we got one */
 			/* Add additional event handling code here if you need it */
-			SIOUXHandleOneEvent( &myEvent );      
-		//	if( SIOUXQuitting ) 
+			SIOUXHandleOneEvent( &myEvent );
+		//	if( SIOUXQuitting )
     	//		sig_die("User interrupt; execution stopped", 1);		/* Graceful quit */
  		}
- 		
-    	err = SetAnimatedThemeCursor ( kThemeSpinningCursor, spin++); 
-    
+
+    	err = SetAnimatedThemeCursor ( kThemeSpinningCursor, spin++);
+
     	gNextCheck = TickCount() + gTickSlice;			/* Reset the tick count */
     }
 }

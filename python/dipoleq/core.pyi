@@ -4,7 +4,7 @@ Python bindings for DipolEq
 from __future__ import annotations
 import numpy
 import typing
-__all__ = ['CPlasmaModel', 'CircleType', 'Coil', 'Coils', 'IMatrixView', 'Limiter', 'Limiters', 'Machine', 'MatrixView', 'MeasType', 'Measure', 'Measures', 'ModelType', 'Plasma', 'PsiGrid', 'Separatricies', 'Separatrix', 'Shell', 'Shells', 'SubCoil', 'SubCoils', 'SubShell', 'SubShells', 'VectorView']
+__all__ = ['CPlasmaModel', 'CircleType', 'Coil', 'Coils', 'IMatrixView', 'Limiter', 'Limiters', 'Machine', 'MatrixView', 'MeasType', 'Measure', 'Measures', 'ModelType', 'Plasma', 'PsiGrid', 'Separatrices', 'Separatrix', 'Shell', 'Shells', 'SubCoil', 'SubCoils', 'SubShell', 'SubShells', 'VectorView']
 class CPlasmaModel:
     def model_input(self, arg0: str, arg1: str, arg2: str) -> None:
         """
@@ -418,7 +418,7 @@ class Machine:
     def SMname(self, arg1: str) -> None:
         ...
     @property
-    def Seps(self) -> Separatricies:
+    def Seps(self) -> Separatrices:
         """
         Get the separatrixes
         """
@@ -1080,7 +1080,7 @@ class PsiGrid:
     @property
     def Z(self) -> VectorView:
         ...
-class Separatricies:
+class Separatrices:
     def __getitem__(self, arg0: int) -> Separatrix:
         ...
     def __len__(self) -> int:

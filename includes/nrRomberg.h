@@ -8,7 +8,7 @@
 **	integral = qromb(function, a, b);
 **
 **	where
-**			function is defined as 
+**			function is defined as
 **				double function(double x);
 **
 **			a, b are the limits of integration

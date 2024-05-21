@@ -22,14 +22,14 @@
 
 #include "tokamak.h"
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 void FindMeasFit(TOKAMAK *td);
 void FindMeasNow(TOKAMAK *td);
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 

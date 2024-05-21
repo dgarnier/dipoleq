@@ -80,7 +80,7 @@ extern FILE  *LogFile;
 
 int           getline(char *line, int max, FILE * fi)
 {
-	if (fgets(line, max, fi) == NULL) 
+	if (fgets(line, max, fi) == NULL)
 		return 0;
 	else if ((line[0] == '/' && line[1] == '/') || (line[0] == '\\' && line[1] == '\\'))
 		return 0;				/* ignore C++ comment lines */
@@ -638,17 +638,17 @@ void          AssignCoilVar(COIL * c, char *word, char *value)
 			  break;
 		  case Coil_X:
 			  sscanf(value, "%lf", &(c->X));
-			  break;	  
+			  break;
 		  case Coil_DX:
 			  sscanf(value, "%lf", &(c->dX));
-			  break;	  
+			  break;
 		  case Coil_Z:
 			  sscanf(value, "%lf", &(c->Z));
-			  break;	  
+			  break;
 		  case Coil_DZ:
 			  sscanf(value, "%lf", &(c->dZ));
-			  break;	  
-		  
+			  break;
+
 		}
 }
 
@@ -769,8 +769,8 @@ TOKAMAK      *FileInput(const char *fname)
 		linelen = getline(linebuf, 128, fi);
 	}
 
-	
-	
+
+
 
 	/* P S I G R I D */
 	rewind(fi);
@@ -794,8 +794,8 @@ TOKAMAK      *FileInput(const char *fname)
 	while (!feof(fi)) {
 		if (linelen && sscanf(linebuf, "K_%s", keystr))
 			isOK = (getkey(keystr) == K_Plasma);
-		else if (linelen && isOK && (sscanf(linebuf, "%s = %s", keystr, valstr) == 2)) 
-			AssignPlasmaVar(td, keystr, valstr);	
+		else if (linelen && isOK && (sscanf(linebuf, "%s = %s", keystr, valstr) == 2))
+			AssignPlasmaVar(td, keystr, valstr);
 		i++;
 		linelen = getline(linebuf, 128, fi);
 	}
@@ -816,13 +816,13 @@ TOKAMAK      *FileInput(const char *fname)
 				linelen = getline(linebuf, 128, fi);
 			} else if (linelen && isOK && (sscanf(linebuf, "%s = %s", keystr, valstr) == 2)) {
 				linelen = getline(linebuf, 128, fi);
-				if (linelen && (sscanf(linebuf, "K_%s", keystr) == 0) && 
+				if (linelen && (sscanf(linebuf, "K_%s", keystr) == 0) &&
 						(strstr(linebuf,"Init ->"))){
 					p = strstr(linebuf,"->") + 2;
 					if (!feof(fi)) linelen = getline(linebuf, 128, fi);
 				} else p = NULL;
 				pl->Model->ModelInput(keystr,valstr,p);
-			} else 
+			} else
 				linelen = getline(linebuf, 128, fi);
 		}
 	}
@@ -934,7 +934,7 @@ TOKAMAK      *FileInput(const char *fname)
 		printf("\nWARNING from FileInput.  Not enough Coils in file.\n");
 		fprintf(LogFile, "\nWARNING from FileInput.  Not enough Coils in file.\n");
 	}
-	for (i=0;i<=count;i++) 
+	for (i=0;i<=count;i++)
 		if (td->Coils[i]->dX >= 0) compute_SubCoils(td->Coils[i], td->PsiGrid);
 	/* S H E L L S and S U B S H E L L S */
 	count = -1;

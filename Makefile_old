@@ -47,7 +47,7 @@ ROOTOBJS = AddCoilJ.o AddShellJ.o CDipoleIntStable.o CDipoleStd.o \
 
 #for root only
 DEFINES = -DDIPOLE
-LIBS = 
+LIBS =
 OBJS = $(ROOTOBJS)
 
 #for HDF
@@ -82,20 +82,16 @@ dipoleq: $(OBJS) SimDipEq.o
 install_home: dipoleq
 	if [ ! -d $(HOME)/bin ]; then \
 		mkdir $(HOME)/bin ; \
-	fi; 
+	fi;
 	install -m 755 dipoleq $(HOME)/bin
 
 install: dipoleq
 	if [ ! -d /usr/local/bin ]; then \
 		mkdir /usr/local/bin ; \
-	fi; 
+	fi;
 	install -m 755 dipoleq /usr/local/bin
 
 
 .PHONY : clean
 clean:
 	-rm *.o
-
-
-
-

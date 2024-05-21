@@ -69,7 +69,7 @@ void          meas_mag_Fit(TOKAMAK * td, MEAS * m)
 
 	for (i = 0; i < td->NumCoils; i++) {
 		c = td->Coils[i];
-		if (c->Enabled) 
+		if (c->Enabled)
 			sum += CGrn[i] * c->CoilCurrent;
 	}
 
@@ -109,7 +109,7 @@ void          meas_mag_Now(TOKAMAK * td, MEAS * m)
 
 	for (i = 0; i < td->NumCoils; i++) {
 		c = td->Coils[i];
-		if (c->Enabled) 
+		if (c->Enabled)
 			sum += CGrn[i] * c->CoilCurrent;
 	}
 

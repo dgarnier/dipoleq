@@ -1,4 +1,4 @@
-/* 
+/*
 **
 **   rolldown.c
 **
@@ -26,7 +26,7 @@
 /* a simple runge-kutta routine */
 void rk4(double *y, double *dydx, int n, double x, double h, double *yout,
          void (*derivs)(double, double *, double *));
-         
+
 void RollDerivs(double , double *p, double *dpdz);
 
 /* a simple runge-kutta routine */
@@ -63,27 +63,27 @@ static TOKAMAK *theTok;
 void RollDerivs(double dummy, double *p, double *dpdz)
 {
 	double gpx, gpz, gp2;
-	
+
 	gpx = interpolate(theTok->PsiGrid, theTok->Plasma->GradPsiX, p[1], p[2]);
 	gpz = interpolate(theTok->PsiGrid, theTok->Plasma->GradPsiZ, p[1], p[2]);
 	gp2 = interpolate(theTok->PsiGrid, theTok->Plasma->GradPsi2, p[1], p[2]);
-	
+
 	dpdz[1] = gpx/gp2;
 	dpdz[2] = gpz/gp2;
 }
 
-void RollDownHill(TOKAMAK *td, double r0, double z0, 
+void RollDownHill(TOKAMAK *td, double r0, double z0,
                   int n, double *psi, double *rr, double *zz)
 {
 	double y_in[3], y_out[3], dydpsi[3];
 	int i;
-	
+
 	theTok = td;
-	
+
 	*rr = y_in[1] = r0;
 	*zz = y_in[2] = z0;
 	*psi = GetPsi(td->PsiGrid, r0, z0);
-	
+
 	for (i=0; i<n-1 ; i++) {
 		RollDerivs(psi[i],y_in,dydpsi);
 		rk4(y_in, dydpsi, 2, psi[i], (psi[i+1]-psi[i]), y_out, RollDerivs);
@@ -144,13 +144,13 @@ void RollOutToPsi(TOKAMAK *td, double *x, double *z, double psiNew)
     iz = PT_FLOOR(*z, pg->Zmin, pg->dz);
 
 	nmax = pg->Nsize;
-	
+
     // now lets set up the next contour
     for (tx=*x; tx<pg->Xmax, <nmax-1; i++) {
         if (pg->Psi[i+1] > psiNew) break;
     }
     if (i == nmax-1) nrerror("Couldn't determine midplane.\n");
-    
+
         if ((pg->X[j]-rr[i-1])*(pg->X[j+1]-rr[i-1]) <= 0) ix = j;
         if ((pg->Z[j]-zz[i-1])*(pg->Z[j+1]-zz[i-1]) <= 0) iz = j;
     }
@@ -158,7 +158,7 @@ void RollOutToPsi(TOKAMAK *td, double *x, double *z, double psiNew)
         if (ix >= nmax-1) nrerror("GetRandV: Couldn't follow flux contours.\n");
         ix++;
     }
-    
+
 }
 
 #endif
@@ -168,13 +168,13 @@ static double gV, gRmax, gZrmax;
 void	RmaxVStep(double x, double z, double y, int flag);
 
 void	RmaxVStep(double x, double z, double dummy, int flag)
-{	
+{
 	static double 	Xlast, Zlast, IntLast;
 	double 			Integrand, B, dS;
-	
+
 	B = sqrt(interpolate(theTok->PsiGrid,theTok->Plasma->GradPsi2,x,z));
 	Integrand = 2*PI * x / B;
-	
+
 	switch (flag) {
 	  case CONTOUR_START:
 	      gRmax = x;
@@ -197,34 +197,34 @@ void	RmaxVStep(double x, double z, double dummy, int flag)
 }
 
 
-void GetRandV(TOKAMAK *td, double r0, double z0, 
+void GetRandV(TOKAMAK *td, double r0, double z0,
                   int n, double *psi, double *rr, double *zz, double *vv)
 {
 	PSIGRID *pg;
-	
+
 	int i,j,nmax,ix,iz;
-	
+
 	theTok = td;
-	
+
 	pg = td->PsiGrid;
-	
+
 	nmax = pg->Nsize;
-	
+
 	*rr = r0;
 	*zz = z0;
-	
-	
+
+
 	i=0;
-	contour_point(pg->X, pg->Z, pg->Psi, 1, nmax, 1, nmax, 
+	contour_point(pg->X, pg->Z, pg->Psi, 1, nmax, 1, nmax,
 		   rr[i], zz[i], CONTOUR_MIDPOINT, RmaxVStep);
 		vv[i] = gV;
 		rr[i] = gRmax;
 		zz[i] = gZrmax;
 		psi[i] = GetPsi(td->PsiGrid, rr[i], zz[i]);
 
-	
+
 	for (i=1; i<n ; i++) {
-		
+
 		// now lets set up the next contour
 		for (j=0; j<nmax; j++) {
 			if ((pg->X[j]-rr[i-1])*(pg->X[j+1]-rr[i-1]) <= 0) ix = j;
@@ -234,14 +234,14 @@ void GetRandV(TOKAMAK *td, double r0, double z0,
 			if (ix >= nmax-1) nrerror("GetRandV: Couldn't follow flux contours.\n");
 			ix++;
 		}
-		rr[i] =   pg->X[ix] + 
-		        ( psi[i]            - pg->Psi[ix][iz] ) * 
+		rr[i] =   pg->X[ix] +
+		        ( psi[i]            - pg->Psi[ix][iz] ) *
 		        ( pg->X[ix+1]       - pg->X[ix]       ) /
 		        ( pg->Psi[ix+1][iz] - pg->Psi[ix][iz] ) ;
 		zz[i] = pg->Z[iz];
-		
-		// now do the contour 
-		contour_point(pg->X, pg->Z, pg->Psi, 1, nmax, 1, nmax, 
+
+		// now do the contour
+		contour_point(pg->X, pg->Z, pg->Psi, 1, nmax, 1, nmax,
 		   rr[i], zz[i], CONTOUR_MIDPOINT, RmaxVStep);
 		vv[i] = gV;
 		rr[i] = gRmax;
@@ -279,7 +279,7 @@ void GetRmidPsi(TOKAMAK *td, int npts, double *psi, double *xx, double *zz)
 #endif
     {
         psi[i] = i*(pg->PsiLim-pg->PsiAxis)/(npts-1.d)+pg->PsiAxis;
-        
+
         newX = 1;
 
         contour_point(pg->X, pg->Z, pg->Psi, 1, nmax, 1, nmax,
@@ -316,10 +316,8 @@ void GetRmidPsi(TOKAMAK *td, int npts, double *psi, double *xx, double *zz)
         zz[i] = gZrmax;
         psi[i] = GetPsi(td->PsiGrid, rr[i], zz[i]);
     }
-    
-    
+
+
 
 }
 #endif
-                  
-                  

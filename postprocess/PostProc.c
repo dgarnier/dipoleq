@@ -53,12 +53,12 @@ void ComputeCoilCurrentCentroid(char *fn, FILE *out)
     float	x,z,cur;
     double	x0,z0,current;
     int		n,enabled;
-                    
+
     strncpy(con,fn,256);
     if ((s=strchr(con,'.')) != NULL) *s = '\0';
     strcat(con,"_Conductors.out");
     in = fopen(con,"r");
-    
+
     if (in == NULL) {
         fprintf(out,"Couldn't open conductor file: %s\n",con);
         return;
@@ -90,14 +90,14 @@ void ComputeCoilCurrentCentroid(char *fn, FILE *out)
 
 int main(int argc, char **argv)
 {
-	int npts; 
-	double *PsiX, *Psi,  *P, *G,  *Pp, *G2p, *q,  *dVdpsi,  *Vol, *Shear, 
+	int npts;
+	double *PsiX, *Psi,  *P, *G,  *Pp, *G2p, *q,  *dVdpsi,  *Vol, *Shear,
 			 *Well, *Jave, *B2ave, *Beta;
 	double *XC, *ZC, Px, Pz;
-			 
+
 	PSIGRID 	*pg;
 	PLASMA 		*pl;
-			 
+
 	char         fn[256] = "LDXTest.HDF";
         char	     on[256];
 	char         *lgn = "DipLog.out";
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
                     strncpy(fn,argv[i],256);
                     continue;
                 }
-            for ( ; i < argc; i++) 
+            for ( ; i < argc; i++)
                 if (argv[i][0] != '-') {
                     strncpy(on,argv[i],256);
                     if (strchr(on,'.') == NULL) strcat(on,".dat");
@@ -190,32 +190,32 @@ int main(int argc, char **argv)
 		strncpy(vax_lgname, cli_value, cli_val_len);
 		lgn = vax_lgname;
 	}
-#endif		 
+#endif
 	printf ("Handy Dipole post processor\n\n");
-	
+
         fi = fopen(fn,"r");
         if (fi == NULL) nrerror("ERROR: Could not open HDF file.");
         fclose(fi);
-        
+
 	pg = HDFPsiGridIn(fn);
 	pl = HDFPlasmaIn(pg ,fn);
-	HDFFluxFuncsIn(fn, &npts, &PsiX, &Psi, &P, &G, &Pp, &G2p, 
+	HDFFluxFuncsIn(fn, &npts, &PsiX, &Psi, &P, &G, &Pp, &G2p,
 					&q, &dVdpsi, &Vol, &Shear, &Well, &Jave, &B2ave, &Beta);
-	
-	
+
+
         fi = fopen(on, "w");
         if (!fi)
 			nrerror("ERROR:	Could not open file for writing.");
-					
+
 	fprintf(fi,"Dipole Contour Tracer.  From Input File: %s\n",fn);
         ComputeCoilCurrentCentroid(fn, fi);
         fprintf(fi,"Number of contours:\n%d\n",npts);
 	fprintf(fi,"Cont#\tPsiNorm\tPsi\tPress\tdPdPsi\tV\t# points\n");
 	fprintf(fi,"     R      \t     Z      \t  dPsi/dx   \t  dPsi/dz   \n");
-	
-					
+
+
 	for (i=0;i<npts;i++) {
-		
+
 		printf("Doing Contour Trace %s %d\n",fn,i);
 
 		ncpts = GetContour(pg,Psi[i],&XC,&ZC);
@@ -229,11 +229,11 @@ int main(int argc, char **argv)
 //		fprintf(fi,"     R      \t     Z      \t  dPsi/dx   \t  dPsi/dz   \n");
 		fprintf(fi,"%5d\t%5f\t%12g\t%12g\t%12g\t%7g\t%5d\n",
 			i, PsiX[i], Psi[i], P[i], Pp[i], dVdpsi[i], ncpts);
-		for (j=0;j<ncpts;j++) { 
+		for (j=0;j<ncpts;j++) {
 			Px = interpolate(pg, pl->GradPsiX, XC[j], ZC[j]);
-			Pz = interpolate(pg, pl->GradPsiZ, XC[j], ZC[j]);	
+			Pz = interpolate(pg, pl->GradPsiZ, XC[j], ZC[j]);
 			fprintf(fi,"%12g\t%12g\t%12g\t%12g\n",XC[j],ZC[j],Px,Pz);
-		}	
+		}
 		free_dvector(XC,0,ncpts);
 		free_dvector(ZC,0,ncpts);
 	}
@@ -244,7 +244,7 @@ int main(int argc, char **argv)
 
 
 void		CountContourStep(double x, double z, double psi, int flag)
-{	
+{
 #pragma unused(x,z,psi)
 	switch (flag) {
 	  case CONTOUR_START:
@@ -258,7 +258,7 @@ void		CountContourStep(double x, double z, double psi, int flag)
 }
 
 void		RecordContourStep(double x, double z, double psi, int flag)
-{	
+{
 #pragma unused(psi)
 	switch (flag) {
 	  case CONTOUR_START:
@@ -278,20 +278,19 @@ void		RecordContourStep(double x, double z, double psi, int flag)
 int 	GetContour(PSIGRID *pg, double Psi, double **X, double **Z)
 {
 		int nmax, npts;
-		
+
 		nmax = pg->Nsize;
-		
+
 		contour(pg->X, pg->Z, pg->Psi, 0, nmax, 0, nmax, Psi, CONTOUR_ONLY_CLOSED,
 			CONTOUR_NO_MIDPOINT, CountContourStep);
-			
+
 		npts = gCount;
-		
+
 		*X = gXvec = dvector(0,npts);
 		*Z = gZvec = dvector(0,npts);
-		
+
 		contour(pg->X, pg->Z, pg->Psi, 0, nmax, 0, nmax, Psi, CONTOUR_ONLY_CLOSED,
 			CONTOUR_NO_MIDPOINT, RecordContourStep);
 
 		return npts;
 }
-

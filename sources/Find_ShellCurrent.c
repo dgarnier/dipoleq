@@ -56,7 +56,7 @@
 ** Date:		August 5, 1993
 **
 ** Revisions:
-**	Feb, 1996		Changed factor of two error in shell inductances 
+**	Feb, 1996		Changed factor of two error in shell inductances
 **				REPORTED by Ned Eisner
 **
 **
@@ -78,11 +78,11 @@
 #include "LoadShellGreens.h"
 #include "Find_ShellCurrent.h"
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 

@@ -55,7 +55,7 @@ void          ReadRestart(char *fn, TOKAMAK * td)
             InitJ(td->PsiGrid, td->Plasma);
             return;
         }
-        
+
 	/* R E A D    P S I G R I D */
 
 	count1 = fread_dmatrix(pg->Current, 0, nmax, 0, nmax, fi);

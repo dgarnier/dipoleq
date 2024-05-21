@@ -22,15 +22,15 @@
 
 
 /*
-** SHELLGREEN 
-** 
+** SHELLGREEN
+**
 ** This stores the LH Green's Function for a subshell.
-** It contains four arrays for the top, bottom, inside, and 
+** It contains four arrays for the top, bottom, inside, and
 ** outside of the computational grid.
 **
 */
 
-typedef struct shellgreen {	
+typedef struct shellgreen {
 	double		*Top;
 	double		*Bot;
 	double		*In;
@@ -40,13 +40,13 @@ typedef struct shellgreen {
 
 /*
 **
-** SUBSHELL  
+** SUBSHELL
 **
 ** This is a particular winding of a subshell (filament).
 **
 */
 
-typedef struct subshell {	
+typedef struct subshell {
     char		Name[32];			/* the subshell name */
 	double		X,Z;				/* the location of the subshell */
 	double		Radius;				/* the (cross-sectional) radius of the subshell */
@@ -59,16 +59,16 @@ typedef struct subshell {
 
 /*
 **
-** SHELL  
+** SHELL
 **
-** A shell is a collection of subshells (or filaments) which act as a 
+** A shell is a collection of subshells (or filaments) which act as a
 ** perfectly conductor with ZERO net current.
 **
 ** [Note: the subshell array has dimensions [0..NumSubShells-1]. ]
 **
 */
 
-typedef struct shell {		
+typedef struct shell {
 	int				Enabled;		/* if non-zero, then use this shell */
     char			Name[32];		/* the name of this shell set */
 	int				NumSubShells;	/* the number of subshells */

@@ -35,4 +35,3 @@ double  FindJ_Loc(TOKAMAK * , int , int );
 #endif
 
 #endif
-

@@ -2,25 +2,28 @@
 # Convert a dipoleq h5 file to a g-eqdsk file
 # Usage: python h5togeqdsk.py <dipoleq.h5> ...
 
-from typing import Dict, Union, Any
+from typing import Any, Dict, Union
+
 import h5py
-from matplotlib import scale
 import numpy as np
 from freeqdsk import geqdsk
+from matplotlib import scale
 
 
 def dipoleq_lim_to_eqdsk(lim):
-    '''lim is a 3D array with shape (nlim, 2, 2)
+    """lim is a 3D array with shape (nlim, 2, 2)
     with a start and end point for each limiter
-    in this we will assume that the start is the end of the last'''
+    in this we will assume that the start is the end of the last"""
     newlim = np.zeros((lim.shape[0] + 1, 2))
     newlim[:-1] = lim[:, 0]
     newlim[-1] = lim[-1, 1]
     return newlim
 
 
-def dipoleq_to_geqdsk(h5f, COCOS=3, NormalizeAtAxis=True) -> Dict[str, Union[int, float, np.ndarray]]:
-    '''Extract geqdsk data from a dipoleq h5 file'''
+def dipoleq_to_geqdsk(
+    h5f, COCOS=3, NormalizeAtAxis=True
+) -> Dict[str, Union[int, float, np.ndarray]]:
+    """Extract geqdsk data from a dipoleq h5 file"""
 
     # future version of geqdsk will have type hints
     # from typing import Dict, Union
@@ -55,7 +58,7 @@ def dipoleq_to_geqdsk(h5f, COCOS=3, NormalizeAtAxis=True) -> Dict[str, Union[int
     gdata["zcentr"] = eq0d["Z0"][()]
     gdata["bcentr"] = eq0d["B0"][()]
     Fscale = eq0d["R0"][()] * eq0d["B0"][()]
-    
+
     # plasma current
     gdata["cpasma"] = eq0d["Ip"][()]
     gdata["rmagx"] = eq0d["RMagX"][()]
@@ -64,7 +67,6 @@ def dipoleq_to_geqdsk(h5f, COCOS=3, NormalizeAtAxis=True) -> Dict[str, Union[int
     PsiFCFS = eq0d["PsiFCFS"][()] * scale_psi
     PsiLCFS = eq0d["PsiLCFS"][()] * scale_psi
     PsiMagX = eq0d["PsiMagX"][()] * scale_psi
-    
 
     # 1D values
     # geqdsk assumes that the radial resolution is the same
@@ -136,12 +138,13 @@ def plot_h5eq(h5eq):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     from pathlib import Path
+
     parser = ArgumentParser(description="Convert a dipoleq hdf5 file to a g-eqdsk file")
-    parser.add_argument('h5files', metavar='h5file', type=str, nargs='+',
-                        help="dipoleq hdf5 file(s)")
-    parser.add_argument('--plot', '-p', action='store_true', 
-                        help="Plot the g-eqdsk")
-    
+    parser.add_argument(
+        "h5files", metavar="h5file", type=str, nargs="+", help="dipoleq hdf5 file(s)"
+    )
+    parser.add_argument("--plot", "-p", action="store_true", help="Plot the g-eqdsk")
+
     args = parser.parse_args()
 
     for h5file in args.h5files:
@@ -154,10 +157,20 @@ if __name__ == "__main__":
         with open(f"{stem}.geqdsk", "w") as fh:
             geqdsk.write(gdata, fh, label=f"DipQ:{oname}")
 
-        with open(f"{stem}_fcfs.csv", "w", encoding='utf-8') as fh:
+        with open(f"{stem}_fcfs.csv", "w", encoding="utf-8") as fh:
             fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
-            np.savetxt(fh, fcfs, delimiter=',', header='r,z', )
+            np.savetxt(
+                fh,
+                fcfs,
+                delimiter=",",
+                header="r,z",
+            )
 
-        with open(f"{stem}_flim.csv", "w", encoding='utf-8') as fh:
+        with open(f"{stem}_flim.csv", "w", encoding="utf-8") as fh:
             flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
-            np.savetxt(fh, flim, delimiter=',', header='r,z', )
+            np.savetxt(
+                fh,
+                flim,
+                delimiter=",",
+                header="r,z",
+            )

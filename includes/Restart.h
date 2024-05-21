@@ -34,4 +34,3 @@ void ReadRestart(char *, TOKAMAK *);
 }   // extern "C"
 #endif
 #endif
-

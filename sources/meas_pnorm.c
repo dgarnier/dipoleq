@@ -89,7 +89,7 @@ void          meas_pnorm_Fit(TOKAMAK * td, MEAS * m)
 	}
 
 	CHECK_PRESS_0;
-	
+
 	m->Fit = press / press_0;		/* normalized pressure */
 }
 
@@ -128,7 +128,7 @@ void          meas_pnorm_L(TOKAMAK * td, MEAS * m, double *L)
 
 	/* Use previously calculated m->Now, in order to find present pnorm */
 	pnorm = m->Now;
-	
+
 	switch (pl->ModelType) {
 	  case Plasma_Std:
 		  /* --------   L[2] = Pp[1]  ------- */
@@ -163,7 +163,7 @@ void          meas_pnorm_L(TOKAMAK * td, MEAS * m, double *L)
 	}
 
 	CHECK_PRESS_0;
-	
+
 	for (iu = 1; iu <= td->NumUnkns; iu++)
 		L[iu] /= press_0;
 }

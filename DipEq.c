@@ -373,7 +373,7 @@ void          MakeEqualEq(TOKAMAK * td)
 			PlasmaBoundary(td);
 			FindJ(td);
 		}
-		
+
 		/* F I N D   M E A S   F I T */
 		LoadMeasGreens(td);
 		FindMeasFit(td);
@@ -444,7 +444,7 @@ void          MakeEqualEq2(TOKAMAK * td)
 		AddCoilJ(td);
 		AddShellJ(td);
 		GoPDE(td->PsiGrid);
-		
+
 		/* F I N D   M E A S   F I T */
 		LoadMeasGreens(td);
 		FindMeasFit(td);
@@ -469,9 +469,9 @@ void          MakeEqualEq2(TOKAMAK * td)
 	free_dvector(unkn0, 1, td->NumUnkns);
 }
 
-#undef PSIXMAX_EQ	
+#undef PSIXMAX_EQ
 #undef MAKE_ITERATIONS
-#undef MAKE_UNDERRELAX	
+#undef MAKE_UNDERRELAX
 
 /*
 **	MakeMCarloEq
@@ -493,7 +493,7 @@ void          MakeMCarloEq(TOKAMAK * td)
 
 	td->RestartUnkns = 1;
 	td->MaxIterFree = td->MaxIterMCarlo;
-	
+
 	/* C O P Y    A C T U A L    M E A S U R E M E N T S */
 	real_meas = dvector(0,td->NumMeasures - 1);
 	for (i = 0; i < td->NumMeasures; i++) {
@@ -526,7 +526,7 @@ void          MakeMCarloEq(TOKAMAK * td)
 		dUnkn(td->UnknVectors, td->SValues, del, unkn0, unkn1, td->NumUnkns);
 		RewriteUnknowns(td, unkn1);
 		FindJ(td);
-		
+
 		/* Compute simulated Monte Carlo data set */
 		LoadMeasGreens(td);
 		FindMeasNow(td);
@@ -538,7 +538,7 @@ void          MakeMCarloEq(TOKAMAK * td)
 
 		/* C O M P U T E   N E W   E Q U I L B R I A */
 		IterateSolution(td, &IsFirst);
-		
+
 		/* Restore values */
 		for (i = 0; i < td->NumMeasures; i++) {
 			m = td->Measures[i];
@@ -584,7 +584,7 @@ void          MakeMCarloData(TOKAMAK * td)
 
 	td->RestartUnkns = 1;
 	td->MaxIterFree = td->MaxIterMCarlo;
-	
+
 	/* C O P Y    A C T U A L    M E A S U R E M E N T S */
 	real_meas = dvector(0,td->NumMeasures - 1);
 	for (i = 0; i < td->NumMeasures; i++) {
@@ -613,7 +613,7 @@ void          MakeMCarloData(TOKAMAK * td)
 
 		/* C O M P U T E   N E W   E Q U I L B R I A */
 		IterateSolution(td, &IsFirst);
-		
+
 		/* Restore values */
 		for (i = 0; i < td->NumMeasures; i++) {
 			m = td->Measures[i];

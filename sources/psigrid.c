@@ -543,7 +543,7 @@ void          GoPDE(PSIGRID * pg)
 
 	ResThr = sqrt(pg->ResThreshold * pg->BoundError);
 
-#ifdef IDL 
+#ifdef IDL
     IDL_Message(IDL_M_GENERIC,IDL_MSG_INFO, "INFO:	Solving Grad-Shafranov Equation.\n");
 #else
 	printf("INFO:	Solving Grad-Shafranov Equation.\n");

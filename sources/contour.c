@@ -164,7 +164,7 @@ void          Trace1(DELSQUARE * in, DELSQUARE * out, int ccode, void (*doAT) (d
 			  (*doAT) (xx, yy, height, CONTOUR_TRACE);
 			  break;
                 case CASE_BAD : nrerror("Program error in contour.");
-	
+
 		}
 	}
 	switch (case_type) {
@@ -350,7 +350,7 @@ void          Trace2(DELSQUARE * in, DELSQUARE * out, int ccode, void (*doAT) (d
 		  out->iyd = in->ixd;
 		  break;
             case CASE_BAD : nrerror("Program error in contour.");
-	
+
 	}
 }
 
@@ -419,7 +419,7 @@ void          trace_closed_contour(DELSQUARE * in1, int dummy, int midpt, void (
 
 void  contour_point(double *xarg, double *yarg, double **zarg,
 	  int nx1, int nx2, int ny1, int ny2, double xx, double yy, int midpt,
-					  void          (*doAT) (double, double, double, int))  
+					  void          (*doAT) (double, double, double, int))
 /* traces a contour (either open or closed) from a starting point xx, yy */
 /* currently this has a bug... it will only do half of an open contour */
 {
@@ -427,7 +427,7 @@ void  contour_point(double *xarg, double *yarg, double **zarg,
 	int 		done = 0;
 	int         ix, iy;
 	double      zz,t,u;
-	
+
 	/* Copy to file-global variables */
 	x = xarg;
 	y = yarg;
@@ -438,26 +438,26 @@ void  contour_point(double *xarg, double *yarg, double **zarg,
 	iymax = ny2;
 
     /* find border grid points */
-	for (ix = ixmin; ix < ixmax; ix++) 
-		if (((x[ix] <= xx) && (xx < x[ix+1])) || 
+	for (ix = ixmin; ix < ixmax; ix++)
+		if (((x[ix] <= xx) && (xx < x[ix+1])) ||
 		    ((x[ix] >= xx) && (xx > x[ix+1]))    ) break;
 	if (ix == ixmax) nrerror("Error in contour_point:  bad xx input\n");
-	
-	for (iy = iymin; iy < iymax; iy++) 
-		if (((y[iy] <= yy) && (yy < y[iy+1])) || 
+
+	for (iy = iymin; iy < iymax; iy++)
+		if (((y[iy] <= yy) && (yy < y[iy+1])) ||
 		    ((y[iy] >= yy) && (yy > y[iy+1]))    ) break;
 	if (iy == iymax) nrerror("Error in contour_point:  bad yy input\n");
 
     /* find z[xx,yy] by bilinear interpolation */
-    
+
 	t = (xx - x[ix])/(x[ix+1]-x[ix]);
 	u = (yy - y[iy])/(y[iy+1]-y[iy]);
-	
-	zz = height = (1.0 - t) * (1.0 - u) * z[ix][iy] + 
+
+	zz = height = (1.0 - t) * (1.0 - u) * z[ix][iy] +
 	                 t * (1.0 - u) * z[ix + 1][iy] +
 			         t * u         * z[ix + 1][iy + 1] +
 			 (1.0 - t) * u         * z[ix][iy + 1];
-	
+
 	/* now lets find the orientation of the grid */
 	if        ( (z[ix][iy] <= zz) && (z[ix+1][iy] > zz) ) {     /* enter bottom */
 		in.ix = ix+1;
@@ -466,7 +466,7 @@ void  contour_point(double *xarg, double *yarg, double **zarg,
 		in.iya = 0;
 		in.ixd = 0;
 		in.iyd = 1;
-		
+
 	} else if ( (z[ix+1][iy] <= zz) && (z[ix+1][iy+1] > zz) ) { /* enter right */
 		in.ix = ix+1;
 		in.iy = iy+1;
@@ -474,7 +474,7 @@ void  contour_point(double *xarg, double *yarg, double **zarg,
 		in.iya = -1;
 		in.ixd = -1;
 		in.iyd = 0;
-	
+
 	} else if ( (z[ix+1][iy+1] <= zz) && (z[ix][iy+1] > zz) ) { /* enter top */
 		in.ix = ix;
 		in.iy = iy+1;
@@ -489,16 +489,16 @@ void  contour_point(double *xarg, double *yarg, double **zarg,
 		in.iya = 1;
 		in.ixd = 1;
 		in.iyd = 0;
-	} else 
+	} else
 		nrerror("Error in contour_point: Internal error . \n");
-		
+
 	copydel(&in,&in1);
-	
+
 	/* tell the drawing routine to start! */
 	(*doAT) (xx, yy, height, CONTOUR_START);
-	
+
 	/* now lets find the appropriat */
-	
+
 	while (done == 0) {
 		if (midpt == CONTOUR_NO_MIDPOINT)
 			Trace1(&in, &out, CONTOUR_DRAW, doAT);
@@ -516,7 +516,7 @@ void  contour_point(double *xarg, double *yarg, double **zarg,
 		if ((in.iy == iymax) && (in.iyd == 1))	/*If entering bottom*/
 			done = 2;
 	}
-	
+
 	(*doAT) (xx, yy, height, CONTOUR_STOP);
 }
 

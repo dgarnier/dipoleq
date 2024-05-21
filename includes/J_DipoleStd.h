@@ -10,7 +10,7 @@
 **
 ** Revisions:
 **
-**		
+**
 **
 **
 ** (c) D. Garnier -- Columbia University
@@ -37,4 +37,3 @@ double		G2_DipoleStd_Loc(TOKAMAK *, double Psi);
 }
 #endif
 #endif
-

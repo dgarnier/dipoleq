@@ -97,7 +97,7 @@ int           IsValidSeparatrix(SEPARATRIX * s, double x, double z)
 **
 ** Should we only erase within the sep's domain? Answer: No.
 **
-** DTG 12/7/98 
+** DTG 12/7/98
 **
 ** changed this algorithm to use a special "center" for better results
 ** with dipoles.
@@ -109,7 +109,7 @@ int           IsPtDivertor(SEPARATRIX * s, double x, double z, double xa, double
 
 	xa = s->XC;
 	za = s->ZC;
-	
+
 	if (s->Enabled) {
 		a_b = (s->Xs - xa) * (x - xa) + (s->Zs - za) * (z - za);
 		a_a = SQUARE(s->Xs - xa) + SQUARE(s->Zs - za);

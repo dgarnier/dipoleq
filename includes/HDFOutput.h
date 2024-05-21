@@ -79,7 +79,7 @@
 #define ZMAGX_0D 	"ZMagX"   // Z axis
 #define OLIM_NAME   "olim"    // EFIT name for limiter
 #define ILIM_NAME   "ilim"    // inner limiter
-  
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,9 +90,9 @@ void 	HDFLimiters(const char *Oname, LIMITER **lims, int nlims);
 void 	HDFBoundary(const char *Oname, const char *Vname, double, double *, double *, int);
 void    HDFPPsi(PSIGRID *, char *);
 void	HDFPlasma(PLASMA *,PSIGRID *,char *);
-void	HDFFluxFuncs(char *Oname, int npts, double *PsiX, 
-					double *Psi, double *P, double *G, double *Pp, double *G2p, 
-					double *q, double *dVdpsi, double *Vol, double *Shear, 
+void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
+					double *Psi, double *P, double *G, double *Pp, double *G2p,
+					double *q, double *dVdpsi, double *Vol, double *Shear,
 					double *Well, double *Jave, double *B2ave, double *Beta,
 					double *BetaMax, double *XBetaMax, double *ZBetaMax, double *BBetaMax,
 					double *BMax, double *XBMax, double *ZBMax);
@@ -101,4 +101,3 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 }
 #endif
 #endif
-

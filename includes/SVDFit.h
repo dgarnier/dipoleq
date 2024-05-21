@@ -28,7 +28,7 @@ extern "C" {
 
 void svdcmp(double **,int ,int ,double *,double **);
 void svbksb(double **, double *, double**, int ,int ,double *, double *);
-void svdfit(double **,double **, double *,double **,double *,double *,int ,int ,double *); 
+void svdfit(double **,double **, double *,double **,double *,double *,int ,int ,double *);
 void svdvar(double **, int , double *, double **);
 
 #ifdef __cplusplus

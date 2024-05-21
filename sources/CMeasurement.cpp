@@ -14,21 +14,21 @@
 //#include "CMeasPressure.h"
 #include "nrutil.h"
 
-CMeasurement* CMeasurement::CreateWithType(char* mType) 
+CMeasurement* CMeasurement::CreateWithType(char* mType)
 {
     CMeasurement *mp = NULL;
-    
-    
-    
+
+
+
     return mp;
 }
 
-CMeasurement* CMeasurement::CreateWithType(int mType) 
+CMeasurement* CMeasurement::CreateWithType(int mType)
 {
     CMeasurement *mp = NULL;
-    
-    
-    
+
+
+
     return mp;
 }
 
@@ -40,19 +40,19 @@ void CMeasurement::SetParameter(char *key, char *val)
         "Value",
         "StdDev"
     };
-    
+
     enum eInputCodes {
         kName,
         kValue,
         kStdDev,
         kDone
     };
-    
+
     int i;
-    
-    for (i=0; i<kDone; i++) 
+
+    for (i=0; i<kDone; i++)
         if (!strcmp(kInputWords[i], key)) break;
-        
+
     switch (i) {
         case kValue:
             sscanf(val,"%lf",&mValue);
@@ -70,6 +70,6 @@ void CMeasurement::SetParameter(char *key, char *val)
             nrerror(err);
         }
     }
-            
-    
+
+
 }

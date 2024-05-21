@@ -41,7 +41,7 @@
 double     ***new_dJdy(int ynum, int nmax)
 {
 	double     ***a;
-	
+
 	a = d3tensor(1, ynum, 0, nmax, 0, nmax);
 
 	return a;

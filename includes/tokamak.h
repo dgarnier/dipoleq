@@ -103,14 +103,14 @@
       char RSname[32];		/* A file name for reading and writting the restart file */
 	  char Start[TIMEBUF];	/* A string containing the start time */
 	  char Stop[TIMEBUF];	/* A string containing the stop time */
-		
+
       int NumCoils;
       int NumShells;
       int NumLimiters;
       int NumSeps;
       int NumMeasures;
       int NumUnkns;
-      	
+
       double **Covar;		/* the covariance matrix for the unknowns */
       double **UnknVectors;	/* the vectors of the unknowns from SVD */
       double *SValues;		/* the singular values */
@@ -121,7 +121,7 @@
       COIL **Coils;			/* the coil sets */
       SHELL **Shells;		/* the perfectly conducting shells */
       LIMITER **Limiters;	/* the limiters */
-      SEPARATRIX **Seps;	/* the separatricies */
+      SEPARATRIX **Seps;	/* the separatrices */
       MEAS **Measures;		/* pointer to an array of measurements */
       LHARY *LHPlasmaGreen;	/* the LH Green funcs for plasma current */
 

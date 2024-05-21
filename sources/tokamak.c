@@ -227,4 +227,3 @@ void          SetStopTime(TOKAMAK * td)
 
 	strftime(td->Stop, TIMEBUF, "%A, %b %d, %Y %I:%M:%S %p", date);
 }
-

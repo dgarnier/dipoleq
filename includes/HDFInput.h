@@ -30,9 +30,9 @@ extern "C" {
 
 PSIGRID 	*HDFPsiGridIn(char *);
 PLASMA		*HDFPlasmaIn(PSIGRID *,char *);
-void		HDFFluxFuncsIn(char *Oname, int *nptsIn, double **PsiX, 
-					double **Psi, double **P, double **G, double **Pp, double **G2p, 
-					double **q, double **dVdpsi, double **Vol, double **Shear, 
+void		HDFFluxFuncsIn(char *Oname, int *nptsIn, double **PsiX,
+					double **Psi, double **P, double **G, double **Pp, double **G2p,
+					double **q, double **dVdpsi, double **Vol, double **Shear,
 					double **Well, double **Jave, double **B2ave, double **Beta);
 
 #ifdef __cplusplus
@@ -40,4 +40,3 @@ void		HDFFluxFuncsIn(char *Oname, int *nptsIn, double **PsiX,
 #endif
 
 #endif
-

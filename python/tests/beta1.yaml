@@ -7,11 +7,11 @@ NumLimiters: 8
 NumSeps: 2
 NumMeasures: 0
 Name: LDX
-Info: LDX beta=1 test case
+Info: Beta_1_Test_Case
 Oname: beta1
-MGname: ""
-LHname: ""
-RSname: ""
+MGname: "*"
+LHname: "*"
+RSname: "*"
 RestartStatus: 0
 RestartUnkns: 0
 LHGreenStatus: 0
@@ -40,14 +40,14 @@ Plasma:
   PsiXmax: 0.995
   Jedge: 0.00
   Model:
-    Type: 6          # DipoleStdInt
+    Type: 6 # DipoleStdInt
     RPeak: 0.8
     ZPeak: 0.00
     PEdge: 2.0
     PsiFlat: .999
     NSurf: 125
     fCrit: 1.0
-  
+
 Limiters:
   - Limiter:
     Name: Outer
@@ -56,64 +56,64 @@ Limiters:
     X2: 2.49
     Z2: -0.52
     Enabled: 1
-  
+
   - Limiter:
-    Name: Top1                
-    X1: 2.49                 
-    Z1: 0.52        
-    X2: 2.37       
+    Name: Top1
+    X1: 2.49
+    Z1: 0.52
+    X2: 2.37
     Z2: 0.81
     Enabled: 1
-  
+
   - Limiter:
-    Name: Top2                
-    X1: 2.37       
+    Name: Top2
+    X1: 2.37
     Z1: 0.81
-    X2: 2.0      
+    X2: 2.0
     Z2: 1.0
     Enabled: 1
 
   - Limiter:
-    Name: Top3                
-    X1: 2.0      
+    Name: Top3
+    X1: 2.0
     Z1: 1.0
-    X2: 1.56       
+    X2: 1.56
     Z2: 1.195
     Enabled: 1
 
   - Limiter:
-    Name: Top4                
-    X1: 1.56      
+    Name: Top4
+    X1: 1.56
     Z1: 1.195
-    X2: 1.0       
+    X2: 1.0
     Z2: 1.35
     Enabled: 1
 
   - Limiter:
-    Name: Top5                
-    X1: 1.0      
+    Name: Top5
+    X1: 1.0
     Z1: 1.35
-    X2: 0.63       
+    X2: 0.63
     Z2: 1.41
     Enabled: 1
-  
+
   - Limiter:
-    Name: Floating_Coil                
-    X1: 0.2235                   
-    Z1: 0.000        
-    X2: 0.24        
+    Name: Floating_Coil
+    X1: 0.2235
+    Z1: 0.000
+    X2: 0.24
     Z2: 0.000
     Enabled: -1
 
   - Limiter:
-    Name: Floating_Coil                
-    X1: 0.585                   
-    Z1: 0.000        
-    X2: 0.5        
+    Name: Floating_Coil
+    X1: 0.585
+    Z1: 0.000
+    X2: 0.5
     Z2: 0.000
     Enabled: -1
 
-Seperatrices:
+Separatrices:
   - Separatrix:
     Name: Upper_Sep
     X1: 1.4
@@ -123,7 +123,7 @@ Seperatrices:
     XC: 1.0
     ZC: 0.05
     Enabled: 1
-    
+
   - Separatrix:
     Name: Extra_Sep
     X1: 1.5
@@ -132,53 +132,53 @@ Seperatrices:
     Z2: 0.0
     XC: 0.65
     ZC: 0.05
-    Enabled: 0  
+    Enabled: 0
 
 Coils:
   - Coil:
     Name: F1_Coil
     Enabled: 1
     InitialCurrent: 57132
-    X : 0.2717
+    X: 0.2717
     dX: 0.0116
-    Z : 0.0
-    dZ: 0.0695  
+    Z: 0.0
+    dZ: 0.0695
 
   - Coil:
     Name: F2_Coil
     Enabled: 1
     InitialCurrent: 169119
-    X : 0.28504
+    X: 0.28504
     dX: 0.01508
-    Z : 0.0
-    dZ: 0.125  
+    Z: 0.0
+    dZ: 0.125
 
   - Coil:
     Name: F3_Coil
     Enabled: 1
     InitialCurrent: 1257939
-    X : 0.33734
+    X: 0.33734
     dX: 0.08936
-    Z : 0.0
-    dZ: 0.1615  
+    Z: 0.0
+    dZ: 0.1615
 
   - Coil:
     Name: L_Coil
     Enabled: 1
     InitialCurrent: 206000
-    X : 0.483
+    X: 0.483
     dX: 0.322
-    Z : 1.5633
-    dZ: 0.00661  
+    Z: 1.5633
+    dZ: 0.00661
 
   - Coil:
     Name: H_U
     Enabled: 0
     InitialCurrent: 0
-    X: 2.35  
+    X: 2.35
     dX: 0.05
-    Z: 1.175 
-    dZ: 0.08   
+    Z: 1.175
+    dZ: 0.08
 
   - Coil:
     Name: H_L
@@ -187,7 +187,7 @@ Coils:
     X: 2.35
     dX: 0.05
     Z: -1.175
-    dZ: 0.08     
+    dZ: 0.08
 
   - Coil:
     Name: C_Coil
@@ -196,4 +196,4 @@ Coils:
     X: .6727
     dX: 0.1
     Z: 0.0
-    dZ: 0.7  
+    dZ: 0.7

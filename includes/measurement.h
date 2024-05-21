@@ -13,7 +13,7 @@
 ** unknowns.  These may be different since the present current
 ** density may not be equal to the present unknowns due
 ** to under-relaxation.
-**	
+**
 ** File:		include:measurement.h
 ** Date:		January 26, 1993
 **
@@ -102,7 +102,7 @@
 
 typedef struct meas {
     union {
-    
+
 	struct {
 	    double Angle;			/* angle in degrees clockwise from vertical */
 	}
@@ -130,7 +130,7 @@ typedef struct meas {
 
     }
     parm;
-	
+
 	void		(*FindFit)(void *, void *);			/* Function which computes Fit */
 	void		(*FindNow)(void *, void *);			/* Function which computes Now */
 	void		(*FindL)(void *, void *, double *);	/* Function which computes L */

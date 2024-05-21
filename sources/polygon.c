@@ -20,7 +20,7 @@ int  CCW(DPOINT p0, DPOINT p1, DPOINT p2) ;
    *
    * RETURN VALUE
    * (BOOL) TRUE if the point is inside the polygon, FALSE if not.
- *************************************************************************/ 
+ *************************************************************************/
 
   int PtInPolygon(DPOINT *rgpts, int npts, DPOINT ptTest, DRECT *prbound)
 
@@ -66,7 +66,7 @@ int  CCW(DPOINT p0, DPOINT p1, DPOINT p2) ;
    * (BOOL) TRUE or FALSE depending on whether the point is in the rect or
 
    * not.
- *************************************************************************/ 
+ *************************************************************************/
 
   int  PtInPolyRect(DPOINT *rgpts, int npts, DPOINT ptTest, DRECT *prbound)
 
@@ -87,7 +87,7 @@ int  CCW(DPOINT p0, DPOINT p1, DPOINT p2) ;
 
 	  xmin = xmax = rgpts->x;
 	  ymin = ymax = rgpts->y;
-	  
+
       for (i=0, ppt = rgpts ; i < npts ; i++, ppt++)
       {
          if (ppt->x < xmin)
@@ -105,7 +105,7 @@ int  CCW(DPOINT p0, DPOINT p1, DPOINT p2) ;
       r.top = ymax;
 
    }
-   return ((ptTest.x >= r.right) && (ptTest.x <= r.left) && 
+   return ((ptTest.x >= r.right) && (ptTest.x <= r.left) &&
            (ptTest.y >= r.bot)   && (ptTest.y <= r.top ));
 
    }
@@ -118,7 +118,7 @@ int  CCW(DPOINT p0, DPOINT p1, DPOINT p2) ;
    *
    * RETURN VALUE
    * TRUE if they intersect, FALSE if not.
- *************************************************************************/ 
+ *************************************************************************/
 
  int Intersect(DPOINT p1, DPOINT p2, DPOINT p3, DPOINT p4)
   {
@@ -140,7 +140,7 @@ int  CCW(DPOINT p0, DPOINT p1, DPOINT p2) ;
    * RETURN VALUE
    * (int) 1 if the movement is in a counterclockwise direction, -1 if
    * not.
- *************************************************************************/ 
+ *************************************************************************/
 
   int CCW(DPOINT p0, DPOINT p1, DPOINT p2)
 
@@ -156,7 +156,7 @@ int  CCW(DPOINT p0, DPOINT p1, DPOINT p2) ;
 
     * of divide by zero possibilities with pure horizontal and pure
     * vertical lines.
-    */ 
+    */
 
    return ((dx1 * dy2 > dy1 * dx2) ? 1 : -1) ;
 

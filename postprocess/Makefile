@@ -31,11 +31,11 @@ PPOBJS = \
     GetPlasmaParameters.o \
     interpolate.o \
     nrRomberg.o \
-    nrSpline.o nrutil.o plasma.o psigrid.o rolldown.o 
+    nrSpline.o nrutil.o plasma.o psigrid.o rolldown.o
 
 #for root only
 DEFINES = -DDIPOLE
-LIBS += -lmfhdf -ldf -ljpeg -lz 
+LIBS += -lmfhdf -ldf -ljpeg -lz
 OBJS = $(PPOBJS)
 
 CFLAGS += -O2 -g -I../includes $(DEFINES)
@@ -54,7 +54,3 @@ contourhdf: $(OBJS) PostProc.o HDFInput.o
 .PHONY : clean
 clean:
 	-rm *.o
-
-
-
-

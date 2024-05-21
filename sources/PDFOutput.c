@@ -42,32 +42,32 @@ static const double B2_Levels[] = {1.0e4,   2.5e3,   4.0e2,
 							       1.0e-6,  2.5e-7,  4.0e-8,
 							       1.0e-8,  2.5e-9,  4.0e-10,
 							       1.0e-10, 2.5e-11, 4.0e-12};
-							       
+
 static const char *B2Dash[] = { "[] 0",
 								"[4 4] 0"
 								};
 
-static const int B2DI[] = {0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 
+static const int B2DI[] = {0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1,
                            0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1};
-							       
+
 static CPDFviewerPrefs theVP = { PM_NONE, NO, NO, NO, NO, NO, PL_SINGLE, PM_NONE };
 
-#define BSIZE 8191			          
+#define BSIZE 8191
 void PDFOutput(TOKAMAK *td)
-{	
+{
     CPDFdoc *pdf;
 
-    char  buf[BSIZE+1];    
+    char  buf[BSIZE+1];
     pdf = cpdf_open(0, NULL);
 
     snprintf(buf, BSIZE, "%s.pdf", td->Oname);
     cpdf_setOutputFilename(pdf, buf);
     cpdf_enableCompression(pdf, YES);		/* use Flate/Zlib compression */
     cpdf_init(pdf);
-    
+
     /* This will have outline (book marks) visible upon document open */
     cpdf_setViewerPreferences(pdf,&theVP);
-    
+
     /* PDF Info object */
 	snprintf(buf, BSIZE, "%s: built %s, %s", APPNAME, __DATE__, __TIME__);
 	cpdf_setCreator(pdf, buf);
@@ -77,7 +77,7 @@ void PDFOutput(TOKAMAK *td)
 	snprintf(buf, BSIZE, "Equilibrium, Grad-Shafranov,  %s, %s, %s", APPNAME,
 			 td->Name, td->Info);
 	cpdf_setKeywords(pdf, buf);
-	
+
     cpdf_pageInit(pdf,1, PORTRAIT, LETTER, LETTER);		/* page orientation */
     Eq_Plot(pdf,td);
 
@@ -97,14 +97,14 @@ void	showGeometry(CPDFdoc *pdf,TOKAMAK *td)
 	SUBCOIL *sc;
 	MEAS *m;
 	int i,j;
-	
+
 	cpdf_gsave(pdf);
-	
+
 	/* do limiters */
-	
+
 	cpdf_setrgbcolorStroke(pdf,1.0, 0.0, 0.0);	/* red */
 
-	
+
 	for (i=0;i<td->NumLimiters;i++) {
 		l = td->Limiters[i];
 		if (l->Enabled != Limiter_Off) {
@@ -119,11 +119,11 @@ void	showGeometry(CPDFdoc *pdf,TOKAMAK *td)
 	cpdf_setgray(pdf,1.0);
 	cpdf_setrgbcolorFill(pdf,0.0, 1.0, 0.0);	/* green */
 	cpdf_setrgbcolorStroke(pdf,0.2, 0.2, 0.2);	/* gray */
-	
+
 	for (i=0;i<td->NumCoils;i++) {
 		c = td->Coils[i];
 		if (c->Enabled >= Coil_On) {
-			
+
 			if (c->dX > 0) {
 				/* make box */
 				cpdf_newpath(pdf);
@@ -139,7 +139,7 @@ void	showGeometry(CPDFdoc *pdf,TOKAMAK *td)
 				cpdf_lineto(pdf,c->X+c->dX/2,c->Z+c->dZ/2);
 				cpdf_moveto(pdf,c->X+c->dX/2,c->Z-c->dZ/2);
 				cpdf_lineto(pdf,c->X-c->dX/2,c->Z+c->dZ/2);
-				cpdf_stroke(pdf);  
+				cpdf_stroke(pdf);
 */
 				/* mini grid points... */
 //				for (j=0; j<c->NumSubCoils; j++) {
@@ -154,7 +154,7 @@ void	showGeometry(CPDFdoc *pdf,TOKAMAK *td)
 			}
 		}
 	}
-	
+
 	/* do measurements */
 	cpdf_setrgbcolorStroke(pdf,1.0, 0.0, 1.0);	/* magenta */
 	cpdf_setrgbcolorFill(pdf,0.5, 0.5, 0.5);	/* gray */
@@ -189,7 +189,7 @@ void contour_Psi(CPDFdoc *pdf,TOKAMAK *td)
 
 	int			i;
 	double	 	dPsi,PsiAxis,Psi;
-	
+
 	pg = td->PsiGrid;
 	pl = td->Plasma;
 	nmax = pg->Nsize;
@@ -198,15 +198,15 @@ void contour_Psi(CPDFdoc *pdf,TOKAMAK *td)
     PsiAxis = pg->PsiAxis;
     npsi = pl->NumPsiPts/3;
     dPsi = pl->PsiXmax*(pg->PsiLim-PsiAxis)/npsi;
-	
+
 	for (i=npsi;i>=0;i--) { // plot every third psi point....
     MULTI;
 
 	    Psi = i*dPsi+PsiAxis;
 		plot_contour(pdf, NOFILL, pg->X, pg->Z, pg->Psi, Psi, 0, nmax, 0, nmax);
-		
+
 	}
-	
+
 	cpdf_setdash(pdf,"[1 2] 0");
 	plot_contour(pdf, NOFILL, pg->X, pg->Z, pg->Psi, pg->PsiLim, 0, nmax, 0, nmax);
 	cpdf_nodash(pdf);
@@ -224,15 +224,15 @@ void contour_ModB(CPDFdoc *pdf,TOKAMAK *td)
 	pl = td->Plasma;
 	nmax = pg->Nsize;
 	B2 = pl->B2;
-	
+
 	maxB2 = minB2 = B2[nmax/2][nmax/2];
-	for (ix=1; ix<nmax-1; ix++) 
+	for (ix=1; ix<nmax-1; ix++)
 		for (iz=1; iz<nmax-1 ; iz++) {
 			BB = B2[ix][iz];
 			if (BB < minB2) minB2 = BB;
 			if (BB > maxB2) maxB2 = BB;
 		}
-		
+
 	for (i = 0; i < nB2lev ; i++) {
 MULTI;
 		if ((BB = B2_Levels[i]) < minB2) break;
@@ -248,14 +248,14 @@ MULTI;
 
 
 void contour_IsPlasma(CPDFdoc *pdf,TOKAMAK *td) {
-	
+
 	PSIGRID *pg;
 	int		nmax,ix,iz;
 	double	**ipd;
-	
+
 	pg = td->PsiGrid;
-	
-	nmax = pg->Nsize;	
+
+	nmax = pg->Nsize;
 	ipd = dmatrix(0,nmax,0,nmax);
 	for (ix=0;ix<=nmax;ix++)
 		for (iz=0;iz<=nmax;iz++)
@@ -269,10 +269,10 @@ void    Eq_Plot(CPDFdoc *pdf,TOKAMAK *td)
 {
 
 	PSIGRID   		*pg;
-	
+
 	CPDFplotDomain 	*myDomain, *oldDomain;
 	CPDFaxis 		*xAxis, *yAxis;
-	
+
 	float 			aspect, xmin, xmax, ymin, ymax, plx, ply;
 
 	pg = td->PsiGrid;
@@ -286,8 +286,8 @@ void    Eq_Plot(CPDFdoc *pdf,TOKAMAK *td)
 	if (ply > 9.0*inch) {
 		ply = 9.0*inch;
 		plx = ply/aspect;
-	}	
-		
+	}
+
 	myDomain = cpdf_createPlotDomain(.5*inch+(8.0*inch-plx)/2, (11*inch - ply)/2, plx, ply,
 				xmin,xmax,ymin,ymax, LINEAR, LINEAR, 0);
 	oldDomain = cpdf_setPlotDomain(pdf,myDomain);	/* save oldDomain for later restore */
@@ -315,47 +315,47 @@ void    Eq_Plot(CPDFdoc *pdf,TOKAMAK *td)
     cpdf_setgrayFill(pdf,0.0); /* Black */
     cpdf_beginText(pdf,0);
     cpdf_setFont(pdf,"Times-Roman", "MacRomanEncoding", 24.0);
-    cpdf_textAligned(pdf,(xmin+xmax)/2., ymax+(ymax-ymin)*.035, 0.0, TEXTPOS_LM, 
+    cpdf_textAligned(pdf,(xmin+xmax)/2., ymax+(ymax-ymin)*.035, 0.0, TEXTPOS_LM,
     	"Psi and |B| Contours");
     cpdf_endText(pdf);
 
 	cpdf_gsave(pdf); /* to later undo clipping */
 	cpdf_clipDomain(myDomain);
-	
+
 	/* first show roughly where the code thinks there is plasma */
 
 	cpdf_setrgbcolorFill(pdf,1.0, 0.7, .7);	/* pink plasma */
 	cpdf_setrgbcolorStroke(pdf,1.0, 0.7, .7);	/* pink plasma */
 	cpdf_setlinewidth(pdf,.1);
-	
+
 	contour_IsPlasma(pdf,td);
 
 
 
 	cpdf_setlinewidth(pdf,.5);
     showGeometry(pdf,td);
-	 
+
 	/* Plot it */
-	
+
 
 
 	cpdf_setlinewidth(pdf,.1);
 	cpdf_setrgbcolorStroke(pdf,0.0, 0.0, 1.0);	/* blue */
-	
+
 	contour_Psi(pdf,td);
-    
-	
+
+
 	cpdf_setlinewidth(pdf,.1);
 	cpdf_setrgbcolorStroke(pdf,0.0, 0.5, 0.5);
 	cpdf_setdash(pdf,"[4 4] 0");
-	
+
 	contour_ModB(pdf,td);
-	
+
 	printf("\n");
-	
+
 	cpdf_grestore(pdf); /* remove clipping */
 
- 
+
 	cpdf_setPlotDomain(pdf,oldDomain);		/* restore previous plot domain */
 	cpdf_freePlotDomain(myDomain);		/* deallocate the plot domain */
 }

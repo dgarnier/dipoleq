@@ -1,5 +1,5 @@
-// Test for DipolEq 
-// 
+// Test for DipolEq
+//
 
 K_CodeControl
 	MaxIterFixed = 0
@@ -9,7 +9,8 @@ K_CodeControl
 	NumSeps = 2
 	NumMeasures = 0
 	Name = Vacuum
-	Info = Newest Vacuum Vessel
+// old version can't handle spaces in values
+	Info = Beta_1_Test_Case
 	Oname = beta1
 	MGname = *
 	LHname = *
@@ -49,71 +50,71 @@ K_Plasma
 	PsiFlat = .999
 	NSurf = 125
  	fCrit = 1
-	
+
 K_Limiter
-	Name = Outer                
-	X1 = 2.49                 
-	Z1 = 0.52        
-	X2 = 2.49       
+	Name = Outer
+	X1 = 2.49
+	Z1 = 0.52
+	X2 = 2.49
 	Z2 = -0.52
 	Enabled = 1
-	
+
 K_Limiter
-	Name = Top1                
-	X1 = 2.49                 
-	Z1 = 0.52        
-	X2 = 2.37       
+	Name = Top1
+	X1 = 2.49
+	Z1 = 0.52
+	X2 = 2.37
 	Z2 = 0.81
 	Enabled = 1
-	
+
 K_Limiter
-	Name = Top2                
-	X1 = 2.37       
+	Name = Top2
+	X1 = 2.37
 	Z1 = 0.81
-	X2 = 2.0      
+	X2 = 2.0
 	Z2 = 1.0
 	Enabled = 1
-	
+
 K_Limiter
-	Name = Top3                
-	X1 = 2.0      
+	Name = Top3
+	X1 = 2.0
 	Z1 = 1.0
-	X2 = 1.56       
+	X2 = 1.56
 	Z2 = 1.195
 	Enabled = 1
 
 K_Limiter
-	Name = Top4                
-	X1 = 1.56      
+	Name = Top4
+	X1 = 1.56
 	Z1 = 1.195
-	X2 = 1.0       
+	X2 = 1.0
 	Z2 = 1.35
 	Enabled = 1
 
 K_Limiter
-	Name = Top5                
-	X1 = 1.0      
+	Name = Top5
+	X1 = 1.0
 	Z1 = 1.35
-	X2 = 0.63       
+	X2 = 0.63
 	Z2 = 1.41
 	Enabled = 1
-	
+
 K_Limiter
-	Name = Floating_Coil                
-	X1 = 0.2235                   
-	Z1 = 0.000        
-	X2 = 0.24        
+	Name = Floating_Coil
+	X1 = 0.2235
+	Z1 = 0.000
+	X2 = 0.24
 	Z2 = 0.000
 	Enabled = -1
 
 K_Limiter
-	Name = Floating_Coil                
-	X1 = 0.585                   
-	Z1 = 0.000        
-	X2 = 0.5        
+	Name = Floating_Coil
+	X1 = 0.585
+	Z1 = 0.000
+	X2 = 0.5
 	Z2 = 0.000
-	Enabled = -1  
-	
+	Enabled = -1
+
 K_Separatrix
 	Name = Upper_Sep
 	X1 = 1.4
@@ -123,7 +124,7 @@ K_Separatrix
 	XC = 1.0
 	ZC = 0.05
 	Enabled = 1
-	
+
 K_Separatrix
 	Name = Extra_Sep
 	X1 = 1.5
@@ -174,26 +175,25 @@ K_Coil
 	Name = H_U
 	Enabled = 0
 	InitialCurrent = 0
-	X = 2.35  
+	X = 2.35
 	dX = 0.05
-	Z = 1.175 
-	dZ = 0.08 
+	Z = 1.175
+	dZ = 0.08
 
 K_Coil
 	Name = H_L
 	Enabled = 0
-	InitialCurrent = 0                       
+	InitialCurrent = 0
 	X = 2.35
 	dX = 0.05
 	Z = -1.175
-	dZ = 0.08   
+	dZ = 0.08
 
 K_Coil
 	Name = C_Coil
 	Enabled = 0
-	InitialCurrent = 4050200                      
+	InitialCurrent = 4050200
 	X = .6727
 	dX = 0.1
 	Z = 0.0
-	dZ = 0.7  
-
+	dZ = 0.7

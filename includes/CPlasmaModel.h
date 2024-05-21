@@ -1,4 +1,4 @@
-/* Dipole 
+/* Dipole
 **
 **  CPlasmaModel.h
 **
@@ -8,7 +8,7 @@
 **
 */
 
-#ifndef _CPlasmaModel_ 
+#ifndef _CPlasmaModel_
 
 #define _CPlasmaModel_ 1
 
@@ -20,10 +20,10 @@ class CPlasmaModel {
   public:
 	int mModelType;
 	int mNumUnkns;
-	int isVacuum;  
+	int isVacuum;
 	CPlasmaModel() { isVacuum = 0; } ;
 	static  CPlasmaModel * CreateModel(PLASMA *p);
-	virtual void    UpdateModel(TOKAMAK *);   
+	virtual void    UpdateModel(TOKAMAK *);
 	virtual double  P(  double ) { return 0.0; };
 	virtual double  Pp( double ) { return 0.0; };
 	virtual double  G2( double ) { return 1.0; };

@@ -1,12 +1,12 @@
 #if MULTITASK
 #define MULTI doMultiTask(1)
-#else 
+#else
 #define MULTI {}
 #endif
 
 #if MULTITASK
-#ifdef __cplusplus 
-extern "C" { 
+#ifdef __cplusplus
+extern "C" {
 #endif
 
    void doMultiTask(long);

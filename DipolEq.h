@@ -2,13 +2,13 @@
 #define NoToroidalField 1
 #define MULTITASK 0
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 void DoMultiTask(long);
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 

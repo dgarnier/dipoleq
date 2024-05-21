@@ -6,7 +6,7 @@
 ** Header file for local poloidal field measurements.
 **
 ** Every measurement must define the following subroutines:
-**				
+**
 **				meas_circle_Green(TOKAMAK *td, MEAS *m)
 **
 **				meas_circle_Fit(TOKAMAK *td, MEAS *m)

@@ -6,7 +6,7 @@
 ** Header file for local poloidal field measurements.
 **
 ** Every measurement must define the following subroutines:
-**				
+**
 **				meas_bpangle_Green(TOKAMAK *td, MEAS *m)
 **
 **				meas_bpangle_Fit(TOKAMAK *td, MEAS *m)

@@ -2,22 +2,21 @@
 dipoleq input file schema using pydantic for validation
 """
 
-from re import M
-from typing import Optional, List, Any, Union, Tuple
-from unittest.mock import Base
-from numpy import isin
-from typing_extensions import Self, Annotated, Literal
 import enum
 from itertools import chain
+from re import M
+from typing import Any, List, Optional, Tuple, Union
+from unittest.mock import Base
 
+from numpy import isin
 from pydantic import BaseModel, Field, field_validator, model_validator
+from typing_extensions import Annotated, Literal, Self
 
-from ._c import Machine, PsiGrid, Plasma, CPlasmaModel, \
-                Coil, Shell, SubCoil, SubShell, \
-                Limiter, Separatrix, Measure, ModelType, MeasType, CircleType
+from .core import (CircleType, Coil, CPlasmaModel, Limiter, Machine, MeasType,
+                   Measure, ModelType, Plasma, PsiGrid, Separatrix, Shell,
+                   SubCoil, SubShell)
 
-
-MU0 = 4.0e-7*3.14159265358979323846
+MU0 = 4.0e-7 * 3.14159265358979323846
 
 
 class PsiGridIn(BaseModel):
@@ -31,7 +30,7 @@ class PsiGridIn(BaseModel):
     ResThreshold: float
     UnderRelax1: float
     UnderRelax2: float
-    
+
     def do_init(self, pg: PsiGrid) -> None:
         pg.Nsize = self.Nsize
         pg.Rmin = self.Rmin
@@ -46,15 +45,18 @@ class PsiGridIn(BaseModel):
 
 
 def model_type_ids(mts: List[ModelType]) -> List[Union[int, str]]:
-    """ make a list of literals for the model types both name and value
-    """
+    """make a list of literals for the model types both name and value"""
     lists_of_literals = [[mt.value, mt.name, str(mt.value)] for mt in mts]
     return list(chain.from_iterable(lists_of_literals))
 
 
-OLD_MODELS = [ModelType.Std,
-              ModelType.IsoNoFlow, ModelType.IsoFlow,
-              ModelType.AnisoNoFlow, ModelType.AnisoFlow]
+OLD_MODELS = [
+    ModelType.Std,
+    ModelType.IsoNoFlow,
+    ModelType.IsoFlow,
+    ModelType.AnisoNoFlow,
+    ModelType.AnisoFlow,
+]
 
 PLASMA_BASE_MODEL_TYPES = Literal[*model_type_ids(OLD_MODELS)]
 
@@ -62,7 +64,7 @@ PLASMA_BASE_MODEL_TYPES = Literal[*model_type_ids(OLD_MODELS)]
 class PlasmaModelBaseModel(BaseModel):
     Type: Any
 
-    @field_validator('Type', mode='after')
+    @field_validator("Type", mode="after")
     @classmethod
     def check_model_type(cls, v: Any) -> Any:
         if isinstance(v, str):
@@ -72,7 +74,7 @@ class PlasmaModelBaseModel(BaseModel):
         if isinstance(v, int):
             return ModelType(v)
         return v
-        
+
 
 class PlasmaModelOld(PlasmaModelBaseModel):
     Type: PLASMA_BASE_MODEL_TYPES = Field(alias="ModelType")
@@ -83,7 +85,7 @@ class PlasmaModelOld(PlasmaModelBaseModel):
     RotTerms: Optional[int]
     SisoTerms: Optional[int]
     SparTerms: Optional[int]
-    SperTerms: Optional[int]    
+    SperTerms: Optional[int]
     G2p: Optional[List[float]]
     H: Optional[List[float]]
     Pp: Optional[List[float]]
@@ -91,14 +93,14 @@ class PlasmaModelOld(PlasmaModelBaseModel):
     Siso: Optional[List[float]]
     Spar: Optional[List[float]]
     Sper: Optional[List[float]]
-   
-    @model_validator(mode='after')
+
+    @model_validator(mode="after")
     def check_old_plasma_model(self) -> Self:
         # should also check for consistency of the terms and models
         if self.Type not in OLD_MODELS:
             raise ValueError(f"ModelType {self.Type} is not a valid plasma model")
         return self
-    
+
     def do_init(self, pm: Plasma) -> None:
         pm.G2pTerms = len(self.G2p) if self.G2p else 0
         if self.G2p:
@@ -131,8 +133,9 @@ class PlasmaModelOld(PlasmaModelBaseModel):
 
 
 class CDipoleStdIn(PlasmaModelBaseModel):
-    Type: Literal[*model_type_ids([ModelType.DipoleStd])] = \
-        Field(ModelType.DipoleStd, alias="ModelType")
+    Type: Literal[*model_type_ids([ModelType.DipoleStd])] = Field(
+        ModelType.DipoleStd, alias="ModelType"
+    )
     RPeak: Optional[float]
     ZPeak: Optional[float]
     PsiPeak: Optional[float]
@@ -140,17 +143,18 @@ class CDipoleStdIn(PlasmaModelBaseModel):
     PsiDipole: Optional[float]
     PPeak: Optional[float]
     PrExp: Optional[float]
+
     def do_init(self, pl: Plasma) -> None:
         pm = pl.Model
-        keys = ['RPeak', 'ZPeak', 'PsiPeak', 'PsiEdge',
-                'PsiDipole', 'PPeak', 'PrExp']
+        keys = ["RPeak", "ZPeak", "PsiPeak", "PsiEdge", "PsiDipole", "PPeak", "PrExp"]
         for key in keys:
             pm.model_input(key, str(getattr(self, key)), "")
 
 
-DIPOLE_INTSTABLE_IDS = Annotated[Literal[*model_type_ids([ModelType.DipoleIntStable])],
-                                 Field(ModelType.DipoleIntStable,
-                                       alias="ModelType")]
+DIPOLE_INTSTABLE_IDS = Annotated[
+    Literal[*model_type_ids([ModelType.DipoleIntStable])],
+    Field(ModelType.DipoleIntStable, alias="ModelType"),
+]
 
 
 class CDipoleIntStableIn(PlasmaModelBaseModel):
@@ -163,15 +167,16 @@ class CDipoleIntStableIn(PlasmaModelBaseModel):
     fCrit: Optional[float]
 
     def do_init(self, pl: Plasma) -> None:
-        keys = ['RPeak', 'ZPeak', 'PEdge', 'PsiFlat', 'NSurf', 'fCrit']
+        keys = ["RPeak", "ZPeak", "PEdge", "PsiFlat", "NSurf", "fCrit"]
         pm = pl.Model
         for key in keys:
-            pm.model_input(key, str(getattr(self, key)), "")    
+            pm.model_input(key, str(getattr(self, key)), "")
 
 
-PlasmaModel = Annotated[Union[PlasmaModelOld, CDipoleStdIn,
-                              CDipoleIntStableIn],
-                        Field(discriminator='Type')]
+PlasmaModel = Annotated[
+    Union[PlasmaModelOld, CDipoleStdIn, CDipoleIntStableIn], Field(discriminator="Type")
+]
+
 
 class PlasmaIn(BaseModel):
     B0: float
@@ -183,10 +188,10 @@ class PlasmaIn(BaseModel):
     PsiXmax: Optional[float]
     Jedge: Optional[float]
     Model: PlasmaModel
-    
-    #@field_validator('ModelType')
-    #@classmethod
-    #def check_model_type(cls, v: Any) -> Any:
+
+    # @field_validator('ModelType')
+    # @classmethod
+    # def check_model_type(cls, v: Any) -> Any:
     #    if isinstance(v, int):
     #        return ModelType(v)
     #    return v
@@ -195,7 +200,9 @@ class PlasmaIn(BaseModel):
         pl.B0 = self.B0
         pl.R0 = self.R0
         if self.R0B0:
-            pl.R0B0 = self.R0B0
+            pl.B0R0 = self.R0B0
+        else:
+            pl.B0R0 = self.R0 * self.B0
         if self.Ip0:
             pl.Ip0 = self.Ip0
         if self.NumBndMomts:
@@ -208,6 +215,7 @@ class PlasmaIn(BaseModel):
             pl.Jedge = self.Jedge
         pl.ModelType = ModelType(self.Model.Type)
 
+
 class LimiterIn(BaseModel):
     Name: Optional[str]
     R1: float = Field(alias="X1")
@@ -215,7 +223,7 @@ class LimiterIn(BaseModel):
     R2: float = Field(alias="X2")
     Z2: float
     Enabled: Optional[int] = True
-    
+
     def do_init(self, lim: Limiter) -> None:
         if self.Name:
             lim.Name = self.Name
@@ -235,7 +243,7 @@ class SeparatrixIn(BaseModel):
     RC: float = Field(alias="XC")
     ZC: float
     Enabled: Optional[bool] = True
-    
+
     def do_init(self, sep: Separatrix) -> None:
         if self.Name:
             sep.Name = self.Name
@@ -275,12 +283,14 @@ class CoilIn(BaseModel):
     NumSubCoils: Optional[int] = None
     SubCoils: Optional[List[SubCoilIn]] = None
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def check_shape_vs_subcoils(self) -> Self:
         if self.NumSubCoils:
             if self.NumSubCoils != (len(self.SubCoils) if self.SubCoils else 0):
-                raise ValueError(f"NumSubCoils {self.NumSubCoils} does not match "
-                                 f"the number of subcoils {len(self.SubCoils)}")
+                raise ValueError(
+                    f"NumSubCoils {self.NumSubCoils} does not match "
+                    f"the number of subcoils {len(self.SubCoils)}"
+                )
         else:
             self.NumSubCoils = len(self.SubCoils) if self.SubCoils else 0
         if not self.R or self.R < 0.0:
@@ -288,14 +298,16 @@ class CoilIn(BaseModel):
                 raise ValueError("Coil must have subcoils, or defined limit points")
         else:
             if self.dR == 0.0 or self.dZ == 0.0:
-                raise ValueError("For coils without subcoils, dR and dZ must be defined")
+                raise ValueError(
+                    "For coils without subcoils, dR and dZ must be defined"
+                )
         return self
 
     def do_init(self, coil: Coil, psiGrid: PsiGrid) -> None:
         if self.Name:
             coil.Name = self.Name
         coil.Enabled = self.Enabled
-        coil.CoilCurrent = self.InitialCurrent*MU0
+        coil.CoilCurrent = self.InitialCurrent * MU0
         if self.R:
             coil.R = self.R
         if self.dR:
@@ -343,8 +355,10 @@ class ShellIn(BaseModel):
         if self.Enabled:
             shell.Enabled = self.Enabled
         if shell.NumSubShells != self.NumSubShells:
-            raise ValueError(f"NumSubShells {self.NumSubShells} does not match"
-                             f" the number of subshells {shell.NumSubShells}")
+            raise ValueError(
+                f"NumSubShells {self.NumSubShells} does not match"
+                f" the number of subshells {shell.NumSubShells}"
+            )
         for selfss, subshell in zip(self.SubShells, shell.SubShells):
             selfss.do_init(subshell)
 
@@ -360,6 +374,7 @@ class MeasureIn(BaseModel):
         meas.Enabled = self.Enabled
         meas.Type = self.Type
 
+
 class MachineIn(BaseModel):
     # Complete input file has these fields
     MaxIterFixed: Optional[int] = 0
@@ -367,6 +382,7 @@ class MachineIn(BaseModel):
     Name: Optional[str] = "pyDipolEQ"
     Info: Optional[str] = "DipolEQ Equilibrium"
     Oname: Optional[str]
+    Iname: Optional[str]
     MGname: Optional[str] = ""
     LHname: Optional[str] = ""
     RSname: Optional[str] = ""
@@ -381,7 +397,7 @@ class MachineIn(BaseModel):
     Plasma: PlasmaIn
     Coils: List[CoilIn]
     Limiters: List[LimiterIn]
-    Separatricies: Optional[List[SeparatrixIn]] = None
+    Separatrices: Optional[List[SeparatrixIn]] = None
     Measures: Optional[List[MeasureIn]] = None
     Shells: Optional[List[ShellIn]] = None
     NumCoils: Optional[int] = None
@@ -390,65 +406,74 @@ class MachineIn(BaseModel):
     NumSeps: Optional[int] = None
     NumMeasures: Optional[int] = None
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def check_numbers(self) -> Self:
         if self.NumCoils:
             if self.NumCoils != len(self.Coils):
-                raise ValueError(f"NumCoils {self.NumCoils} does not match the"
-                                 f" number of coils {len(self.Coils)}")
+                raise ValueError(
+                    f"NumCoils {self.NumCoils} does not match the"
+                    f" number of coils {len(self.Coils)}"
+                )
         else:
             self.NumCoils = len(self.Coils)
         if self.NumShells:
             numShells = len(self.Shells) if self.Shells else 0
             if self.NumShells != numShells:
-                raise ValueError(f"NumShells {self.NumShells} does not match"
-                                 f" the number of shells {numShells}")
+                raise ValueError(
+                    f"NumShells {self.NumShells} does not match"
+                    f" the number of shells {numShells}"
+                )
         else:
             self.NumShells = len(self.Shells) if self.Shells else 0
         if self.NumLimiters:
             if self.NumLimiters != len(self.Limiters):
-                raise ValueError(f"NumLimiters {self.NumLimiters} does not "
-                                 f"match the number of limiters "
-                                 f"{len(self.Limiters)}")
+                raise ValueError(
+                    f"NumLimiters {self.NumLimiters} does not "
+                    f"match the number of limiters "
+                    f"{len(self.Limiters)}"
+                )
         else:
             self.NumLimiters = len(self.Limiters) if self.Limiters else 0
         if self.NumSeps:
-            numSeps = len(self.Separatricies) if self.Separatricies else 0
+            numSeps = len(self.Separatrices) if self.Separatrices else 0
             if self.NumSeps != numSeps:
-                raise ValueError(f"NumSeps {self.NumSeps} does not match the"
-                                 f" number of separatricies {numSeps}")
+                raise ValueError(
+                    f"NumSeps {self.NumSeps} does not match the"
+                    f" number of separatrices {numSeps}"
+                )
         else:
-            self.NumSeps = len(self.Separatricies) if self.Separatricies else 0
+            self.NumSeps = len(self.Separatrices) if self.Separatrices else 0
         if self.NumMeasures:
             numMeasures = len(self.Measures) if self.Measures else 0
             if self.NumMeasures != numMeasures:
-                raise ValueError(f"NumMeasures {self.NumMeasures} does not "
-                                 f"match the number of measures {numMeasures}")
+                raise ValueError(
+                    f"NumMeasures {self.NumMeasures} does not "
+                    f"match the number of measures {numMeasures}"
+                )
         else:
             self.NumMeasures = len(self.Measures) if self.Measures else 0
 
         if not self.Oname:
             self.Oname = self.Name
-            
+
         return self
 
-    def create_machine(self) -> Machine:
-        """Creates a Machine object from the input data
+    def initalize_machine(self, m: Machine) -> None:
+        """Initializes a Machine object from the input data"""
 
-        Returns:
-            Machine: The machine object, ready to be solved hopefully
-        """
-        
-        m = Machine()
-        
         # names
-        m.Name = self.Name
-        m.Info = self.Info
-        m.Oname = self.Oname
+        if self.Name:
+            m.Name = self.Name
+        if self.Info:
+            m.Info = self.Info
+        if self.Oname:
+            m.Oname = self.Oname
+        if self.Iname:
+            m.Iname = self.Iname
         m.MGname = self.MGname
         m.LHname = self.LHname
         m.RSname = self.RSname
-        
+
         # control parameters
         m.RestartStatus = self.RestartStatus
         m.RestartUnkns = self.RestartUnkns
@@ -456,51 +481,52 @@ class MachineIn(BaseModel):
         m.MGreenStatus = self.MGreenStatus
         m.NumEqualEq = self.NumEqualEq
         m.VacuumOnly = self.VacuumOnly
-        
+
         m.MaxIterFixed = self.MaxIterFixed
         m.MaxIterFree = self.MaxIterFree
-        
+
         # set numbers
         m.NumCoils = self.NumCoils
         m.NumShells = self.NumShells
         m.NumLimiters = self.NumLimiters
         m.NumSeps = self.NumSeps
         m.NumMeasures = self.NumMeasures
-        
+
         # init PsiGrid and Plasma
         self.PsiGrid.do_init(m.PsiGrid)
         self.Plasma.do_init(m.Plasma)
+        # these need to be equal
+        m.Plasma.Nsize = m.PsiGrid.Nsize
 
         # init machine (do allocations)
         m.init()
-        
+
         # now init the plasma model that was inited
         self.Plasma.Model.do_init(m.Plasma)
-        
+
         # now do lists
         for i, coil in enumerate(self.Coils):
             coil.do_init(m.Coils[i], m.PsiGrid)
-            
+
         for i, lim in enumerate(self.Limiters):
             if not m.Limiters[i]:
                 m.Limiters[i] = m.Limiters.new_limiter()
             lim.do_init(m.Limiters[i])
-            
-        if self.Separatricies:
-            for i, sep in enumerate(self.Separatricies):
+
+        if self.Separatrices:
+            for i, sep in enumerate(self.Separatrices):
                 if not m.Seps[i]:
                     m.Seps[i] = m.Seps.new_separatrix()
                 sep.do_init(m.Seps[i])
-                
+
         if self.Measures:
             for i, meas in enumerate(self.Measures):
                 if not m.Measures[i]:
-                    m.Measures[i] = m.Measures.new_meas()
+                    m.Measures[i] = m.Measures.new_meas(MeasType(meas.Type))
                 meas.do_init(m.Measures[i])
-                
+
         if self.Shells:
             for i, shell in enumerate(self.Shells):
                 shell.do_init(m.Shells[i])
-        
+
         return m
-    

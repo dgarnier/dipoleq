@@ -1,4 +1,4 @@
-/* Dipole 
+/* Dipole
 **
 **  CDipoleIntStable.cc
 **
@@ -46,13 +46,13 @@ CDipoleIntStable::CDipoleIntStable(PLASMA *pl)
 	mG2pow = 0.0;
 }
 
-CDipoleIntStable::~CDipoleIntStable() 
+CDipoleIntStable::~CDipoleIntStable()
 {
 	if (mP) 	delete[] mP;
 	if (mPsi) 	delete[] mPsi;
 	if (mSplPp) delete[] mSplPp;
 	if (mSigmas) delete[] mSigmas;
-	
+
 }
 
 static const char * sInputWords[] = {
@@ -93,7 +93,7 @@ void CDipoleIntStable::ModelInput(char *key, char *val, char *init)
 		case kZPeak :
 			sscanf(val,"%lf",&mZPeak);
 			break;
-		case kPEdge : 
+		case kPEdge :
 			sscanf(val,"%lf",&mPEdge);
 			break;
 		case kPsiFlat :
@@ -111,7 +111,7 @@ void CDipoleIntStable::ModelInput(char *key, char *val, char *init)
 		default :
 			CPlasmaModel::ModelInput(key,val,init);
 	}
-	
+
 //		if (terms != NULL) {
 //		tok = strtok(init,",\n");
 //		for (i=0; i<maxt; i++) {
@@ -127,68 +127,68 @@ void CDipoleIntStable::UpdateModel(TOKAMAK *td)
 	int i;
 	double *rr, *zz, *vv;
 	double p, lastp;
-	
+
 	if (td->VacuumOnly != 0) {
 		isVacuum = 1;
 		return;
 	}
-	
+
 	// we'll need the correct B field from Psi
 	GetGradPsi(td);
-	
+
 	mPsiPeak = GetPsi(td->PsiGrid, mRPeak, mZPeak);
 	mPsiDipole = td->PsiGrid->PsiAxis;
 	mPsiEdge = td->PsiGrid->PsiLim;
 	if (mP == NULL) {
-		mP       = new double[mNpts]; 
+		mP       = new double[mNpts];
 		mPsi     = new double[mNpts];
 		mSplPp   = new double[mNpts];
 		mSigmas  = new double[mNpts];
 	}
-	
+
 	rr = new double[mNpts];
 	zz = new double[mNpts];
 	vv = new double[mNpts];
-	
+
 	// first lets compute Psi
 	mPsi[0]     = mPsiPeak;
 	mPsi[mNpts-1] = mPsiEdge;
 	for (i=0;i<mNpts;i++) {
 		mPsi[i] = mPsiPeak + mPsiFlat*(mPsiEdge-mPsiPeak)*i/(mNpts-1);
 	}
-	
+
 	// now lets get some r's and z's to start our contours safely!
 //	RollDownHill(td, mRPeak, mZPeak, mNpts, mPsi, rr, zz);
-                  
-    // now lets compute v for each psi (or contours starting at r, z              
+
+    // now lets compute v for each psi (or contours starting at r, z
 //	CompVPoints(td, mNpts, rr, zz, vv);
-	
+
 	GetRandV(td, mRPeak, mZPeak, mNpts, mPsi, rr, zz, vv);
-	
+
 	// finally, we define P = Pedge * (Vedge/V)^(frac*5/3)
-	
+
 	lastp = MU0*mPEdge;
 	for (i=mNpts-1;i>=0;i--) {
 		p = MU0*mPEdge*pow(vv[mNpts-1]/vv[i],mFracCrit*1.666666666666667);
 		lastp = mP[i] = (lastp < p) ? p : lastp;
 	}
-	
+
 	mP[mNpts-1] = MU0*mPEdge;
 	mPPeak = mP[0];
-	
+
 #if _USE_TSPACK_
 	{
 		double *wk;
-		
+
 		long ncd = 2;
 		long per = 0;
 		long iendc = 1;
 		long unifrm = 0;
 		long n = mNpts;
 		long ier, lwk;
-		
+
 		if (ncd == 1) {
-			lwk = 0; 
+			lwk = 0;
 			wk = NULL;
 		} else {
 			if (unifrm) {
@@ -206,43 +206,43 @@ void CDipoleIntStable::UpdateModel(TOKAMAK *td)
 			}
 			wk = new double[lwk];
 		}
-		
-		mSplPp[0] = 0.0 ; 
+
+		mSplPp[0] = 0.0 ;
 		mSplPp[mNpts-1] = 0.0;
-		
+
 		// now lets spline it for later and set the end derivatives to zero.
 		TSPSI(&n, mPsi, mP, &ncd, &iendc, &per, &unifrm, &lwk, wk, mSplPp, mSigmas, &ier);
 		if (ier < 0) {
 			printf("Error in tension spline: %d",ier);
 			nrerror("Error in tension spline routine.\n");
 		}
-		
+
 		if (wk) delete[] wk;
 	}
-#else 
+#else
 
 	spline(mPsi-1,mP-1,mNpts,0.0,0.0,mSplPp-1);   // spline likes vectors from 1-n
 
 #endif /* _USE_TSPACK_ */
-	
+
 	delete[] rr;
 	delete[] zz;
 	delete[] vv;
-	
+
 }
 
 double CDipoleIntStable::P(double psi)
 {
 	double p, theta;
-		
+
 	if (isVacuum) return 0;
-		
+
 	if ((psi <= mPsiDipole) || (psi > mPsiEdge)) {
 		p = 0.0;
 	} else if (psi <= mPsiPeak) {
 	// on the inside just use a simple sine wave
 		theta = PI * (psi - mPsiDipole) / (mPsiPeak - mPsiDipole);
-		p = mPPeak*(1-cos(theta))/2; 
+		p = mPPeak*(1-cos(theta))/2;
 	} else if (psi >= mPsiEdge*mPsiFlat) {
 		p = mPEdge*MU0;
 	} else {
@@ -252,39 +252,39 @@ double CDipoleIntStable::P(double psi)
 		long n = mNpts;
 		p = HVAL(&psi, &n, mPsi, mP, mSplPp, mSigmas, &ier);
 		if (ier < 0) nrerror("Error in CDipoleIntStable::P\n");
-#else 
+#else
 	    splint(mPsi-1,mP-1,mSplPp-1,mNpts,psi,&p);
 #endif /* _USE_TSPACK_ */
 
 	}
 
-	return p;	
+	return p;
 }
 
 double CDipoleIntStable::Pp(double psi)
 {
 	double pp, theta;
-	
+
 	if (isVacuum) return 0;
-		
+
 	if ((psi <= mPsiDipole) || (psi >= mPsiEdge/mPsiFlat)) {
 		pp = 0.0;
 	} else if (psi <= mPsiPeak) {
 		theta = PI * (psi - mPsiDipole) / (mPsiPeak - mPsiDipole);
-		pp = mPPeak/2*sin(theta)*PI/(mPsiPeak - mPsiDipole); 
+		pp = mPPeak/2*sin(theta)*PI/(mPsiPeak - mPsiDipole);
 	} else {
 #if _USE_TSPACK_
 		long ier;
 		long n = mNpts;
 		pp = HPVAL(&psi, &n, mPsi, mP, mSplPp, mSigmas, &ier);
 		if (ier < 0) nrerror("Error in CDipoleIntStable::P\n");
-#else 
+#else
 		double p;
 		splint_dervs(mPsi-1,mP-1,mSplPp-1,mNpts,psi,&p,&pp);
 #endif /* _USE_TSPACK_ */
 	}
 
-	return pp;	
+	return pp;
 }
 
 
@@ -292,7 +292,7 @@ void CDipoleIntStable::ModelDescription(FILE *fi)
 {
 	fprintf(fi,"    Plasma_DipoleIntStable with RPeak, ZPeak, PEdge, fCrit, PsiFlat, G2Pow, NPts = \n");
 	fprintf(fi,"    %f %f %f %f %f %f %d\n",
-		mRPeak,mZPeak,mPEdge,mFracCrit,mPsiFlat,mG2pow,mNpts); 
+		mRPeak,mZPeak,mPEdge,mFracCrit,mPsiFlat,mG2pow,mNpts);
 
 }
 
@@ -306,9 +306,9 @@ void CDipoleIntStable::ModelOutput(FILE *fi)
 double CDipoleIntStable::G2(double psi)
 {
 	double lG2;
-	
+
 	if (isVacuum) return 1.0;
-		
+
 	if (mG2pow == 0.0) return CPlasmaModel::G2(psi);
 	// this really is wrong... not sure what I was thinking of 25 years ago.
 	if (psi <= mPsiDipole) {
@@ -324,11 +324,11 @@ double CDipoleIntStable::G2(double psi)
 double CDipoleIntStable::G2p(double psi)
 {
 	double lG2p;
-	
+
 	if (isVacuum) return 0.0;
-		
+
 	if (mG2pow == 0.0) return CPlasmaModel::G2p(psi);
-	
+
 	if ((psi <= mPsiDipole) || (psi >= mPsiEdge )) {
 		lG2p = 0.0;
 	} else {
@@ -375,7 +375,7 @@ void CDipoleIntStable::GetPParam(TOKAMAK *td)
 			/* G not effected by pressure */
 			G[ix][iz] = sqrt(G2(Psi[ix][iz]));
 			Bt[ix][iz] = G[ix][iz] * pl->B0R0 / pg->X[ix];
-				
+
 			B2[ix][iz] = gPsi2[ix][iz] / TWOPI / pg->X[ix] / TWOPI / pg->X[ix];
 			B2[ix][iz] = B2[ix][iz] + DSQR(Bt[ix][iz]);
 		}

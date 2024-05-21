@@ -50,11 +50,11 @@ void					ZeroJ(TOKAMAK * td)
 	PSIGRID *pg;
 	double **Cur;
 	int			ix, iz, nmax;
-	
+
 	pg = td->PsiGrid;
 	Cur = pg->Current;
 	nmax = pg->Nsize;
-	
+
 	for (ix = 0; ix < nmax; ix++)
 		for (iz = 0; iz < nmax; iz++)
 			Cur[ix][iz] = 0.0;
@@ -86,7 +86,7 @@ void          FindJ(TOKAMAK * td)
 
 	printf("INFO:	FindJ\n");
 	fprintf(LogFile, "INFO:	FindJ\n");
-		
+
 	switch (pl->ModelType) {
 	  case Plasma_Std:
 		  if (!td->VacuumOnly) J_Std(td, J, pl->Pp[1], pl->G2p[1]);
@@ -106,7 +106,7 @@ void          FindJ(TOKAMAK * td)
 	  default:
 	  	pl->Model->FindJ(td,J);
 	  	break;
-	  	
+
 	}
     MULTI;
 
@@ -122,9 +122,9 @@ void          FindJ(TOKAMAK * td)
 				Cur[ix][iz] = 0.0;
 
 	free_dmatrix(J, 0, nmax, 0, nmax);
-    
+
     MULTI;
-    
+
 	/*	C H E C K   F I N A L   R E S U L T */
 	for (ix = 1; ix < nmax; ix++)
 		for (iz = 1; iz < nmax; iz++)

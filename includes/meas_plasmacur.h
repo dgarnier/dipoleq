@@ -6,7 +6,7 @@
 ** Header file for local poloidal field measurements.
 **
 ** Every measurement must define the following subroutines:
-**				
+**
 **				meas_plasmacur_Green(TOKAMAK *td, MEAS *m)
 **
 **				meas_plasmacur_Fit(TOKAMAK *td, MEAS *m)

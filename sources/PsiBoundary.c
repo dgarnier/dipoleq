@@ -262,7 +262,7 @@ void          PsiCoilBoundary(PSIGRID * pg, COIL * c)
 	COILGREEN    *cg;
 
 	if (c->Enabled==0) return;
-	
+
 	nmax = pg->Nsize;
 
 	cg = c->CoilGreen;
@@ -351,7 +351,7 @@ void          PsiBoundary(TOKAMAK * td)
 		Psi[i][nmax] = Psi[i][0] = Psi[0][i] = Psi[nmax][i] = 0.0;
 
     MULTI;
-    
+
 	/* G E T    P L A S M A    B O U N D A R Y */
 	PsiPlasmaBoundary(td->LHPlasmaGreen, pg);
 

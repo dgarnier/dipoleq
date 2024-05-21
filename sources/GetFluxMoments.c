@@ -71,7 +71,7 @@ int           gm;				/* the moment being integrated */
 **
 **	The count begins at 0, and ends at N. (N + 1 entries.)
 */
- 
+
 void          Trace_Count(double x, double z, double dummy, int flag)
 {
 #pragma unused(x,z,dummy)
@@ -97,7 +97,7 @@ void          Trace_Boundary(double x, double z, double dummy, int flag)
 {
 #pragma unused(dummy)
     static int count = 0;
-    
+
     switch (flag) {
         case CONTOUR_START:
             count = 0;
@@ -210,7 +210,7 @@ void	GetFluxContour(PSIGRID * pg, double PsiX, double **x, double **z, int *len)
 {
         int nmax;
         double **Psi, PsiBnd, *X, *Z;
-        
+
     	nmax = pg->Nsize;
 	Psi = pg->Psi;
 	X = pg->X;
@@ -219,7 +219,7 @@ void	GetFluxContour(PSIGRID * pg, double PsiX, double **x, double **z, int *len)
 	PsiBnd = pg->PsiAxis + PsiX * pg->DelPsi;
 
         gCount=0;
-        
+
 	contour(X, Z, Psi, 0, nmax, 0, nmax, PsiBnd, CONTOUR_ONLY_CLOSED,
 			CONTOUR_MIDPOINT, Trace_Count);
 
@@ -232,12 +232,12 @@ void	GetFluxContour(PSIGRID * pg, double PsiX, double **x, double **z, int *len)
             *z = NULL;
             return;
         }
-            
-        
+
+
 	*len = gCount;		/* the number of points to represent this flux surface */
 
         gLen = *len;
-        
+
 	*x = gX = dvector(0, *len);
 	*z = gZ = dvector(0, *len);
 

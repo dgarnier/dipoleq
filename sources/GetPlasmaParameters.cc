@@ -80,7 +80,7 @@ void          GetGradPsi(TOKAMAK * td)
 	gPsiX = pl->GradPsiX;
 	gPsiZ = pl->GradPsiZ;
 	gPsi2 = pl->GradPsi2;
-	
+
 	m1 = n-1;
 	m2 = n-2;
 
@@ -370,7 +370,7 @@ void          GetPlasmaParameters(TOKAMAK * td)
 	  case Plasma_AnisoFlow:
 		  GetPParm_AnisoFlow(td);
 		  break;
-	 default: 
+	 default:
 	 	  pl->Model->GetPParam(td);
 	}
 
@@ -383,7 +383,7 @@ void          GetPlasmaParameters(TOKAMAK * td)
 	fprintf(LogFile, "		[Virial Integrals]\n");
 
 	GetVirial_Vol(td);
- 
+
  	printf("		[Flux profile parameters]\n");
 	fprintf(LogFile, "		[Flux profile parameters]\n");
 
@@ -508,4 +508,3 @@ void          GetPParm_AnisoFlow(TOKAMAK *)
 {
 
 }
-

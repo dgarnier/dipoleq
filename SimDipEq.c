@@ -58,7 +58,7 @@
 #include "FileInput.h"
 #include "FileOutput.h"
 #include "FindJ.h"
-#include "InitJ.h" 
+#include "InitJ.h"
 #include "AddCoilJ.h"
 #include "AddShellJ.h"
 #include "LoadBndryGreens.h"
@@ -109,14 +109,14 @@ void CleanupProfiler(void)
 {
 	if (profileropen != 0) {
 		ProfilerSetStatus(0);
-		ProfilerDump("\pErrorProfile");  
+		ProfilerDump("\pErrorProfile");
 		ProfilerTerm();
 	}
 }
 #endif
 
 /* IMT 09Sep95  Prototypes for new functions that add multitasking */
-#if defined(TPM_F2C) || defined(SPM_F2C) || defined(CW_F2C_MAC) 
+#if defined(TPM_F2C) || defined(SPM_F2C) || defined(CW_F2C_MAC)
 	#include <setjmp.h>
 	#ifdef __cplusplus
 	extern "C" {
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 
 #if MULTITASK
 /* Initialize multi-tasking code */
-#if defined(TPM_F2C) || defined(SPM_F2C) || defined(CW_F2C_MAC) 
+#if defined(TPM_F2C) || defined(SPM_F2C) || defined(CW_F2C_MAC)
 	InitMultiTask( 0 );
     if ( setjmp(gRecoverToConsole) == 0 )
 #endif /* Multi-tasking code */
@@ -223,10 +223,10 @@ int main(int argc, char **argv)
 	fprintf(LogFile, "SimDipEq:	Starting new equilibrium model using input from %s.\n", fn);
 
 #if __profile__
-	ProfilerInit(collectDetailed, PPCTimeBase, 1000,10);  
+	ProfilerInit(collectDetailed, PPCTimeBase, 1000,10);
 	profileropen = 1;
 	atexit(CleanupProfiler);
-	ProfilerSetStatus(1);  
+	ProfilerSetStatus(1);
 
 #endif
 
@@ -305,7 +305,7 @@ int main(int argc, char **argv)
 
 #if __profile__
 	ProfilerSetStatus(0);
-	ProfilerDump("\pDipProfile");  
+	ProfilerDump("\pDipProfile");
 	ProfilerTerm();
 	profileropen = 0;
 #endif
@@ -331,7 +331,7 @@ int main(int argc, char **argv)
 	SIOUXSetTitle((unsigned char *)"\pQuitting...");
 #endif
 
-} 
+}
 
 /*
 **	F R E E   B O U N D A R Y   S O L U T I O N
@@ -370,11 +370,11 @@ if (isFirst != 0) {
 	LoadMeasGreens(td);
 	LeastSquares(td, isFirst);
 	free_MeasGreens(td);
-	
+
 #endif /* MAKEFIT */
-      
-	if (td->VacuumOnly) 
-		ZeroJ(td); 
+
+	if (td->VacuumOnly)
+		ZeroJ(td);
 	else
 		FindJ(td);
 }
@@ -393,7 +393,7 @@ void          DoFixedBoundary(TOKAMAK * td)
 	GoPDE(td->PsiGrid);
 
 	PlasmaBoundary(td);
-	
+
 #if MAKEFIT
 
 	LoadMeasGreens(td);
@@ -402,8 +402,8 @@ void          DoFixedBoundary(TOKAMAK * td)
 
 #endif
 
-	if (td->VacuumOnly) 
-		ZeroJ(td); 
+	if (td->VacuumOnly)
+		ZeroJ(td);
 	else
 		FindJ(td);
 }
@@ -440,9 +440,9 @@ void          IterateSolution(TOKAMAK * td, int *IsFirst)
 		if ((td->PsiGrid->BoundError < td->PsiGrid->BoundThreshold) && (ifree != 1))
 			break;
 	}
-	
+
 #if !MAKEFIT  /* Only do modeling */
-	
+
 	LoadMeasGreens(td);
 	FindMeasNow(td);  /* only update the values of the measurements */
 	FindMeasFit(td);  /* only update the values of the measurements */
@@ -521,7 +521,7 @@ void          MakeEqualEq(TOKAMAK * td)
 			PlasmaBoundary(td);
 			FindJ(td);
 		}
-		
+
 		/* F I N D   M E A S   F I T */
 		LoadMeasGreens(td);
 		FindMeasFit(td);
@@ -592,7 +592,7 @@ void          MakeEqualEq2(TOKAMAK * td)
 		AddCoilJ(td);
 		AddShellJ(td);
 		GoPDE(td->PsiGrid);
-		
+
 		/* F I N D   M E A S   F I T */
 		LoadMeasGreens(td);
 		FindMeasFit(td);
@@ -617,9 +617,9 @@ void          MakeEqualEq2(TOKAMAK * td)
 	free_dvector(unkn0, 1, td->NumUnkns);
 }
 
-#undef PSIXMAX_EQ	
+#undef PSIXMAX_EQ
 #undef MAKE_ITERATIONS
-#undef MAKE_UNDERRELAX	
+#undef MAKE_UNDERRELAX
 
 /*
 **	MakeMCarloEq
@@ -641,7 +641,7 @@ void          MakeMCarloEq(TOKAMAK * td)
 
 	td->RestartUnkns = 1;
 	td->MaxIterFree = td->MaxIterMCarlo;
-	
+
 	/* C O P Y    A C T U A L    M E A S U R E M E N T S */
 	real_meas = dvector(0,td->NumMeasures - 1);
 	for (i = 0; i < td->NumMeasures; i++) {
@@ -674,7 +674,7 @@ void          MakeMCarloEq(TOKAMAK * td)
 		dUnkn(td->UnknVectors, td->SValues, del, unkn0, unkn1, td->NumUnkns);
 		RewriteUnknowns(td, unkn1);
 		FindJ(td);
-		
+
 		/* Compute simulated Monte Carlo data set */
 		LoadMeasGreens(td);
 		FindMeasNow(td);
@@ -686,7 +686,7 @@ void          MakeMCarloEq(TOKAMAK * td)
 
 		/* C O M P U T E   N E W   E Q U I L B R I A */
 		IterateSolution(td, &IsFirst);
-		
+
 		/* Restore values */
 		for (i = 0; i < td->NumMeasures; i++) {
 			m = td->Measures[i];
@@ -731,7 +731,7 @@ void          MakeMCarloData(TOKAMAK * td)
 
 	td->RestartUnkns = 1;
 	td->MaxIterFree = td->MaxIterMCarlo;
-	
+
 	/* C O P Y    A C T U A L    M E A S U R E M E N T S */
 	real_meas = dvector(0,td->NumMeasures - 1);
 	for (i = 0; i < td->NumMeasures; i++) {
@@ -760,7 +760,7 @@ void          MakeMCarloData(TOKAMAK * td)
 
 		/* C O M P U T E   N E W   E Q U I L B R I A */
 		IterateSolution(td, &IsFirst);
-		
+
 		/* Restore values */
 		for (i = 0; i < td->NumMeasures; i++) {
 			m = td->Measures[i];

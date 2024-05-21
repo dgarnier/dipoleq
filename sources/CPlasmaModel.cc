@@ -5,14 +5,14 @@
 #include "CDipoleStd.h"
 #include "CDipoleIntStable.h"
 
-#define PI          3.14159265358979323 
+#define PI          3.14159265358979323
 #define MU0			1.25663706e-06
 #define TWOPI		6.283185307
 
 CPlasmaModel * CPlasmaModel::CreateModel(PLASMA *p)
 {
 	CPlasmaModel  *it = NULL;
-	
+
 	switch (p->ModelType) {
 		case Plasma_DipoleStd :
 			it = new CDipoleStd(p);
@@ -22,7 +22,7 @@ CPlasmaModel * CPlasmaModel::CreateModel(PLASMA *p)
 		break;
 	}
 	return it;
-}			
+}
 
 void CPlasmaModel::UpdateModel(TOKAMAK *td) {
 	if (td->VacuumOnly != 0) isVacuum = 1;
@@ -36,10 +36,10 @@ void CPlasmaModel::FindJ(TOKAMAK *td, double **J)
 	double       *X, **Psi;
 	double        Ptemp, Gtemp;
 	double        dPress;
-	double        dG2;	
+	double        dG2;
 
 	UpdateModel(td);
-	
+
 	pg = td->PsiGrid;
 	pl = td->Plasma;
 	X = pg->X;
@@ -51,7 +51,7 @@ void CPlasmaModel::FindJ(TOKAMAK *td, double **J)
 		J[ix][0] = J[ix][nmax] = 0.0;
 	for (iz = 0; iz <= nmax; iz++)
 		J[0][iz] = J[nmax][iz] = 0.0;
-		
+
 	/* Calculate the current... */
 	for (ix = 1; ix < nmax; ix++) {
 		Gtemp = -PI * DSQR(pl->B0R0) / X[ix];
@@ -75,15 +75,15 @@ double CPlasmaModel::FindJ_Loc(TOKAMAK * td, int ix, int iz)
 	double        Ptemp, Gtemp;
 	double        dPress;
 	double        dG2;
-	double		  J=0.0;	
+	double		  J=0.0;
 
 	pg = td->PsiGrid;
 	pl = td->Plasma;
 	X = pg->X;
 	Psi = pg->Psi;
-	
+
 	if (isVacuum) return 0;
-	
+
 	if (pg->IsPlasma[ix][iz] && !isVacuum) {
 		Gtemp = -PI * DSQR(pl->B0R0) / X[ix];
 		Ptemp = -TWOPI * X[ix];
