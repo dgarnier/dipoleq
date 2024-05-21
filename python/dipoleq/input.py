@@ -2,19 +2,14 @@
 dipoleq input file schema using pydantic for validation
 """
 
-import enum
 from itertools import chain
-from re import M
-from typing import Annotated, Any, List, Literal, Optional, Tuple, Union
-from unittest.mock import Base
+from typing import Annotated, Any, Literal, Union
 
-from numpy import isin
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
-from .core import (CircleType, Coil, CPlasmaModel, Limiter, Machine, MeasType,
-                   Measure, ModelType, Plasma, PsiGrid, Separatrix, Shell,
-                   SubCoil, SubShell)
+from .core import (Coil, Limiter, Machine, MeasType, Measure, ModelType,
+                   Plasma, PsiGrid, Separatrix, Shell, SubCoil, SubShell)
 
 MU0 = 4.0e-7 * 3.14159265358979323846
 
@@ -528,5 +523,3 @@ class MachineIn(BaseModel):
         if self.Shells:
             for i, shell in enumerate(self.Shells):
                 shell.do_init(m.Shells[i])
-
-        return m
