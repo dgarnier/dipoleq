@@ -22,7 +22,7 @@ def dipoleq_lim_to_eqdsk(lim):
 
 def dipoleq_to_geqdsk(
     h5f, COCOS=3, NormalizeAtAxis=True
-) -> Dict[str, Union[int, float, np.ndarray]]:
+) -> dict[str, int | float | np.ndarray]:
     """Extract geqdsk data from a dipoleq h5 file"""
 
     # future version of geqdsk will have type hints

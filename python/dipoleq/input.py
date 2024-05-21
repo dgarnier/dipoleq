@@ -10,7 +10,8 @@ from unittest.mock import Base
 
 from numpy import isin
 from pydantic import BaseModel, Field, field_validator, model_validator
-from typing_extensions import Annotated, Literal, Self
+from typing_extensions import Self
+from typing import Annotated, Literal
 
 from .core import (CircleType, Coil, CPlasmaModel, Limiter, Machine, MeasType,
                    Measure, ModelType, Plasma, PsiGrid, Separatrix, Shell,
@@ -25,7 +26,7 @@ class PsiGridIn(BaseModel):
     Rmax: float = Field(alias="Xmax")
     Zmin: float
     Zmax: float
-    Symmetric: Optional[bool] = False
+    Symmetric: bool | None = False
     BoundThreshold: float
     ResThreshold: float
     UnderRelax1: float
@@ -44,7 +45,7 @@ class PsiGridIn(BaseModel):
         pg.UnderRelax2 = self.UnderRelax2
 
 
-def model_type_ids(mts: List[ModelType]) -> List[Union[int, str]]:
+def model_type_ids(mts: list[ModelType]) -> list[int | str]:
     """make a list of literals for the model types both name and value"""
     lists_of_literals = [[mt.value, mt.name, str(mt.value)] for mt in mts]
     return list(chain.from_iterable(lists_of_literals))
@@ -78,21 +79,21 @@ class PlasmaModelBaseModel(BaseModel):
 
 class PlasmaModelOld(PlasmaModelBaseModel):
     Type: PLASMA_BASE_MODEL_TYPES = Field(alias="ModelType")
-    G2pTerms: Optional[int]
-    HTerms: Optional[int]
-    PpTerms: Optional[int]
-    HTerms: Optional[int]
-    RotTerms: Optional[int]
-    SisoTerms: Optional[int]
-    SparTerms: Optional[int]
-    SperTerms: Optional[int]
-    G2p: Optional[List[float]]
-    H: Optional[List[float]]
-    Pp: Optional[List[float]]
-    Rot: Optional[List[float]]
-    Siso: Optional[List[float]]
-    Spar: Optional[List[float]]
-    Sper: Optional[List[float]]
+    G2pTerms: int | None
+    HTerms: int | None
+    PpTerms: int | None
+    HTerms: int | None
+    RotTerms: int | None
+    SisoTerms: int | None
+    SparTerms: int | None
+    SperTerms: int | None
+    G2p: list[float] | None
+    H: list[float] | None
+    Pp: list[float] | None
+    Rot: list[float] | None
+    Siso: list[float] | None
+    Spar: list[float] | None
+    Sper: list[float] | None
 
     @model_validator(mode="after")
     def check_old_plasma_model(self) -> Self:
@@ -136,13 +137,13 @@ class CDipoleStdIn(PlasmaModelBaseModel):
     Type: Literal[*model_type_ids([ModelType.DipoleStd])] = Field(
         ModelType.DipoleStd, alias="ModelType"
     )
-    RPeak: Optional[float]
-    ZPeak: Optional[float]
-    PsiPeak: Optional[float]
-    PsiEdge: Optional[float]
-    PsiDipole: Optional[float]
-    PPeak: Optional[float]
-    PrExp: Optional[float]
+    RPeak: float | None
+    ZPeak: float | None
+    PsiPeak: float | None
+    PsiEdge: float | None
+    PsiDipole: float | None
+    PPeak: float | None
+    PrExp: float | None
 
     def do_init(self, pl: Plasma) -> None:
         pm = pl.Model
@@ -159,12 +160,12 @@ DIPOLE_INTSTABLE_IDS = Annotated[
 
 class CDipoleIntStableIn(PlasmaModelBaseModel):
     Type: DIPOLE_INTSTABLE_IDS
-    RPeak: Optional[float]
-    ZPeak: Optional[float]
-    PEdge: Optional[float]
-    PsiFlat: Optional[float]
-    NSurf: Optional[int]
-    fCrit: Optional[float]
+    RPeak: float | None
+    ZPeak: float | None
+    PEdge: float | None
+    PsiFlat: float | None
+    NSurf: int | None
+    fCrit: float | None
 
     def do_init(self, pl: Plasma) -> None:
         keys = ["RPeak", "ZPeak", "PEdge", "PsiFlat", "NSurf", "fCrit"]
@@ -181,12 +182,12 @@ PlasmaModel = Annotated[
 class PlasmaIn(BaseModel):
     B0: float
     R0: float
-    R0B0: Optional[float] = None
-    Ip0: Optional[float]
-    NumBndMomts: Optional[int] = None
-    NumPsiPts: Optional[int]
-    PsiXmax: Optional[float]
-    Jedge: Optional[float]
+    R0B0: float | None = None
+    Ip0: float | None
+    NumBndMomts: int | None = None
+    NumPsiPts: int | None
+    PsiXmax: float | None
+    Jedge: float | None
     Model: PlasmaModel
 
     # @field_validator('ModelType')
@@ -217,12 +218,12 @@ class PlasmaIn(BaseModel):
 
 
 class LimiterIn(BaseModel):
-    Name: Optional[str]
+    Name: str | None
     R1: float = Field(alias="X1")
     Z1: float
     R2: float = Field(alias="X2")
     Z2: float
-    Enabled: Optional[int] = True
+    Enabled: int | None = True
 
     def do_init(self, lim: Limiter) -> None:
         if self.Name:
@@ -235,14 +236,14 @@ class LimiterIn(BaseModel):
 
 
 class SeparatrixIn(BaseModel):
-    Name: Optional[str]
+    Name: str | None
     R1: float = Field(alias="X1")
     Z1: float
     R2: float = Field(alias="X2")
     Z2: float
     RC: float = Field(alias="XC")
     ZC: float
-    Enabled: Optional[bool] = True
+    Enabled: bool | None = True
 
     def do_init(self, sep: Separatrix) -> None:
         if self.Name:
@@ -257,8 +258,8 @@ class SeparatrixIn(BaseModel):
 
 
 class SubCoilIn(BaseModel):
-    Name: Optional[str]
-    Enabled: Optional[bool] = True
+    Name: str | None
+    Enabled: bool | None = True
     Fraction: float
     R: float = Field(alias="X")
     Z: float
@@ -273,15 +274,15 @@ class SubCoilIn(BaseModel):
 
 
 class CoilIn(BaseModel):
-    Name: Optional[str]
-    Enabled: Optional[bool] = True
+    Name: str | None
+    Enabled: bool | None = True
     InitialCurrent: float
-    R: Optional[float] = Field(alias="X")
-    dR: Optional[float] = Field(alias="dX")
-    Z: Optional[float]
-    dZ: Optional[float]
-    NumSubCoils: Optional[int] = None
-    SubCoils: Optional[List[SubCoilIn]] = None
+    R: float | None = Field(alias="X")
+    dR: float | None = Field(alias="dX")
+    Z: float | None
+    dZ: float | None
+    NumSubCoils: int | None = None
+    SubCoils: list[SubCoilIn] | None = None
 
     @model_validator(mode="after")
     def check_shape_vs_subcoils(self) -> Self:
@@ -330,8 +331,8 @@ class CoilIn(BaseModel):
 
 
 class SubShellIn(BaseModel):
-    Name: Optional[str]
-    Current: Optional[float] = 0.0
+    Name: str | None
+    Current: float | None = 0.0
     R: float = Field(alias="X")
     Z: float
 
@@ -344,10 +345,10 @@ class SubShellIn(BaseModel):
 
 
 class ShellIn(BaseModel):
-    Name: Optional[str]
-    Enabled: Optional[bool] = True
-    NumSubShells: Optional[int]
-    SubShells: List[SubShellIn]
+    Name: str | None
+    Enabled: bool | None = True
+    NumSubShells: int | None
+    SubShells: list[SubShellIn]
 
     def do_init(self, shell: Shell) -> None:
         if self.Name:
@@ -364,8 +365,8 @@ class ShellIn(BaseModel):
 
 
 class MeasureIn(BaseModel):
-    Name: Optional[str]
-    Enabled: Optional[bool] = True
+    Name: str | None
+    Enabled: bool | None = True
     Type: str
 
     def do_init(self, meas: Measure) -> None:
@@ -377,34 +378,34 @@ class MeasureIn(BaseModel):
 
 class MachineIn(BaseModel):
     # Complete input file has these fields
-    MaxIterFixed: Optional[int] = 0
-    MaxIterFree: Optional[int] = 50
-    Name: Optional[str] = "pyDipolEQ"
-    Info: Optional[str] = "DipolEQ Equilibrium"
-    Oname: Optional[str]
-    Iname: Optional[str]
-    MGname: Optional[str] = ""
-    LHname: Optional[str] = ""
-    RSname: Optional[str] = ""
-    RestartStatus: Optional[bool] = False
-    RestartUnkns: Optional[bool] = False
-    LHGreenStatus: Optional[bool] = False
-    MGreenStatus: Optional[bool] = False
-    NumEqualEq: Optional[int] = 0
-    VacuumOnly: Optional[bool] = False
-    FitMeasurements: Optional[bool] = False
+    MaxIterFixed: int | None = 0
+    MaxIterFree: int | None = 50
+    Name: str | None = "pyDipolEQ"
+    Info: str | None = "DipolEQ Equilibrium"
+    Oname: str | None
+    Iname: str | None
+    MGname: str | None = ""
+    LHname: str | None = ""
+    RSname: str | None = ""
+    RestartStatus: bool | None = False
+    RestartUnkns: bool | None = False
+    LHGreenStatus: bool | None = False
+    MGreenStatus: bool | None = False
+    NumEqualEq: int | None = 0
+    VacuumOnly: bool | None = False
+    FitMeasurements: bool | None = False
     PsiGrid: PsiGridIn
     Plasma: PlasmaIn
-    Coils: List[CoilIn]
-    Limiters: List[LimiterIn]
-    Separatrices: Optional[List[SeparatrixIn]] = None
-    Measures: Optional[List[MeasureIn]] = None
-    Shells: Optional[List[ShellIn]] = None
-    NumCoils: Optional[int] = None
-    NumShells: Optional[int] = None
-    NumLimiters: Optional[int] = None
-    NumSeps: Optional[int] = None
-    NumMeasures: Optional[int] = None
+    Coils: list[CoilIn]
+    Limiters: list[LimiterIn]
+    Separatrices: list[SeparatrixIn] | None = None
+    Measures: list[MeasureIn] | None = None
+    Shells: list[ShellIn] | None = None
+    NumCoils: int | None = None
+    NumShells: int | None = None
+    NumLimiters: int | None = None
+    NumSeps: int | None = None
+    NumMeasures: int | None = None
 
     @model_validator(mode="after")
     def check_numbers(self) -> Self:
