@@ -78,5 +78,6 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "loadbndrygreens.h": "c"
-    }
+    },
+    "cmake.buildDirectory": "${workspaceFolder}/build/${buildKitHostOs}"
 }
