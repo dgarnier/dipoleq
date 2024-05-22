@@ -1,14 +1,15 @@
 """Save the solved equilibrium data to an HDF5 file
     this should be identical to whats in the c code
 """
-
-from h5py import File, Group, Dataset
+from enum import StrEnum
 
 import numpy as np
 import numpy.typing as npt
+from h5py import Dataset, File, Group
 
-from .core import IMatrixView, Machine, MatrixView, VectorView
+from .core import IMatrixView, Machine, MatrixView
 from .core import ModelType as MT
+from .core import VectorView
 
 # github copilot translation from C++ to Python
 
@@ -82,9 +83,7 @@ def _save_0D(loc: Group, name: str, units: str, data: float) -> Dataset:
     return ds
 
 
-def _save_1D(
-    loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike
-):
+def _save_1D(loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike):
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
     ds.attrs["UNITS"] = units
@@ -92,13 +91,17 @@ def _save_1D(
     return ds
 
 
-def _save_2D(loc: Group, name: str,units: str, dimr: Dataset, dimz: Dataset, data: ArrayLike):
+def _save_2D(
+    loc: Group, name: str, units: str, scl_r: Dataset, scl_z: Dataset,
+    data: ArrayLike
+):
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
     ds.attrs["UNITS"] = units
-    ds.dims[0].attach_scale(dimr)
-    ds.dims[1].attach_scale(dimz)
+    ds.dims[0].attach_scale(scl_r)
+    ds.dims[1].attach_scale(scl_z)
     return ds
+
 
 def save_flux_functions(flux: Group, m: Machine):
     # create flux dimensions
@@ -107,15 +110,15 @@ def save_flux_functions(flux: Group, m: Machine):
         dimp = flux.create_dataset(DS_NAME.DIMX_NAME, data=pl.PsiX_pr)
         dimp.attrs["UNITS"] = "1"
         dimp.make_scale("Normalized Magnetic Flux")
-        
+
         _save_1D(flux, DS_NAME.PSI_1D, "Wb", dimp, pl.Psi_pr)
         _save_1D(flux, DS_NAME.PRESS_1D, "Pa", dimp, pl.P_pr)
         _save_1D(flux, DS_NAME.G_1D, "1", dimp, pl.G_pr)
         _save_1D(flux, DS_NAME.PP_1D, "Pa/Wb", dimp, pl.Pp_pr)
         _save_1D(flux, DS_NAME.G2P_1D, "1/Wb", dimp, pl.G2p_pr)
-        _save_1D(flux, DS_NAME.V_1D, "m^3/Wb", dimp, pl.dVdPsi_pr)
-        _save_1D(flux, DS_NAME.VOL_1D, "m^3", dimp, pl.V_pr)
-        _save_1D(flux, DS_NAME.SHEAR_1D, "", dimp, pl.Shear_pr)
+        _save_1D(flux, DS_NAME.V_1D, "m^3/Wb", dimp, pl.Volp_pr)
+        _save_1D(flux, DS_NAME.VOL_1D, "m^3", dimp, pl.Vol_pr)
+        _save_1D(flux, DS_NAME.SHEAR_1D, "", dimp, pl.S_pr)
         _save_1D(flux, DS_NAME.WELL_1D, "", dimp, pl.Well_pr)
         _save_1D(flux, DS_NAME.B2_1D, "T^2", dimp, pl.B2_pr)
         _save_1D(flux, DS_NAME.BETA_1D, "", dimp, pl.Beta_pr)
@@ -126,7 +129,7 @@ def save_flux_functions(flux: Group, m: Machine):
         _save_1D(flux, DS_NAME.B_BETAMAX_1D, "T", dimp, pl.BBetaMax_pr)
         _save_1D(flux, DS_NAME.BMAX_1D, "T", dimp, pl.BMax_pr)
         _save_1D(flux, DS_NAME.R_BMAX_1D, "m", dimp, pl.RBMax_pr)
-        _save_1D(flux, DS_NAME.Z_BMAX_1D, "m", dimp, pl.ZBMax_pr)    
+        _save_1D(flux, DS_NAME.Z_BMAX_1D, "m", dimp, pl.ZBMax_pr)
 
 
 def save_boundaries(loc: Group, m: Machine):
@@ -156,20 +159,20 @@ def save_limiters(loc: Group, m: Machine):
 
     olim = np.array([[[l.R1, l.Z1], [l.R2, l.Z2]] for l in m.Limiters if l.Enabled > 0])
     ilim = np.array([[[l.R1, l.Z1], [l.R2, l.Z2]] for l in m.Limiters if l.Enabled < 0])
-    
+
     olim_ds = loc.create_dataset(DS_NAME.OLIM_NAME, data=olim)
     olim_ds.attrs["UNITS"] = "m"
     olim_ds.attrs["DIMENSION"] = "cylindrical"
     olim_ds.attrs["FORMAT"] = "F7.4"
-    
+
     ilim_ds = loc.create_dataset(DS_NAME.ILIM_NAME, data=ilim)
     ilim_ds.attrs["UNITS"] = "m"
     ilim_ds.attrs["DIMENSION"] = "cylindrical"
-    ilim_ds.attrs["FORMAT"] = "F7.4" 
+    ilim_ds.attrs["FORMAT"] = "F7.4"
 
 
-def save_to_hdf5(m: Machine, filename: str = None):
-
+def save_to_hdf5(m: Machine, filename: str | None = None):
+    """Save the equilibrium data to an HDF5 file"""
     if filename is None:
         filename = m.Oname + ".h5"
 
@@ -180,7 +183,7 @@ def save_to_hdf5(m: Machine, filename: str = None):
     R = np.array(pg.R)
     Z = np.array(pg.Z)
 
-    with h5py.File(filename, mode="w") as h5f:
+    with File(filename, mode="w") as h5f:
         # put some info into the file
         h5f.attrs["TITLE"] = "Equilibrium data from dipoleq"
         h5f.attrs["VERSION"] = "0.1"
@@ -225,7 +228,7 @@ def save_to_hdf5(m: Machine, filename: str = None):
         _save_2D(grid, DS_NAME.BpZ_NAME, "T/m", dimr, dimz, Bz)
         _save_2D(grid, DS_NAME.TFLUX_NAME, "Wb/R0B0", dimr, dimz, pl.G)
 
-        match (p.ModelType):
+        match (pl.ModelType):
             case MT.Std | MT.DipoleIntStable | MT.DipoleStd:
                 _save_2D(
                     grid, DS_NAME.PRESS_NAME, "Pa", dimr, dimz, np.array(pl.Piso) / MU0
@@ -236,11 +239,10 @@ def save_to_hdf5(m: Machine, filename: str = None):
                 pass
 
         # write 1d flux functions
-        
+
         save_flux_functions(flux, m)
-            
+
         # do boundaries
-        
+
         save_boundaries(bound, m)
         save_limiters(bound, m)
-        

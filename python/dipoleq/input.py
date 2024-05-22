@@ -88,7 +88,6 @@ class PlasmaModelOld(PlasmaModelBaseModel):
     G2pTerms: int | None
     HTerms: int | None
     PpTerms: int | None
-    HTerms: int | None
     RotTerms: int | None
     SisoTerms: int | None
     SparTerms: int | None
@@ -265,7 +264,6 @@ class SeparatrixIn(BaseModel):
 
 class SubCoilIn(BaseModel):
     Name: str | None
-    Enabled: bool | None = True
     Fraction: float
     R: float = Field(alias="X")
     Z: float
@@ -273,7 +271,6 @@ class SubCoilIn(BaseModel):
     def do_init(self, scoil: SubCoil) -> None:
         if self.Name:
             scoil.Name = self.Name
-        scoil.Enabled = self.Enabled
         scoil.Fraction = self.Fraction
         scoil.R = self.R
         scoil.Z = self.Z

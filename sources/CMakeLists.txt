@@ -78,7 +78,9 @@ endif()
 
 if (BUILD_WITH_HDF5)
     list(APPEND dipoleq_SOURCES HDF5Output.c)
-    list(APPEND dipoleq_LIBS HDF5::HDF5 hdf5::hdf5_hl)
+    # I shouldn't need hdf5::hdf5 and HDF5::HDF5 but it doesn't
+    # work without them on all platforms
+    list(APPEND dipoleq_LIBS HDF5::HDF5 hdf5::hdf5 hdf5::hdf5_hl)
     list(APPEND dipoleq_DEFS HDFOUTPUT=1)
 endif()
 
