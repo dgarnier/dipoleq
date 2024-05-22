@@ -541,6 +541,7 @@ void          PlasmaOutput(TOKAMAK * td)
 #endif /* HDFOUTPUT */
 }
 
+
 /*
 **	FluxProfileOutput
 */
@@ -578,12 +579,12 @@ void          FluxProfileOutput(TOKAMAK * td)
 	PsiXmax = pl->PsiXmax;
 	DelPsi = pl->PsiLim - pl->PsiAxis;
 
-	PsiV  = pl->Psi_pr  = dvector(0, npts-1);
-	PsiXV = pl->PsiX_pr = dvector(0, npts-1);
-	PV    = pl->P_pr    = dvector(0, npts-1);
-	GV    = pl->G_pr    = dvector(0, npts-1);
-	PpV   = pl->Pp_pr   = dvector(0, npts-1);
-	G2V   = pl->G2p_pr  = dvector(0, npts-1);
+	PsiV  = pl->Psi_pr ;
+	PsiXV = pl->PsiX_pr;
+	PV    = pl->P_pr   ;
+	GV    = pl->G_pr   ;
+	PpV   = pl->Pp_pr  ;
+	G2V   = pl->G2p_pr ;
 
 #ifndef DIPOLE
 	/*          12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 */
@@ -592,43 +593,12 @@ void          FluxProfileOutput(TOKAMAK * td)
 	fprintf(fi, "i         PsiX         Psi           P           Pp        dVol         Vol        <J>        <B2>        <Beta>     BetaMax     RBetaMax    ZBetaMax    BBetaMax	BMax         RBMax       ZBMax\n");
 #endif
 	for (i = 0; i < npts; i++) {
-		PsiX = PsiXV[i] = i * PsiXmax / (npts - 1);
-		Psi = PsiV[i] = pl->PsiAxis + PsiX * DelPsi;
-		Pp = P = 0.0;
-		switch (pl->ModelType) {
-			case Plasma_Std:
-				P = -DelPsi * pl->Pp[1] * pow(1.0 - PsiX, pl->StndP) / pl->StndP;
-				G = 1.0 - DelPsi * pl->G2p[1] * pow(1.0 - PsiX, pl->StndG) / pl->StndG;
-				Pp = pl->Pp[1] * pow(1.0 - PsiX, pl->StndP - 1.0);
-				G2p = pl->G2p[1] * pow(1.0 - PsiX, pl->StndG - 1.0);
-			break;
-
-			case  Plasma_IsoNoFlow:
-				P = fpoly_int(pl->Pp, PsiX, pl->PpTerms, DelPsi, P_EDGE);
-				G = fpoly_int(pl->G2p, PsiX, pl->G2pTerms, DelPsi, 1.0);
-				Pp = fpoly(pl->Pp, PsiX, pl->PpTerms);
-				G2p = fpoly(pl->G2p, PsiX, pl->G2pTerms);
-			break;
-
-			default :
-			    if (pl->Model) {
-			    	P   = pl->Model->P(Psi);
-			    	Pp  = pl->Model->Pp(Psi);
-			    	G   = pl->Model->G2(Psi);
-			    	G2p = pl->Model->G2p(Psi);
-			    }
-//			case Plasma_DipoleStd:
-//				P   = P_DipoleStd_Loc  (td,Psi);
-//				Pp  = Pp_DipoleStd_Loc (td,Psi);
-//				G   = G2_DipoleStd_Loc (td,Psi);
-//				G2p = G2p_DipoleStd_Loc(td,Psi);
-//				break;
-
-		}
-		GV[i]  = G  = sqrt(G);
-		PV[i]  = P  = P / MU0;
-		PpV[i] = Pp = Pp / MU0;
-		G2V[i] = G2p;
+		PsiX = PsiXV[i];
+		Psi = PsiV[i];
+		P = PV[i];
+		G = GV[i];
+		Pp = PpV[i];
+		G2p = G2V[i];
 #ifndef DIPOLE
 		fprintf(fi, "%02d %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g\n",
 				i, PsiX, Psi, pl->q_pr[i], P, G, Pp, G2p, pl->Volp_pr[i], pl->Vol_pr[i],

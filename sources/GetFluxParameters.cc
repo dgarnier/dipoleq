@@ -43,6 +43,7 @@
 #include "GetFluxMoments.h"
 #include "GetFluxParameters.h"
 #include "multitask.h"
+#include "CPlasmaModel.h"
 
 #define PI          3.14159265358979323
 #define MU0			1.25663706e-06
@@ -524,6 +525,68 @@ void          Fill_q_integrand(PSIGRID * pg, PLASMA * pl)
 				gIntegrand[ix][iz] = 0.0;
 }
 
+
+/*
+**  ComputeFluxFunctions
+*/
+void		ComputeFluxFunctions(TOKAMAK *td)
+{
+	PLASMA       *pl;
+	int           i, npts;
+	double        PsiXmax, PsiX, Psi, DelPsi, P, G, Pp, G2p;
+	double		  *PV, *GV, *PpV, *G2V, *PsiV, *PsiXV;
+
+	/* F L U X   P R O F I L E S */
+	pl = td->Plasma;
+	npts = pl->NumPsiPts;
+	PsiXmax = pl->PsiXmax;
+	DelPsi = pl->PsiLim - pl->PsiAxis;
+
+	/*  A L L O C A T E   M E M O R Y */
+	PsiV  = pl->Psi_pr  = dvector(0, npts-1);
+	PsiXV = pl->PsiX_pr = dvector(0, npts-1);
+	PV    = pl->P_pr    = dvector(0, npts-1);
+	GV    = pl->G_pr    = dvector(0, npts-1);
+	PpV   = pl->Pp_pr   = dvector(0, npts-1);
+	G2V   = pl->G2p_pr  = dvector(0, npts-1);
+
+	for (i = 0; i < npts; i++) {
+		PsiX = PsiXV[i] = i * PsiXmax / (npts - 1);
+		Psi = PsiV[i] = pl->PsiAxis + PsiX * DelPsi;
+		Pp = P = 0.0;
+		switch (pl->ModelType) {
+			case Plasma_Std:
+				P = -DelPsi * pl->Pp[1] * pow(1.0 - PsiX, pl->StndP) / pl->StndP;
+				G = 1.0 - DelPsi * pl->G2p[1] * pow(1.0 - PsiX, pl->StndG) / pl->StndG;
+				Pp = pl->Pp[1] * pow(1.0 - PsiX, pl->StndP - 1.0);
+				G2p = pl->G2p[1] * pow(1.0 - PsiX, pl->StndG - 1.0);
+			break;
+
+			case  Plasma_IsoNoFlow:
+				P = fpoly_int(pl->Pp, PsiX, pl->PpTerms, DelPsi, P_EDGE);
+				G = fpoly_int(pl->G2p, PsiX, pl->G2pTerms, DelPsi, 1.0);
+				Pp = fpoly(pl->Pp, PsiX, pl->PpTerms);
+				G2p = fpoly(pl->G2p, PsiX, pl->G2pTerms);
+			break;
+
+			default :
+			    if (pl->Model) {
+			    	P   = pl->Model->P(Psi);
+			    	Pp  = pl->Model->Pp(Psi);
+			    	G   = pl->Model->G2(Psi);
+			    	G2p = pl->Model->G2p(Psi);
+			    }
+
+		}
+		GV[i]  = G  = sqrt(G);
+		PV[i]  = P  = P / MU0;
+		PpV[i] = Pp = Pp / MU0;
+		G2V[i] = G2p;
+	}
+
+}
+
+
 /*
 **	G E T F L U X P A R A M E T E R S
 **
@@ -573,6 +636,8 @@ void          GetFluxParameters(TOKAMAK * td)
 	double        DelPsi;
 	double       *Pp;			/* �<P>/�Psi */
 	double        R0, Wnorm;
+
+	ComputeFluxFunctions(td);
 
 	pg = td->PsiGrid;
 	pl = td->Plasma;

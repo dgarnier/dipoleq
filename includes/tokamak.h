@@ -101,8 +101,8 @@
       char SGname[32];		/* A file name for saving the Shell Green's Functions */
       char SMname[32];		/* A file name for saving the Shell inductance matrix */
       char RSname[32];		/* A file name for reading and writting the restart file */
-	  char Start[TIMEBUF];	/* A string containing the start time */
-	  char Stop[TIMEBUF];	/* A string containing the stop time */
+	    char Start[TIMEBUF];	/* A string containing the start time */
+	    char Stop[TIMEBUF];	/* A string containing the stop time */
 
       int NumCoils;
       int NumShells;

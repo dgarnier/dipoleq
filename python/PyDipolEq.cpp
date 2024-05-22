@@ -392,6 +392,18 @@ PYBIND11_MODULE(core, m) {
         .def_property_readonly("Alpha", [](PLASMA& self)->py::object {
             return DMatrixView::create(self.Nsize, self.Alpha);})
 
+        .def_property_readonly("Psi_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.Psi_pr);})
+        .def_property_readonly("PsiX_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.PsiX_pr);})
+        .def_property_readonly("P_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.P_pr);})
+        .def_property_readonly("G_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.G_pr);})
+        .def_property_readonly("Pp_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.Pp_pr);})
+        .def_property_readonly("G2p_pr", [](PLASMA& self)->py::object {
+            return DVectorView::create(self.NumPsiPts, self.G2p_pr);})
         .def_property_readonly("q_pr", [](PLASMA& self)->py::object {
             return DVectorView::create(self.NumPsiPts, self.q_pr);})
         .def_property_readonly("Volp_pr", [](PLASMA& self)->py::object {
@@ -456,18 +468,18 @@ PYBIND11_MODULE(core, m) {
         .def_readwrite("DelPsi", &PSIGRID::DelPsi)
         .def_readwrite("RMagAxis", &PSIGRID::XMagAxis)
         .def_readwrite("ZMagAxis", &PSIGRID::ZMagAxis)
-        .def_property_readonly("R", [](PSIGRID& self) {return DVectorView(self.Nsize + 1, self.X);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Z", [](PSIGRID& self) {return DVectorView(self.Nsize + 1, self.Z);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("IsPlasma", [](PSIGRID& self) {return IMatrixView(self.Nsize, self.IsPlasma);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Psi", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Psi);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Current", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Current);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Residual", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Residual);},
-            py::return_value_policy::reference_internal)
+        .def_property_readonly("R", [](PSIGRID& self) {
+            return DVectorView(self.Nsize + 1, self.X);})
+        .def_property_readonly("Z", [](PSIGRID& self) {
+            return DVectorView(self.Nsize + 1, self.Z);})
+        .def_property_readonly("IsPlasma", [](PSIGRID& self) {
+            return IMatrixView(self.Nsize, self.IsPlasma);})
+        .def_property_readonly("Psi", [](PSIGRID& self) {
+            return DMatrixView(self.Nsize, self.Psi);})
+        .def_property_readonly("Current", [](PSIGRID& self) {
+            return DMatrixView(self.Nsize, self.Current);})
+        .def_property_readonly("Residual", [](PSIGRID& self) {
+            return DMatrixView(self.Nsize, self.Residual);})
         .def("get_contour", &get_flux_contour, "Get a contour at psi, returns r, z")
     ;
 

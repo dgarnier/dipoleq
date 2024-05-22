@@ -13,7 +13,7 @@ list(APPEND dipoleq_SOURCES
     Find_ShellCurrent.c
     Find_dJdy.c
     GetFluxMoments.c
-    GetFluxParameters.c
+    GetFluxParameters.cc
     GetPlasmaParameters.cc
     InitJ.c
     J_DipoleStd.c

@@ -10,5 +10,7 @@ __pycache__
 dist
 *.so
 .coverage
-python/dipoleq/core.pyi
-python/dipole/core.so
+python/dipoleq/*.pyi
+python/dipole/*.so
+wheelhouse
+

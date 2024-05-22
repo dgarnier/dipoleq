@@ -3,6 +3,7 @@ requires = [
     "cmake",
     "scikit-build-core",
     "pybind11",
+    "pybind11-stubgen",
     "numpy",
     "cibuildwheel",
     "wheel",
@@ -35,17 +36,18 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest", "pyyaml"]
-wheels = ["cmake", "pyyaml", "ninja; sys_platform!='win32'"]
+wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
-       "numpy", "pybind11", "pyyaml"]
+       "numpy", "pybind11", "pyyaml", "pybind11-stubgen"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
 cmake.targets = ["pydipoleq", "dipoleq"]
 # cmake.verbose = true
 install.components = ["python", "cli"]
-wheel.packages = ["python/dipoleq"]
-wheel.py-api = "py3"
+# wheel.packages = ["python/dipoleq"] # not required
+sdist.include = ["python/dipoleq/*.pyi"]
+wheel.py-api = "py310"
 # logging.level = "INFO"
 build-dir = "build/{wheel_tag}"
 
