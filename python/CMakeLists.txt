@@ -2,6 +2,8 @@
 # python is already installed at this point
 # and we have pybind11 installed
 
+include(FindPyBind11)
+find_package(pybind11 REQUIRED)
 Python_add_library(pydipoleq MODULE WITH_SOABI PyDipolEq.cpp)
 
 target_compile_definitions(pydipoleq PRIVATE PYBIND11=1)

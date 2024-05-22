@@ -1,5 +1,5 @@
 # CMake file for DipolEq - a dipole equilibrium solver
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.26)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 project(DipolEq VERSION 1.2 LANGUAGES C CXX)
@@ -17,6 +17,7 @@ endif()
 
 if (BUILD_PYTHON_BINDINGS)
     # maybe we should force make a virtualenv here
+    # cmake 3.26 for changes to FindPython
     set(Python_FIND_VIRTUALENV "FIRST")
     set(Python_FIND_FRAMEWORK "LAST")
     find_package(Python GLOBAL REQUIRED 

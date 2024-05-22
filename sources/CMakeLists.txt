@@ -78,8 +78,12 @@ endif()
 
 if (BUILD_WITH_HDF5)
     list(APPEND dipoleq_SOURCES HDF5Output.c)
+
     # I shouldn't need hdf5::hdf5 and HDF5::HDF5 but it doesn't
     # work without them on all platforms
+    set(HDF5_USE_STATIC_LIBRARIES ON CACHE BOOL " " FORCE)
+    find_package(HDF5 COMPONENTS C HL)
+
     if (TARGET HDF5::HDF5)
         message(STATUS "HDF5::HDF5 found")
         list(APPEND dipoleq_LIBS HDF5::HDF5)
