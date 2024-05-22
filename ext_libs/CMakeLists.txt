@@ -145,9 +145,10 @@ endif()
 if (BUILD_PYTHON_BINDINGS)
     # Find the module development requirements (requires FindPython from 3.17 or
     # scikit-build-core's built-in backport)
-    set(Python_FIND_VIRTUALENV "FIRST")
-    set(Python_FIND_FRAMEWORK "LAST")
-    find_package(Python GLOBAL REQUIRED COMPONENTS Interpreter Development.Module NumPy ${SKBUILD_SABI_COMPONENT})
+
+    # just look to install certain components.. python itself is 
+    # previously found.
+
     include(FindPyBind11)
     find_package(pybind11 GLOBAL CONFIG QUIET)
     if(NOT pybind11_FOUND)
@@ -162,7 +163,6 @@ if (BUILD_PYTHON_BINDINGS)
                 "PYBIND11_FINDPYTHON OFF"
         )
         find_package(pybind11 GLOBAL REQUIRED)
-        # dump_cmake_variables(pybind11)
     endif()
 endif()
 

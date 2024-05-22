@@ -11,6 +11,21 @@ option(BUILD_HDF4_WITH_FETCHCONTENT "Build HDF4 with FetchContent" OFF)
 option(BUILD_WITH_CLIBPDF "Build with C libPDF" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
 
+if (SKBUILD)
+    set(BUILD_PYTHON_BINDINGS ON)
+endif()
+
+if (BUILD_PYTHON_BINDINGS)
+    # maybe we should force make a virtualenv here
+    set(Python_FIND_VIRTUALENV "FIRST")
+    set(Python_FIND_FRAMEWORK "LAST")
+    find_package(Python GLOBAL REQUIRED 
+        COMPONENTS 
+            Interpreter Development.Module NumPy 
+            ${SKBUILD_SABI_COMPONENTS}
+    )
+endif()
+
 add_subdirectory(ext_libs EXCLUDE_FROM_ALL)
 
 include_directories("${CMAKE_SOURCE_DIR}/includes")
@@ -47,7 +62,10 @@ endif()
 install(TARGETS dipoleq DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT cli)
 
 add_subdirectory(postprocess)
-add_subdirectory(python)
+if (BUILD_PYTHON_BINDINGS)
+    add_subdirectory(python)
+endif()
+
 add_subdirectory(Testing)
 
 # for some reason.. TARGETS must install from top level
@@ -55,3 +73,4 @@ if (SKBUILD)
     message(STATUS "SKBUILD STATUS = ${SKBUILD_STATE}")
     install(TARGETS pydipoleq LIBRARY DESTINATION dipoleq COMPONENT python)
 endif()
+

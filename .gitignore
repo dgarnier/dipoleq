@@ -8,6 +8,7 @@ Testing/*.h5
 Testing/*.bin
 __pycache__
 dist
-python/dipole/_c.so
 *.so
 .coverage
+python/dipoleq/core.pyi
+python/dipole/core.so
