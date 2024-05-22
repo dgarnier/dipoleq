@@ -2,10 +2,6 @@
 # python is already installed at this point
 # and we have pybind11 installed
 
-
-
-
-
 Python_add_library(pydipoleq MODULE WITH_SOABI PyDipolEq.cpp)
 
 target_compile_definitions(pydipoleq PRIVATE PYBIND11=1)
@@ -22,4 +18,3 @@ add_custom_command(TARGET pydipoleq POST_BUILD
         COMMENT "Generating Python bindings"
 )
     
-

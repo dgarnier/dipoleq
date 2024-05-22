@@ -482,7 +482,7 @@ class MachineIn(BaseModel):
         m.RSname = self.RSname
 
         # control parameters
-        m.RestartStatus = self.RestartStatus
+        m.RestartStatus = int(self.RestartStatus)
         m.RestartUnkns = self.RestartUnkns
         m.LHGreenStatus = self.LHGreenStatus
         m.MGreenStatus = self.MGreenStatus

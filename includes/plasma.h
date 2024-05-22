@@ -116,6 +116,13 @@ typedef struct plasma {
     double              *XBMax_pr;/* X at max B on flux tube. */
     double              *ZBMax_pr;/* Z at max B flux tube. */
 
+	/* calculated at end.. store for python */
+	double 				*Psi_pr; 
+	double				*PsiX_pr;
+	double				*P_pr;
+	double				*G_pr;
+	double				*Pp_pr;
+	double				*G2p_pr;
 
 	double  			Ip;		/* the output plasma current */
 	double  			beta0;	/* the vaccuum toroidal beta at R0*/

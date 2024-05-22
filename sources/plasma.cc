@@ -95,6 +95,13 @@ PLASMA       *new_Plasma()
 	p->J_pr = NULL;				/* flux-surface averaged toroidal current */
 	p->Beta_pr = NULL;			/* flux-tube averaged beta */
 
+	p->Psi_pr = NULL;
+	p->PsiX_pr = NULL;
+	p->P_pr = NULL;
+	p->G_pr = NULL;
+	p->Pp_pr = NULL;
+	p->G2p_pr = NULL;
+
 	p->R0 = 0.2350;
 	p->Z0 = 0.0;
 	p->a0 = 0.5;
@@ -158,6 +165,13 @@ void          free_Plasma(PLASMA * p)
 		IF_free_dvectorg(p->Well_pr, p->NumPsiPts - 1);
 		IF_free_dvectorg(p->J_pr, p->NumPsiPts - 1);
 		IF_free_dvectorg(p->Beta_pr, p->NumPsiPts - 1);
+
+		IF_free_dvectorg(p->Psi_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->PsiX_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->P_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->G_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->Pp_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->G2p_pr, p->NumPsiPts - 1);
 
 		IF_free_dmatrix(p->B2);
 		IF_free_dmatrix(p->GradPsiX);

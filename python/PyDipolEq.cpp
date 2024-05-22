@@ -31,6 +31,7 @@
 #include "Find_ShellCurrent.h"
 #include "FindMeasFit.h"
 #include "GetPlasmaParameters.h"
+#include "GetFluxMoments.h"
 #include "Restart.h"
 #include "measurement.h"
 
@@ -229,6 +230,35 @@ void set_NumSubCoils(COIL& self, int n) {
         self.SubCoils[i] = new_SubCoil();
 }
 
+std::pair<py::array_t<double>, py::array_t<double>> 
+get_flux_contour(PSIGRID *pg, double psi) {
+    int len;
+    double *r, *z;
+    // internally calls dvector(0, len) for r and z
+    // these suck to get rid of.. I'll cheat and put
+    // the length in the NR_END area, which is the
+    // root of the problem anyway.
+    // FIXME
+    // should really fix nrutils to use the area
+    // to clean up after themselves and not require 
+    // sizes on their destructors.
+    GetFluxContour(pg, psi, &r, &z, &len);
+    *(int *)(r-1)=len; // oh so dirty
+    *(int *)(z-1)=len;
+
+    void (*dvlen)(void *f) = [](void *f) {
+        double *v = reinterpret_cast<double *>(f);
+        int len = *(int *)(v-1);
+        free_dvector(v, 0, len);
+    };
+    py::capsule free_r(r, "free_r", dvlen);
+    py::capsule free_z(z, "free_z", dvlen);
+
+    return std::make_pair(
+        py::array_t<double>(len, r, free_r), 
+        py::array_t<double>(len, z, free_z)
+    );
+}
 
 PYBIND11_MODULE(core, m) {
     // the order of definitions is important because
@@ -254,12 +284,15 @@ PYBIND11_MODULE(core, m) {
         .value("AnisoFlow", ModelType::AnisoFlow)
         .value("DipoleStd", ModelType::DipoleStd)
         .value("DipoleIntStable", ModelType::DipoleIntStable)
-        // .export_values() // make these unscoped
         //.def_property_readonly_static("__iter__", [](py::object) {
         //    return py::make_iterator(
         //      }
     ;
     py::class_<CPlasmaModel>(m, "CPlasmaModel")
+        // FIXME
+        // more work here... should make it possible to make 
+        // our own python classes that inherit from CPlasmaModel
+        // with overriden methods and generic getter and setters
         .def("update_model", &CPlasmaModel::UpdateModel, "Update the plasma model")
         .def("model_input", &CPlasmaModel::ModelInput, "Input model parameters")
     ;
@@ -435,6 +468,7 @@ PYBIND11_MODULE(core, m) {
             py::return_value_policy::reference_internal)
         .def_property_readonly("Residual", [](PSIGRID& self) {return DMatrixView(self.Nsize, self.Residual);},
             py::return_value_policy::reference_internal)
+        .def("get_contour", &get_flux_contour, "Get a contour at psi, returns r, z")
     ;
 
     py::enum_<MeasType>(m, "MeasType")

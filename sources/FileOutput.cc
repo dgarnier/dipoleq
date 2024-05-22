@@ -578,12 +578,12 @@ void          FluxProfileOutput(TOKAMAK * td)
 	PsiXmax = pl->PsiXmax;
 	DelPsi = pl->PsiLim - pl->PsiAxis;
 
-	PsiV  = dvector(0, npts-1);
-	PsiXV = dvector(0, npts-1);
-	PV    = dvector(0, npts-1);
-	GV    = dvector(0, npts-1);
-	PpV   = dvector(0, npts-1);
-	G2V   = dvector(0, npts-1);
+	PsiV  = pl->Psi_pr  = dvector(0, npts-1);
+	PsiXV = pl->PsiX_pr = dvector(0, npts-1);
+	PV    = pl->P_pr    = dvector(0, npts-1);
+	GV    = pl->G_pr    = dvector(0, npts-1);
+	PpV   = pl->Pp_pr   = dvector(0, npts-1);
+	G2V   = pl->G2p_pr  = dvector(0, npts-1);
 
 #ifndef DIPOLE
 	/*          12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 */
@@ -651,12 +651,6 @@ void          FluxProfileOutput(TOKAMAK * td)
 			pl->BetaMax_pr, pl->XBetaMax_pr, pl->ZBetaMax_pr, pl->BBetaMax_pr,
                          pl->BMax_pr,pl->XBMax_pr,pl->ZBMax_pr);
 #endif /* HDFOUTPUT */
-	free_dvector(PsiV,  0, npts-1);
-	free_dvector(PsiXV, 0, npts-1);
-	free_dvector(PV,    0, npts-1);
-	free_dvector(GV,    0, npts-1);
-	free_dvector(PpV,   0, npts-1);
-	free_dvector(G2V,   0, npts-1);
 
 }
 
