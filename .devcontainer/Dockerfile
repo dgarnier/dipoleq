@@ -15,6 +15,6 @@ RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
 
 # [Optional] Uncomment this section to install additional packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends libjpeg-dev libhdf5-dev python3-pip python-is-python3 
+     && apt-get -y install --no-install-recommends libjpeg-dev libhdf5-dev python3-dev python3-pip python-is-python3 
 
 RUN python -m pip install --upgrade pip numpy pybind11
