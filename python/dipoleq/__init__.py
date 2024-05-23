@@ -86,9 +86,9 @@ class Machine(_Machine):
             raise ValueError(f"Unknown file type: {filename}")
 
     @classmethod
-    def from_input_data(cls, input: MachineIn) -> Self:
+    def from_input_data(cls, valid_input: MachineIn) -> Self:
         m = cls()
-        input.initalize_machine(m)
+        valid_input.initalize_machine(m)
         return m
 
     def solve(self) -> None:

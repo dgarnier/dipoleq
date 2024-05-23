@@ -33,9 +33,9 @@ include_directories("${CMAKE_SOURCE_DIR}/includes")
 
 add_compile_definitions(DIPOLE=1)
 
-#if (CMAKE_BUILD_TYPE MATCHES Debug)
-#    add_compile_options(-fsanitize=address)
-#endif()
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    add_compile_options(-fsanitize=address)
+endif()
 
 # add_subdirectory(fortran)
 add_subdirectory(sources EXCLUDE_FROM_ALL)

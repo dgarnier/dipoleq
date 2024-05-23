@@ -17,6 +17,7 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
 #include "VAX_Alloc.h"
 #include <math.h>
 #include "nrutil.h"
@@ -42,6 +43,8 @@ PLASMA       *new_Plasma()
 	PLASMA       *p;
 
 	p = (PLASMA *) malloc((unsigned) sizeof(PLASMA));
+	memset(p, 0, sizeof(PLASMA));  // zero out the structure
+
 	if (!p)
 		nrerror("ERROR: Allocation error in new_Plasma.");
 
@@ -94,6 +97,10 @@ PLASMA       *new_Plasma()
 	p->Well_pr = NULL;			/* magnetic well */
 	p->J_pr = NULL;				/* flux-surface averaged toroidal current */
 	p->Beta_pr = NULL;			/* flux-tube averaged beta */
+
+	p->BBetaMax_pr = NULL;		/* beta at BetaMax on a flux surface */
+	p->BMax_pr = NULL;			/* maximum field strength on a flux surface */
+
 
 	p->Psi_pr = NULL;
 	p->PsiX_pr = NULL;

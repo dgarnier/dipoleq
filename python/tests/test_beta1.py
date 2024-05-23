@@ -67,3 +67,7 @@ def test_yaml_new():
     m2 = Machine.from_fileinput(data_dir / "beta1.in")
     m1.Iname = m2.Iname = "test"
     assert m1 == m2
+
+
+if __name__ == "__main__":
+    test_old_new()
