@@ -12,11 +12,18 @@ dynamic_version(PROJECT_PREFIX DipolEq_)
 project(DipolEq VERSION ${PROJECT_VERSION} LANGUAGES C CXX)
 include(CTest)
 
+option(BUILD_CLI "Build the CLI executable" ON)
 option(BUILD_WITH_HDF5 "Build with HDF5" ON)
 option(BUILD_WITH_HDF4 "Build with HDF4" OFF)
 option(BUILD_HDF4_WITH_FETCHCONTENT "Build HDF4 with FetchContent" OFF)
 option(BUILD_WITH_CLIBPDF "Build with C libPDF" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
+
+if (NOT BUILD_CLI)
+    set(BUILD_WITH_HDF5 OFF)
+    set(BUILD_WITH_HDF4 OFF)
+    set(BUILD_WITH_CLIBPDF OFF)
+endif()
 
 if (SKBUILD)
     set(BUILD_PYTHON_BINDINGS ON)

@@ -48,7 +48,8 @@ dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
 wheel.expand-macos-universal-tags = true
 cmake.targets = ["pydipoleq", "dipoleq"]
 # cmake.verbose = true
-install.components = ["python", "cli"]
+#install.components = ["python", "cli"]
+install.components = ["python"]
 # wheel.packages = ["python/dipoleq"] # not required
 sdist.include = ["python/dipoleq/*.pyi", "python/dipoleq/py.typed",
                  "python/dipoleq/_version.py"]
@@ -59,6 +60,7 @@ build-dir = "build/{wheel_tag}"
 
 [tool.scikit-build.cmake.define]
 BUILD_PYTHON_BINDINGS = "ON"
+BUILD_CLI = "OFF"
 CMAKE_OSX_DEPLOYMENT_TARGET = "10.15"  # macOS 10.15 Catalina
 
 [tool.scikit-build.metadata.version]

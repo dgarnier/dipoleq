@@ -1,7 +1,3 @@
-include(FetchContent)
-include(FindZLIB)
-include(FindJPEG)
-
 function(dump_cmake_variables)
     get_cmake_property(_variableNames VARIABLES)
     list (SORT _variableNames)
@@ -17,62 +13,69 @@ function(dump_cmake_variables)
     endforeach()
 endfunction()
 
-if(NOT ZLIB_FOUND)
-    include(get_cpm)
-    CPMAddPackage(
-        NAME zlib-cmake
-        GITHUB_REPOSITORY jimmy-park/zlib-cmake
-        GIT_TAG 1.3.1
-        OPTIONS "ZLIB_USE_STATIC_LIBS"
-    )
+include(FetchContent)
+if(BUILD_WITH_HDF4 OR BUILD_WITH_HDF5)
+    include(FindZLIB)
+
+    if(NOT ZLIB_FOUND)
+        include(get_cpm)
+        CPMAddPackage(
+            NAME zlib-cmake
+            GITHUB_REPOSITORY jimmy-park/zlib-cmake
+            GIT_TAG 1.3.1
+            OPTIONS "ZLIB_USE_STATIC_LIBS"
+        )
+    endif()
 endif()
 
-if (NOT JPEG_FOUND)
-    include(get_cpm)
-    CPMAddPackage(
-        NAME jpeg-turbo
-        GITHUB_REPOSITORY libjpeg-turbo/libjpeg-turbo
-        VERSION 3.0.3
-        OPTIONS "ENABLE_SHARED=OFF"
-    )
-    add_library(JPEG::JPEG ALIAS jpeg-static)
+if(BUILD_WITH_CLIBPDF OR BUILD_WITH_HDF5)
+    include(FindJPEG)
+
+    if (NOT JPEG_FOUND)
+        include(get_cpm)
+        CPMAddPackage(
+            NAME jpeg-turbo
+            GITHUB_REPOSITORY libjpeg-turbo/libjpeg-turbo
+            GIT_TAG 3.0.3
+            OPTIONS "ENABLE_SHARED=OFF"
+        )
+        add_library(JPEG::JPEG ALIAS jpeg-static)
+    endif()
+
+    if (NOT TARGET JPEG::JPEG)
+        # not likely to have a CPMAddPackage for jpeg
+        # as it doesn't use cmake
+        include(ExternalProject)
+        ExternalProject_Add(
+            jpeg
+            URL http://ijg.org/files/jpegsrc.v9e.tar.gz
+            URL_HASH SHA256=4077d6a6a75aeb01884f708919d25934c93305e49f7e3f36db9129320e6f4f3d
+            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+            SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/jpeg-src"
+            BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/jpeg-build"
+            INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/jpeg-install"
+            CONFIGURE_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/jpeg-src/configure"
+                "--prefix=${CMAKE_CURRENT_BINARY_DIR}/jpeg-install"
+                "--enable-static"
+                "--disable-shared"
+                "--with-pic"
+            BUILD_COMMAND "make"
+            INSTALL_COMMAND "make" "install"
+        )
+
+        set(JPEG_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/jpeg-install/include" CACHE STRING " " FORCE)
+        set(JPEG_LIBRARY "${CMAKE_CURRENT_BINARY_DIR}/jpeg-install/lib/libjpeg.a" CACHE STRING " " FORCE)
+
+        add_library(LOCAL_JPEG STATIC IMPORTED GLOBAL)
+        add_dependencies(LOCAL_JPEG jpeg)
+        set_target_properties(LOCAL_JPEG PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${JPEG_INCLUDE_DIR}"
+            IMPORTED_LOCATION "${JPEG_LIBRARY}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        )
+        add_library(JPEG::JPEG ALIAS LOCAL_JPEG)
+    endif()
 endif()
-
-if (NOT TARGET JPEG::JPEG)
-    # not likely to have a CPMAddPackage for jpeg
-    # as it doesn't use cmake
-    include(ExternalProject)
-    ExternalProject_Add(
-        jpeg
-        URL http://ijg.org/files/jpegsrc.v9e.tar.gz
-        URL_HASH SHA256=4077d6a6a75aeb01884f708919d25934c93305e49f7e3f36db9129320e6f4f3d
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-        SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/jpeg-src"
-        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/jpeg-build"
-        INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/jpeg-install"
-        CONFIGURE_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/jpeg-src/configure"
-            "--prefix=${CMAKE_CURRENT_BINARY_DIR}/jpeg-install"
-            "--enable-static"
-            "--disable-shared"
-            "--with-pic"
-        BUILD_COMMAND "make"
-        INSTALL_COMMAND "make" "install"
-    )
-
-    set(JPEG_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/jpeg-install/include" CACHE STRING " " FORCE)
-    set(JPEG_LIBRARY "${CMAKE_CURRENT_BINARY_DIR}/jpeg-install/lib/libjpeg.a" CACHE STRING " " FORCE)
-
-    add_library(LOCAL_JPEG STATIC IMPORTED GLOBAL)
-    add_dependencies(LOCAL_JPEG jpeg)
-    set_target_properties(LOCAL_JPEG PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${JPEG_INCLUDE_DIR}"
-        IMPORTED_LOCATION "${JPEG_LIBRARY}"
-        IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-    )
-    add_library(JPEG::JPEG ALIAS LOCAL_JPEG)
-
-endif()
-# dump_cmake_variables(JPEG)
 
 if (BUILD_WITH_HDF4)
     if(NOT BUILD_HDF4_WITH_FETCHCONTENT)
