@@ -4,10 +4,10 @@ from pathlib import Path
 
 from pytest import approx
 
-from dipoleq import Machine, MachineIn
+from dipoleq import Machine
 from dipoleq.core import Machine as coreMachine
-from dipoleq.read import input_from_dotin
-from dipoleq.solve import solve
+from dipoleq.file_input import input_from_dotin
+from dipoleq.solver import solve
 
 data_dir = Path(os.path.dirname(os.path.realpath(__file__)))
 

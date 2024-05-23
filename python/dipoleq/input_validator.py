@@ -56,7 +56,8 @@ class PsiGridIn(BaseModel):
 def model_type_ids(mts: list[ModelType]) -> tuple[str | int, ...]:
     """make a list of literals for the model types both name and value"""
     lists_of_literals: list[list[str | int]] = [
-        [mt.value, mt.name, str(mt.value)] for mt in mts]
+        [mt.value, mt.name, str(mt.value)] for mt in mts
+    ]
     return tuple(chain.from_iterable(lists_of_literals))
 
 

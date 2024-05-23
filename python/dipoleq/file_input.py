@@ -8,7 +8,7 @@
 from pathlib import Path
 from typing import Any
 
-from .input import MachineIn, PlasmaIn
+from .input_validator import MachineIn, PlasmaIn
 
 try:
     import yaml

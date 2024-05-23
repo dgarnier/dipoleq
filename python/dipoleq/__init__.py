@@ -14,11 +14,12 @@ from typing import Any
 
 from typing_extensions import Self
 
-from . import core, input, read, solve, util
-from .input import MachineIn
+from . import core, file_input, input_validator, solver, util
+from .core import Machine as _Machine
+from .input_validator import MachineIn
 
 
-class Machine(core.Machine):
+class Machine(_Machine):
     """Machine class for the Dipole Equilibrium Solver"""
 
     # don't even think about messing with init
@@ -35,11 +36,11 @@ class Machine(core.Machine):
             Returns:
                 Machine: The Machine object
         """
-        input_data = read.input_from_dotin(str(filename))
+        input_data = file_input.input_from_dotin(str(filename))
         return cls.from_input_data(input_data)
 
     @classmethod
-    def from_yaml(cls, filename: str) -> Self:
+    def from_yaml(cls, filename: str | Path) -> Self:
         """Generate a Machine object from a .yaml file
 
         Args:
@@ -48,7 +49,7 @@ class Machine(core.Machine):
         Returns:
             Machine: The Machine object
         """
-        input_data = read.input_from_yaml(str(filename))
+        input_data = file_input.input_from_yaml(str(filename))
         return cls.from_input_data(input_data)
 
     @classmethod
@@ -77,9 +78,9 @@ class Machine(core.Machine):
 
         p = Path(filename)
         filename = str(filename)
-        if p.suffix is ".in":
+        if p.suffix == ".in":
             return cls.from_fileinput(filename)
-        elif p.suffix is ".yaml":
+        elif p.suffix == ".yaml":
             return cls.from_yaml(filename)
         else:
             raise ValueError(f"Unknown file type: {filename}")
@@ -91,7 +92,7 @@ class Machine(core.Machine):
         return m
 
     def solve(self) -> None:
-        solve.solve(self)
+        solver.solve(self)
 
     def diff(self, other: Any, verbose: bool = False) -> bool:
         return util.machine_diff(self, other, verbose=verbose)
@@ -100,4 +101,12 @@ class Machine(core.Machine):
         return not self.diff(other)
 
 
-__all__ = ["Machine", "MachineIn", "core", "solve", "input", "read", "util"]
+__all__ = [
+    "Machine",
+    "MachineIn",
+    "core",
+    "solver",
+    "input_validator",
+    "file_input",
+    "util",
+]
