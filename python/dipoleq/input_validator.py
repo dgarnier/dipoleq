@@ -491,7 +491,7 @@ class MachineIn(BaseModel):
         m.RSname = self.RSname
 
         # control parameters
-        if self.RestartStatus is not None: 
+        if self.RestartStatus is not None:
             m.RestartStatus = self.RestartStatus
         if self.RestartUnkns is not None:
             m.RestartUnkns = self.RestartUnkns

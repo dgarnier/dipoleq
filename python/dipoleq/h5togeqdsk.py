@@ -140,14 +140,14 @@ def plot_h5eq(h5eq):
             ax.plot(lim[i, :, 0], lim[i, :, 1], "k-")
     plt.show()
 
-def h5togeqdsk(h5file: Path | PathLike[str], 
-               plot = False, 
-               NormalizeAtAxis = True,
-               suffix: str = ".geqdsk",
-               ) -> dict[str, int | float | np.ndarray] :
-    """Save a dipoleq h5 file to a g-eqdsk file
-    
-    """
+
+def h5togeqdsk(
+    h5file: Path | PathLike[str],
+    plot=False,
+    NormalizeAtAxis=True,
+    suffix: str = ".geqdsk",
+) -> dict[str, int | float | np.ndarray]:
+    """Save a dipoleq h5 file to a g-eqdsk file"""
     stem = Path(h5file).stem
     with h5py.File(h5file) as h5f:
         if plot:
@@ -175,8 +175,9 @@ def main():
     parser.add_argument(
         "h5files", metavar="h5file", type=str, nargs="+", help="dipoleq hdf5 file(s)"
     )
-    parser.add_argument("--plot", "-p", action="store_true", 
-                        default=False, help="Plot the g-eqdsk")
+    parser.add_argument(
+        "--plot", "-p", action="store_true", default=False, help="Plot the g-eqdsk"
+    )
 
     args = parser.parse_args()
 

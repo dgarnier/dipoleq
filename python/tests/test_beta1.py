@@ -71,7 +71,7 @@ def test_yaml_new():
 
 
 @fixture(scope="session")
-def test_yaml_save(tmp_path_factory)->Path:
+def test_yaml_save(tmp_path_factory) -> Path:
     m1 = Machine.from_yaml(data_dir / "beta1.yaml")
     m1.solve()
     fn = tmp_path_factory.mktemp("data") / "beta1.h5"
@@ -81,6 +81,7 @@ def test_yaml_save(tmp_path_factory)->Path:
 
 def test_h5togeqdsk(test_yaml_save):
     from dipoleq.h5togeqdsk import h5togeqdsk
+
     gdata = h5togeqdsk(test_yaml_save)
     assert gdata["cpasma"] == approx(32984, rel=1e-4)
 
