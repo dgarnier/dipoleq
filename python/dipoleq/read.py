@@ -5,6 +5,7 @@
         dict: The data from the *.in file
 """
 
+from pathlib import Path
 from typing import Any
 
 from .input import MachineIn, PlasmaIn
@@ -15,7 +16,7 @@ except ImportError:
     yaml = None
 
 
-def read_dotin(file_path: str) -> dict[str, Any]:
+def read_dotin(file_path: str | Path) -> dict[str, Any]:
     """Load the data from the cli tool *.in file
     Args:
         file_path (str): The path to the *.in file
@@ -25,8 +26,10 @@ def read_dotin(file_path: str) -> dict[str, Any]:
     with open(file_path, encoding="utf-8") as file:
         lines = file.readlines()
 
+    path = Path(file_path)
+
     top_dict: dict[str, Any] = dict(
-        Iname=file_path,
+        Iname=str(path.name),
         PsiGrid={},
         Plasma={},
         Limiters=[],
@@ -78,7 +81,7 @@ def read_dotin(file_path: str) -> dict[str, Any]:
     return top_dict
 
 
-def input_from_dotin(filepath: str) -> MachineIn:
+def input_from_dotin(filepath: str | Path) -> MachineIn:
     """Read the input file and return a dictionary of the input data
     Args:
         filepath (str): The path to the input file
@@ -102,7 +105,7 @@ def input_from_dotin(filepath: str) -> MachineIn:
     return MachineIn(**info)
 
 
-def input_from_yaml(filepath: str) -> MachineIn:
+def input_from_yaml(filepath: str | Path) -> MachineIn:
     """Read the input file and return a dictionary of the input data
     Args:
         filepath (str): The path to the input file
@@ -115,5 +118,7 @@ def input_from_yaml(filepath: str) -> MachineIn:
     with open(filepath, encoding="utf-8") as stream:
         info = yaml.safe_load(stream)
 
-    info["Iname"] = filepath
+    path = Path(filepath)
+
+    info["Iname"] = str(path.name)
     return MachineIn(**info)

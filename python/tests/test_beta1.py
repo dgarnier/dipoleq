@@ -22,7 +22,7 @@ def props(x):
 
 def test_FileInput():
     # see if we can read the file and get the right number of coils
-    m = coreMachine(data_dir / "beta1.in")
+    m = coreMachine(str(data_dir / "beta1.in"))
     assert m.NumCoils == 7
     i = 0
     for coil in m.Coils:
@@ -32,7 +32,7 @@ def test_FileInput():
 
 def test_solve_old():
     # see if we get the right current
-    m = coreMachine(data_dir / "beta1.in")
+    m = coreMachine(str(data_dir / "beta1.in"))
     solve(m)
     assert m.Plasma.Ip == approx(32984, rel=1e-4)
 
@@ -56,7 +56,7 @@ def test_read_dotin():
 
 
 def test_old_new():
-    m2 = coreMachine(data_dir / "beta1.in")
+    m2 = coreMachine(str(data_dir / "beta1.in"))
     m1 = Machine.from_fileinput(data_dir / "beta1.in")
     m1.Iname = m2.Iname = "test"
     assert m1 == m2

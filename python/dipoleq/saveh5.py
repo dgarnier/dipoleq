@@ -1,6 +1,7 @@
 """Save the solved equilibrium data to an HDF5 file
     this should be identical to whats in the c code
 """
+
 from enum import StrEnum
 
 import numpy as np
@@ -92,8 +93,7 @@ def _save_1D(loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike):
 
 
 def _save_2D(
-    loc: Group, name: str, units: str, scl_r: Dataset, scl_z: Dataset,
-    data: ArrayLike
+    loc: Group, name: str, units: str, scl_r: Dataset, scl_z: Dataset, data: ArrayLike
 ):
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)

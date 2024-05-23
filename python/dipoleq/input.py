@@ -2,6 +2,8 @@
 dipoleq input file schema using pydantic for validation
 """
 
+from __future__ import annotations
+
 from itertools import chain
 from typing import Annotated, Any, Literal, Union
 
@@ -51,10 +53,11 @@ class PsiGridIn(BaseModel):
         pg.UnderRelax2 = self.UnderRelax2
 
 
-def model_type_ids(mts: list[ModelType]) -> list[int | str]:
+def model_type_ids(mts: list[ModelType]) -> tuple[str | int, ...]:
     """make a list of literals for the model types both name and value"""
-    lists_of_literals = [[mt.value, mt.name, str(mt.value)] for mt in mts]
-    return list(chain.from_iterable(lists_of_literals))
+    lists_of_literals: list[list[str | int]] = [
+        [mt.value, mt.name, str(mt.value)] for mt in mts]
+    return tuple(chain.from_iterable(lists_of_literals))
 
 
 OLD_MODELS = [
@@ -64,8 +67,10 @@ OLD_MODELS = [
     ModelType.AnisoNoFlow,
     ModelType.AnisoFlow,
 ]
-
-PLASMA_BASE_MODEL_TYPES = Literal[*model_type_ids(OLD_MODELS)]
+MODEL_IDS = model_type_ids(OLD_MODELS)
+PLASMA_BASE_MODEL_TYPES = Literal[MODEL_IDS[0]]
+for mid in MODEL_IDS:
+    PLASMA_BASE_MODEL_TYPES |= Literal[mid]
 
 
 class PlasmaModelBaseModel(BaseModel):
@@ -138,10 +143,16 @@ class PlasmaModelOld(PlasmaModelBaseModel):
                 pm.Sper[i] = v
 
 
+# python < 3.11 can't do argument unpacking in a literal
+# so we have to do it manually
+MODEL_IDS = model_type_ids([ModelType.DipoleStd])
+LTS = Literal[MODEL_IDS[0]]
+for id in MODEL_IDS:
+    LTS |= Literal[id]
+
+
 class CDipoleStdIn(PlasmaModelBaseModel):
-    Type: Literal[*model_type_ids([ModelType.DipoleStd])] = Field(
-        ModelType.DipoleStd, alias="ModelType"
-    )
+    Type: LTS = Field(ModelType.DipoleStd, alias="ModelType")
     RPeak: float | None
     ZPeak: float | None
     PsiPeak: float | None
@@ -157,9 +168,12 @@ class CDipoleStdIn(PlasmaModelBaseModel):
             pm.model_input(key, str(getattr(self, key)), "")
 
 
+IDS = model_type_ids([ModelType.DipoleIntStable])
+LDS = Literal[IDS[0]]
+for mid in IDS:
+    LDS |= Literal[mid]
 DIPOLE_INTSTABLE_IDS = Annotated[
-    Literal[*model_type_ids([ModelType.DipoleIntStable])],
-    Field(ModelType.DipoleIntStable, alias="ModelType"),
+    LDS, Field(ModelType.DipoleIntStable, alias="ModelType")
 ]
 
 

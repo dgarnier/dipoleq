@@ -9,7 +9,8 @@ at OpenStar Technologies, LTD.
 
 """
 
-from typing import Any, Union
+from pathlib import Path
+from typing import Any
 
 from typing_extensions import Self
 
@@ -24,7 +25,7 @@ class Machine(core.Machine):
     # and pybind11 superclass
 
     @classmethod
-    def from_fileinput(cls, filename: str) -> Self:
+    def from_fileinput(cls, filename: str | Path) -> Self:
         """Generate a Machine object from a .in file
         Using the Python code to read the file
 
@@ -34,7 +35,7 @@ class Machine(core.Machine):
             Returns:
                 Machine: The Machine object
         """
-        input_data = read.input_from_dotin(filename)
+        input_data = read.input_from_dotin(str(filename))
         return cls.from_input_data(input_data)
 
     @classmethod
@@ -47,7 +48,7 @@ class Machine(core.Machine):
         Returns:
             Machine: The Machine object
         """
-        input_data = read.input_from_yaml(filename)
+        input_data = read.input_from_yaml(str(filename))
         return cls.from_input_data(input_data)
 
     @classmethod
@@ -64,7 +65,7 @@ class Machine(core.Machine):
         return cls.from_input_data(verified_data)
 
     @classmethod
-    def from_file(cls, filename: str) -> Self:
+    def from_file(cls, filename: str | Path) -> Self:
         """Generate a Machine object from a file
 
         Args:
@@ -73,6 +74,8 @@ class Machine(core.Machine):
         Returns:
             Machine: The Machine object
         """
+
+        filename = str(filename)
         if filename.endswith(".in"):
             return cls.from_fileinput(filename)
         elif filename.endswith(".yaml"):
