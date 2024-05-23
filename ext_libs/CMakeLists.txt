@@ -185,18 +185,19 @@ if (BUILD_PYTHON_BINDINGS)
     endif()
 endif()
 
+if(BUILD_WITH_CLIBPDF)
+    if (CMAKE_VERSION VERSION_LESS 3.24)
+        FetchContent_Declare(ClibPDF
+                            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/clibpdf
+                            )
+        FetchContent_MakeAvailable(ClibPDF)
+    else()
+        FetchContent_Declare(ClibPDF
+                            OVERRIDE_FIND_PACKAGE
+                            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/clibpdf
+                            )
 
-if (CMAKE_VERSION VERSION_LESS 3.24)
-    FetchContent_Declare(ClibPDF
-                        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/clibpdf
-                        )
-    FetchContent_MakeAvailable(ClibPDF)
-else()
-    FetchContent_Declare(ClibPDF
-                        OVERRIDE_FIND_PACKAGE
-                        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/clibpdf
-                        )
-
-    FetchContent_MakeAvailable(ClibPDF)
-    find_package(ClibPDF REQUIRED)
+        FetchContent_MakeAvailable(ClibPDF)
+        find_package(ClibPDF REQUIRED)
+    endif()
 endif()

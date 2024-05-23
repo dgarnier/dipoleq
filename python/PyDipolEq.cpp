@@ -274,7 +274,6 @@ PYBIND11_MODULE(core, m) {
             "version_full"_a=VERSION_FULL,
             "git_commit"_a=GIT_COMMIT,
             "git_short_hash"_a=GIT_SHORT_HASH,
-            "git_describe"_a=GIT_DESCRIBE,
             "git_distance"_a=GIT_DISTANCE
         );
         return version_info;})
