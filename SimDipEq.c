@@ -76,6 +76,7 @@
 #include "PDFOutput.h"
 #endif
 #include "multitask.h"
+#include "version.h"
 
 
 #define TRUE	1
@@ -217,7 +218,7 @@ int main(int argc, char **argv)
 	if (!LogFile)
 		nrerror("ERROR:	Could not open logfile for writting.");
 
-	printf("\nSimDipEq Build %s %s\n",__DATE__, __TIME__);
+	printf("\nSimDipEq v%s: Build %s %s\n",VERSION, __DATE__, __TIME__);
 	fprintf(LogFile, "\nSimDipEq Build %s %s\n",__DATE__, __TIME__);
 	printf("SimDipEq:	Starting new equilibrium model using input from %s.\n", fn);
 	fprintf(LogFile, "SimDipEq:	Starting new equilibrium model using input from %s.\n", fn);

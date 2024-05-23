@@ -122,7 +122,7 @@ def precommit(session: Session) -> None:
         activate_virtualenv_in_precommit_hooks(session)
 
 
-@session(python=python_versions)
+@session(python=python_versions[0,-1])
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or ["python/dipoleq", "python/tests"]

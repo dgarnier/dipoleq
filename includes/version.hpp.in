@@ -1,0 +1,11 @@
+#pragma once
+
+#include <string>
+
+const std::string VERSION = "@PROJECT_VERSION@";
+const std::string VERSION_FULL = "@PROJECT_VERSION_FULL@";
+const std::string GIT_COMMIT = "@GIT_COMMIT@";
+const std::string GIT_SHORT_HASH = "@GIT_SHORT_HASH@";
+const std::string GIT_DESCRIBE = "@GIT_DESCRIBE@";
+// Usually should be int, but here will use string to compile with distance == NOT-FOUND
+const std::string GIT_DISTANCE = "@GIT_DISTANCE@";

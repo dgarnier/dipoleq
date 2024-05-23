@@ -1,0 +1,12 @@
+#ifndef __version_h__
+#define __version_h__
+
+#define VERSION         "@PROJECT_VERSION@"
+#define VERSION_FULL    "@PROJECT_VERSION_FULL@"
+#define GIT_COMMIT      "@GIT_COMMIT@"
+#define GIT_SHORT_HASH  "@GIT_SHORT_HASH@"
+#define GIT_DESCRIBE    "@GIT_DESCRIBE@"
+// Usually should be int, but here will use string to compile with distance    NOT-FOUND
+#define GIT_DISTANCE    "@GIT_DISTANCE@"
+
+#endif // __version_h__

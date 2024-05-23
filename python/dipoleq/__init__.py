@@ -15,8 +15,10 @@ from typing import Any
 from typing_extensions import Self
 
 from . import core, file_input, input_validator, solver, util
+from ._version import __version__, __version_tuple__  # noqa: F401
 from .core import Machine as _Machine
 from .input_validator import MachineIn
+from .saveh5 import save_to_hdf5 as _save_to_hdf5
 
 
 class Machine(_Machine):
@@ -94,11 +96,31 @@ class Machine(_Machine):
     def solve(self) -> None:
         solver.solve(self)
 
-    def diff(self, other: Any, verbose: bool = False) -> bool:
+    def diff(self, other: _Machine, verbose: bool = False) -> bool:
+        """display the differences between two machines
+
+        Args:
+            other (Machine): The one to compare to
+            verbose (bool, optional): Be noisy about it. Defaults to False.
+
+        Returns:
+            bool: Are they different?
+        """
         return util.machine_diff(self, other, verbose=verbose)
 
     def __eq__(self, other: Any) -> bool:
-        return not self.diff(other)
+        if not isinstance(other, _Machine):
+            return False
+        else:
+            return not self.diff(other)
+
+    def to_hdf5(self, filename: str | Path | None) -> None:
+        """Save the machine data to an HDF5 file
+
+        Args:
+            filename (str | Path | None): The path to the file
+        """
+        _save_to_hdf5(self, filename)
 
 
 __all__ = [
@@ -109,4 +131,6 @@ __all__ = [
     "input_validator",
     "file_input",
     "util",
+    "__version_tuple__",
+    "__version__",
 ]

@@ -2,7 +2,16 @@
     this should be identical to whats in the c code
 """
 
-from enum import StrEnum
+try:
+    from enum import StrEnum
+except ImportError:  # python < 3.11
+    from enum import Enum
+
+    class StrEnum(str, Enum):
+        pass
+
+
+from pathlib import Path
 
 import numpy as np
 import numpy.typing as npt
@@ -135,7 +144,7 @@ def save_flux_functions(flux: Group, m: Machine):
 def save_boundaries(loc: Group, m: Machine):
     """Create and save the LCFS and FCFS boundaries"""
     lcfs_r, lcfs_z = m.PsiGrid.get_contour(m.Plasma.PsiLim)
-    if lcfs_r:
+    if lcfs_r is not None:
         lcfs = np.hstack((lcfs_r, lcfs_z))
         lcfs_ds = loc.create_dataset(DS_NAME.LCFS_NAME, data=lcfs)
         lcfs_ds.attrs["UNITS"] = "m"
@@ -146,7 +155,7 @@ def save_boundaries(loc: Group, m: Machine):
         return
 
     fcfs_r, fcfs_z = m.PsiGrid.get_contour(m.Plasma.PsiAxis)
-    if fcfs_r:
+    if fcfs_r is not None:
         fcfs = np.hstack((fcfs_r, fcfs_z))
         fcfs_ds = loc.create_dataset(DS_NAME.FCFS_NAME, data=fcfs)
         fcfs_ds.attrs["UNITS"] = "m"
@@ -171,7 +180,7 @@ def save_limiters(loc: Group, m: Machine):
     ilim_ds.attrs["FORMAT"] = "F7.4"
 
 
-def save_to_hdf5(m: Machine, filename: str | None = None):
+def save_to_hdf5(m: Machine, filename: str | Path | None = None):
     """Save the equilibrium data to an HDF5 file"""
     if filename is None:
         filename = m.Oname + ".h5"
@@ -203,7 +212,7 @@ def save_to_hdf5(m: Machine, filename: str | None = None):
         dimz.attrs["UNITS"] = "m"
         dimz.make_scale("Z")
 
-        # write the scalar data
+        # write the scalar grid data
         _save_0D(scal, DS_NAME.RMAGX_0D, "m", pg.RMagAxis)
         _save_0D(scal, DS_NAME.ZMAGX_0D, "m", pg.ZMagAxis)
 
@@ -217,8 +226,12 @@ def save_to_hdf5(m: Machine, filename: str | None = None):
         # write 0d plasma data
         _save_0D(scal, DS_NAME.R0_0D, "m", pl.R0)
         _save_0D(scal, DS_NAME.Z0_0D, "m", pl.Z0)
+        _save_0D(scal, DS_NAME.R0Z0_0D, "m", pl.R0 * pl.Z0)
         _save_0D(scal, DS_NAME.BT_0D, "T", pl.B0)
         _save_0D(scal, DS_NAME.IP_0D, "A", pl.Ip)
+        _save_0D(scal, DS_NAME.PSIAXIS_0D, "Wb", pl.PsiMagAxis)
+        _save_0D(scal, DS_NAME.PSIFCFS_0D, "Wb", pl.PsiAxis)
+        _save_0D(scal, DS_NAME.PSILCFS_0D, "Wb", pl.PsiLim)
 
         # write 2d plasma data
         _save_2D(grid, DS_NAME.MODB_NAME, "T^2", dimr, dimz, pl.B2)

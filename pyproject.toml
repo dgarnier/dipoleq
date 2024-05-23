@@ -35,7 +35,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "pyyaml", "types-pyyaml"]
+test = ["pytest", "pyyaml", "types-pyyaml", "h5py"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
        "numpy", "pybind11", "pyyaml", "pybind11-stubgen"]
@@ -46,19 +46,25 @@ cmake.targets = ["pydipoleq", "dipoleq"]
 # cmake.verbose = true
 install.components = ["python", "cli"]
 # wheel.packages = ["python/dipoleq"] # not required
-sdist.include = ["python/dipoleq/*.pyi"]
+sdist.include = ["python/dipoleq/*.pyi", "python/dipoleq/py.typed",
+                 "python/dipoleq/_version.py"]
 wheel.py-api = "py310"
 # logging.level = "INFO"
 build-dir = "build/{wheel_tag}"
+
 
 [tool.scikit-build.cmake.define]
 BUILD_PYTHON_BINDINGS = "ON"
 CMAKE_OSX_DEPLOYMENT_TARGET = "10.15"  # macOS 10.15 Catalina
 
 [tool.scikit-build.metadata.version]
-provider = "scikit_build_core.metadata.regex"
-input = "CMakeLists.txt"
-regex = 'project\([^)]+ VERSION (?P<value>[0-9.]+)'
+provider = "scikit_build_core.metadata.setuptools_scm"
+#input = "CMakeLists.txt"
+#regex = 'project\([^)]+ VERSION (?P<value>[0-9.]+)'
+
+[tool.setuptools_scm]
+version_file = "python/dipoleq/_version.py"
+
 
 [tool.pytest.ini_options]
 minversion = "6.0"

@@ -17,7 +17,30 @@ function(dump_cmake_variables)
     endforeach()
 endfunction()
 
-if(NOT JPEG_FOUND)
+if(NOT ZLIB_FOUND)
+    include(get_cpm)
+    CPMAddPackage(
+        NAME zlib-cmake
+        GITHUB_REPOSITORY jimmy-park/zlib-cmake
+        GIT_TAG 1.3.1
+        OPTIONS "ZLIB_USE_STATIC_LIBS"
+    )
+endif()
+
+if (NOT JPEG_FOUND)
+    include(get_cpm)
+    CPMAddPackage(
+        NAME jpeg-turbo
+        GITHUB_REPOSITORY libjpeg-turbo/libjpeg-turbo
+        VERSION 3.0.3
+        OPTIONS "ENABLE_SHARED=OFF"
+    )
+    add_library(JPEG::JPEG ALIAS jpeg-static)
+endif()
+
+if (NOT TARGET JPEG::JPEG)
+    # not likely to have a CPMAddPackage for jpeg
+    # as it doesn't use cmake
     include(ExternalProject)
     ExternalProject_Add(
         jpeg

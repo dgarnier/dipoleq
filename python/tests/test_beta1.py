@@ -69,5 +69,11 @@ def test_yaml_new():
     assert m1 == m2
 
 
+def test_yaml_save():
+    m1 = Machine.from_yaml(data_dir / "beta1.yaml")
+    m1.solve()
+    m1.to_hdf5("test.h5")
+
+
 if __name__ == "__main__":
-    test_old_new()
+    test_yaml_save()

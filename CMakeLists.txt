@@ -2,7 +2,14 @@
 cmake_minimum_required(VERSION 3.26)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-project(DipolEq VERSION 1.2 LANGUAGES C CXX)
+# dynamic versioning from git tags
+include(get_cpm)
+CPMAddPackage("gh:LecrisUT/CMakeExtraUtils@0.4.1")
+list(APPEND CMAKE_MODULE_PATH "${CMakeExtraUtils_BINARY_DIR}")
+include(DynamicVersion)
+dynamic_version(PROJECT_PREFIX DipolEq_)
+
+project(DipolEq VERSION ${PROJECT_VERSION} LANGUAGES C CXX)
 include(CTest)
 
 option(BUILD_WITH_HDF5 "Build with HDF5" ON)

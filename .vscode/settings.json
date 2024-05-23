@@ -79,5 +79,11 @@
         "utility": "cpp",
         "loadbndrygreens.h": "c"
     },
-    "cmake.buildDirectory": "${workspaceFolder}/build/${buildKitHostOs}"
+    "cmake.buildDirectory": "${workspaceFolder}/build/${buildKitHostOs}",
+    "python.testing.pytestArgs": [
+        "python"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+    "python.testing.pytestPath": 
 }

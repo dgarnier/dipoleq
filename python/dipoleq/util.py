@@ -2,6 +2,15 @@
 
 """
 
+try:
+    from enum import StrEnum
+except ImportError:  # python < 3.11
+    from enum import Enum
+
+    class StrEnum(str, Enum):  # type: ignore
+        pass
+
+
 from typing import Any
 
 import numpy as np

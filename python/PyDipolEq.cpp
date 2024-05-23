@@ -37,6 +37,7 @@
 
 #include "FileInput.h"
 #include "PyDipoleEq.hpp"
+#include "version.hpp"
 
 
 namespace py = pybind11;
@@ -265,7 +266,19 @@ PYBIND11_MODULE(core, m) {
     // pybind11-stubgen can't handle forward declarations
     static Logger logger;                    // initialize the logfile
     m.doc() = "Python bindings for DipolEq"; // optional module docstring
-
+    m.def("__version__", []() { return VERSION; }, py::return_value_policy::copy);
+    m.def("__version_info__", []() {
+        using namespace pybind11::literals;
+        py::dict version_info(
+            "version"_a=VERSION,
+            "version_full"_a=VERSION_FULL,
+            "git_commit"_a=GIT_COMMIT,
+            "git_short_hash"_a=GIT_SHORT_HASH,
+            "git_describe"_a=GIT_DESCRIBE,
+            "git_distance"_a=GIT_DISTANCE
+        );
+        return version_info;})
+    ;
     py::class_<DMatrixView>(m, "MatrixView", py::buffer_protocol())
         .def_buffer(&DMatrixView::get_buffer_info)
     ;

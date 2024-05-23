@@ -9,8 +9,9 @@ Testing/*.bin
 __pycache__
 dist
 *.so
-.coverage
+.coverage*
 python/dipoleq/*.pyi
 python/dipole/*.so
 wheelhouse
 
+python/dipoleq/_version.py

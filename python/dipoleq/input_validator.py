@@ -4,8 +4,9 @@ dipoleq input file schema using pydantic for validation
 
 from __future__ import annotations
 
+from functools import reduce
 from itertools import chain
-from typing import Annotated, Any, Literal, Union
+from typing import Annotated, Any, Literal, TypeVar, Union
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
@@ -53,25 +54,14 @@ class PsiGridIn(BaseModel):
         pg.UnderRelax2 = self.UnderRelax2
 
 
-def model_type_ids(mts: list[ModelType]) -> tuple[str | int, ...]:
+def model_type_literals(mts: list[ModelType]) -> type:
     """make a list of literals for the model types both name and value"""
-    lists_of_literals: list[list[str | int]] = [
+    lists_of_vals: list[list[str | int]] = [
         [mt.value, mt.name, str(mt.value)] for mt in mts
     ]
-    return tuple(chain.from_iterable(lists_of_literals))
-
-
-OLD_MODELS = [
-    ModelType.Std,
-    ModelType.IsoNoFlow,
-    ModelType.IsoFlow,
-    ModelType.AnisoNoFlow,
-    ModelType.AnisoFlow,
-]
-MODEL_IDS = model_type_ids(OLD_MODELS)
-PLASMA_BASE_MODEL_TYPES = Literal[MODEL_IDS[0]]
-for mid in MODEL_IDS:
-    PLASMA_BASE_MODEL_TYPES |= Literal[mid]
+    list_of_vals: list[str | int] = [v for v in chain.from_iterable(lists_of_vals)]
+    list_of_literals: list[type] = [Literal[v] for v in list_of_vals]
+    return reduce(lambda a, b: Union[a, b], list_of_literals)
 
 
 class PlasmaModelBaseModel(BaseModel):
@@ -87,6 +77,16 @@ class PlasmaModelBaseModel(BaseModel):
         if isinstance(v, int):
             return ModelType(v)
         return v
+
+
+OLD_MODELS = [
+    ModelType.Std,
+    ModelType.IsoNoFlow,
+    ModelType.IsoFlow,
+    ModelType.AnisoNoFlow,
+    ModelType.AnisoFlow,
+]
+PLASMA_BASE_MODEL_TYPES = model_type_literals(OLD_MODELS)
 
 
 class PlasmaModelOld(PlasmaModelBaseModel):
@@ -146,10 +146,7 @@ class PlasmaModelOld(PlasmaModelBaseModel):
 
 # python < 3.11 can't do argument unpacking in a literal
 # so we have to do it manually
-MODEL_IDS = model_type_ids([ModelType.DipoleStd])
-LTS = Literal[MODEL_IDS[0]]
-for id in MODEL_IDS:
-    LTS |= Literal[id]
+LTS = model_type_literals([ModelType.DipoleStd])
 
 
 class CDipoleStdIn(PlasmaModelBaseModel):
@@ -169,10 +166,7 @@ class CDipoleStdIn(PlasmaModelBaseModel):
             pm.model_input(key, str(getattr(self, key)), "")
 
 
-IDS = model_type_ids([ModelType.DipoleIntStable])
-LDS = Literal[IDS[0]]
-for mid in IDS:
-    LDS |= Literal[mid]
+LDS = model_type_literals([ModelType.DipoleIntStable])
 DIPOLE_INTSTABLE_IDS = Annotated[
     LDS, Field(ModelType.DipoleIntStable, alias="ModelType")
 ]
@@ -252,7 +246,8 @@ class LimiterIn(BaseModel):
         lim.Z1 = self.Z1
         lim.R2 = self.R2
         lim.Z2 = self.Z2
-        lim.Enabled = self.Enabled
+        if self.Enabled is not None:
+            lim.Enabled = self.Enabled
 
 
 class SeparatrixIn(BaseModel):
@@ -274,7 +269,8 @@ class SeparatrixIn(BaseModel):
         sep.Z2 = self.Z2
         sep.RC = self.RC
         sep.ZC = self.ZC
-        sep.Enabled = self.Enabled
+        if self.Enabled is not None:
+            sep.Enabled = self.Enabled
 
 
 class SubCoilIn(BaseModel):
@@ -308,7 +304,7 @@ class CoilIn(BaseModel):
             if self.NumSubCoils != (len(self.SubCoils) if self.SubCoils else 0):
                 raise ValueError(
                     f"NumSubCoils {self.NumSubCoils} does not match "
-                    f"the number of subcoils {len(self.SubCoils)}"
+                    f"the number of subcoils {len(self.SubCoils) if self.SubCoils else 0}"
                 )
         else:
             self.NumSubCoils = len(self.SubCoils) if self.SubCoils else 0
@@ -325,7 +321,8 @@ class CoilIn(BaseModel):
     def do_init(self, coil: Coil, psiGrid: PsiGrid) -> None:
         if self.Name:
             coil.Name = self.Name
-        coil.Enabled = self.Enabled
+        if self.Enabled is not None:
+            coil.Enabled = int(self.Enabled)
         coil.CoilCurrent = self.InitialCurrent * MU0
         if self.R:
             coil.R = self.R
@@ -344,7 +341,7 @@ class CoilIn(BaseModel):
         if self.SubCoils:
             for selfsc, subcoil in zip(self.SubCoils, coil.SubCoils):
                 selfsc.do_init(subcoil)
-        if self.dR > 0.0:
+        if self.dR and self.dR > 0.0:
             coil.compute_SubCoils(psiGrid)
 
 
@@ -384,13 +381,13 @@ class ShellIn(BaseModel):
 
 class MeasureIn(BaseModel):
     Name: str | None
-    Enabled: bool | None = True
+    # Enabled: bool | None = True
     Type: str
 
     def do_init(self, meas: Measure) -> None:
         if self.Name:
             meas.Name = self.Name
-        meas.Enabled = self.Enabled
+        # meas.Enabled = self.Enabled  # no such field
         meas.Type = self.Type
 
 
@@ -494,22 +491,35 @@ class MachineIn(BaseModel):
         m.RSname = self.RSname
 
         # control parameters
-        m.RestartStatus = int(self.RestartStatus)
-        m.RestartUnkns = self.RestartUnkns
-        m.LHGreenStatus = self.LHGreenStatus
-        m.MGreenStatus = self.MGreenStatus
-        m.NumEqualEq = self.NumEqualEq
-        m.VacuumOnly = self.VacuumOnly
+        if self.RestartStatus is not None: 
+            m.RestartStatus = self.RestartStatus
+        if self.RestartUnkns is not None:
+            m.RestartUnkns = self.RestartUnkns
+        if self.LHGreenStatus is not None:
+            m.LHGreenStatus = self.LHGreenStatus
+        if self.MGreenStatus is not None:
+            m.MGreenStatus = self.MGreenStatus
+        if self.NumEqualEq is not None:
+            m.NumEqualEq = self.NumEqualEq
+        if self.VacuumOnly is not None:
+            m.VacuumOnly = self.VacuumOnly
 
-        m.MaxIterFixed = self.MaxIterFixed
-        m.MaxIterFree = self.MaxIterFree
+        if self.MaxIterFixed is not None:
+            m.MaxIterFixed = self.MaxIterFixed
+        if self.MaxIterFree is not None:
+            m.MaxIterFree = self.MaxIterFree
 
         # set numbers
-        m.NumCoils = self.NumCoils
-        m.NumShells = self.NumShells
-        m.NumLimiters = self.NumLimiters
-        m.NumSeps = self.NumSeps
-        m.NumMeasures = self.NumMeasures
+        if self.NumCoils is not None:
+            m.NumCoils = self.NumCoils
+        if self.NumShells is not None:
+            m.NumShells = self.NumShells
+        if self.NumLimiters is not None:
+            m.NumLimiters = self.NumLimiters
+        if self.NumSeps is not None:
+            m.NumSeps = self.NumSeps
+        if self.NumMeasures is not None:
+            m.NumMeasures = self.NumMeasures
 
         # init PsiGrid and Plasma
         self.PsiGrid.do_init(m.PsiGrid)
