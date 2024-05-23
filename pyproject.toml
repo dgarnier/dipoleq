@@ -31,8 +31,12 @@ classifiers = [
 
 dependencies = [
   "numpy >=1.21",
-  "pydantic >=2.7"
+  "pydantic >=2.7",
+  "freeqdsk",
 ]
+
+[project.scripts]
+h5togeqdsk = "dipoleq.scripts.h5togeqdsk:main"
 
 [project.optional-dependencies]
 test = ["pytest", "pyyaml", "types-pyyaml", "h5py"]

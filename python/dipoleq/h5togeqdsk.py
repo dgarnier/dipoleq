@@ -2,12 +2,13 @@
 # Convert a dipoleq h5 file to a g-eqdsk file
 # Usage: python h5togeqdsk.py <dipoleq.h5> ...
 
+from os import PathLike
+from pathlib import Path
 from typing import Any, Dict, Union
 
 import h5py
 import numpy as np
 from freeqdsk import geqdsk
-from matplotlib import scale
 
 
 def dipoleq_lim_to_eqdsk(lim):
@@ -20,9 +21,9 @@ def dipoleq_lim_to_eqdsk(lim):
     return newlim
 
 
-def dipoleq_to_geqdsk(
-    h5f, COCOS=3, NormalizeAtAxis=True
-) -> dict[str, int | float | np.ndarray]:
+def dipoleq_h5f_to_freeqdsk(
+    h5f: h5py.File, COCOS: int = 3, NormalizeAtAxis: bool = True
+) -> tuple[dict[str, int | float | np.ndarray], str]:
     """Extract geqdsk data from a dipoleq h5 file"""
 
     # future version of geqdsk will have type hints
@@ -112,13 +113,18 @@ def dipoleq_to_geqdsk(
     ilim = dipoleq_lim_to_eqdsk(ilimq)
     gdata["rlimi"] = ilim[:, 0]
     gdata["zlimi"] = ilim[:, 1]
-    oname = str(h5f.attrs["ONAME"], "utf-8")
+    oname = h5f.attrs["ONAME"]
+    oname = oname if isinstance(oname, str) else str(oname, "utf-8")
 
     return (gdata, oname)
 
 
 def plot_h5eq(h5eq):
-    import matplotlib.pyplot as plt
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("Matplotlib is required for plotting.")
+        return
 
     fig, ax = plt.subplots()
     ax.contour(h5eq["Grid"]["R"], h5eq["Grid"]["Z"], h5eq["Grid"]["Psi"], 100)
@@ -134,8 +140,34 @@ def plot_h5eq(h5eq):
             ax.plot(lim[i, :, 0], lim[i, :, 1], "k-")
     plt.show()
 
+def h5togeqdsk(h5file: Path | PathLike[str], 
+               plot = False, 
+               NormalizeAtAxis = True,
+               suffix: str = ".geqdsk",
+               ) -> dict[str, int | float | np.ndarray] :
+    """Save a dipoleq h5 file to a g-eqdsk file
+    
+    """
+    stem = Path(h5file).stem
+    with h5py.File(h5file) as h5f:
+        if plot:
+            plot_h5eq(h5f)
+        gdata, oname = dipoleq_h5f_to_freeqdsk(h5f, NormalizeAtAxis=NormalizeAtAxis)
 
-if __name__ == "__main__":
+    with open(stem + suffix, "w") as fh:
+        geqdsk.write(gdata, fh, label=f"DipEq:{oname}")
+
+    with open(f"{stem}_fcfs.csv", "w", encoding="utf-8") as fh:
+        fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
+        np.savetxt(fh, fcfs, delimiter=",", header="r,z")
+
+    with open(f"{stem}_flim.csv", "w", encoding="utf-8") as fh:
+        flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
+        np.savetxt(fh, flim, delimiter=",", header="r,z")
+    return gdata
+
+
+def main():
     from argparse import ArgumentParser
     from pathlib import Path
 
@@ -143,34 +175,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "h5files", metavar="h5file", type=str, nargs="+", help="dipoleq hdf5 file(s)"
     )
-    parser.add_argument("--plot", "-p", action="store_true", help="Plot the g-eqdsk")
+    parser.add_argument("--plot", "-p", action="store_true", 
+                        default=False, help="Plot the g-eqdsk")
 
     args = parser.parse_args()
 
     for h5file in args.h5files:
-        stem = Path(h5file).stem
-        with h5py.File(h5file) as h5f:
-            if args.plot:
-                plot_h5eq(h5f)
-            gdata, oname = dipoleq_to_geqdsk(h5f)
+        h5togeqdsk(Path(h5file), plot=args.plot)
 
-        with open(f"{stem}.geqdsk", "w") as fh:
-            geqdsk.write(gdata, fh, label=f"DipQ:{oname}")
 
-        with open(f"{stem}_fcfs.csv", "w", encoding="utf-8") as fh:
-            fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
-            np.savetxt(
-                fh,
-                fcfs,
-                delimiter=",",
-                header="r,z",
-            )
-
-        with open(f"{stem}_flim.csv", "w", encoding="utf-8") as fh:
-            flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
-            np.savetxt(
-                fh,
-                flim,
-                delimiter=",",
-                header="r,z",
-            )
+if __name__ == "__main__":
+    main()

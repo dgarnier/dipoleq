@@ -1,8 +1,9 @@
 # Test dipoleq with basic LDX beta = 1 equilibrium
 import os
+from os import PathLike
 from pathlib import Path
 
-from pytest import approx
+from pytest import approx, fixture
 
 from dipoleq import Machine
 from dipoleq.core import Machine as coreMachine
@@ -69,10 +70,19 @@ def test_yaml_new():
     assert m1 == m2
 
 
-def test_yaml_save():
+@fixture(scope="session")
+def test_yaml_save(tmp_path_factory)->Path:
     m1 = Machine.from_yaml(data_dir / "beta1.yaml")
     m1.solve()
-    m1.to_hdf5("test.h5")
+    fn = tmp_path_factory.mktemp("data") / "beta1.h5"
+    m1.to_hdf5(fn)
+    return fn
+
+
+def test_h5togeqdsk(test_yaml_save):
+    from dipoleq.h5togeqdsk import h5togeqdsk
+    gdata = h5togeqdsk(test_yaml_save)
+    assert gdata["cpasma"] == approx(32984, rel=1e-4)
 
 
 if __name__ == "__main__":

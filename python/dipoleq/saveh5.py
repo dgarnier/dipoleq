@@ -88,7 +88,7 @@ ArrayLike = npt.ArrayLike | MatrixView | VectorView | IMatrixView
 
 
 def _save_0D(loc: Group, name: str, units: str, data: float) -> Dataset:
-    ds = loc.create_dataset(name, data=[data])
+    ds = loc.create_dataset(name, data=data)
     ds.attrs["UNITS"] = units
     return ds
 
@@ -125,6 +125,7 @@ def save_flux_functions(flux: Group, m: Machine):
         _save_1D(flux, DS_NAME.G_1D, "1", dimp, pl.G_pr)
         _save_1D(flux, DS_NAME.PP_1D, "Pa/Wb", dimp, pl.Pp_pr)
         _save_1D(flux, DS_NAME.G2P_1D, "1/Wb", dimp, pl.G2p_pr)
+        _save_1D(flux, DS_NAME.Q_1D, "", dimp, pl.q_pr)
         _save_1D(flux, DS_NAME.V_1D, "m^3/Wb", dimp, pl.Volp_pr)
         _save_1D(flux, DS_NAME.VOL_1D, "m^3", dimp, pl.Vol_pr)
         _save_1D(flux, DS_NAME.SHEAR_1D, "", dimp, pl.S_pr)
@@ -145,7 +146,7 @@ def save_boundaries(loc: Group, m: Machine):
     """Create and save the LCFS and FCFS boundaries"""
     lcfs_r, lcfs_z = m.PsiGrid.get_contour(m.Plasma.PsiLim)
     if lcfs_r is not None:
-        lcfs = np.hstack((lcfs_r, lcfs_z))
+        lcfs = np.vstack((lcfs_r, lcfs_z))
         lcfs_ds = loc.create_dataset(DS_NAME.LCFS_NAME, data=lcfs)
         lcfs_ds.attrs["UNITS"] = "m"
         lcfs_ds.attrs["DIMENSION"] = "cylindrical"
@@ -156,7 +157,7 @@ def save_boundaries(loc: Group, m: Machine):
 
     fcfs_r, fcfs_z = m.PsiGrid.get_contour(m.Plasma.PsiAxis)
     if fcfs_r is not None:
-        fcfs = np.hstack((fcfs_r, fcfs_z))
+        fcfs = np.vstack((fcfs_r, fcfs_z))
         fcfs_ds = loc.create_dataset(DS_NAME.FCFS_NAME, data=fcfs)
         fcfs_ds.attrs["UNITS"] = "m"
         fcfs_ds.attrs["DIMENSION"] = "cylindrical"
