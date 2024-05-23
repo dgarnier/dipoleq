@@ -155,6 +155,17 @@ template <typename T> class ObjVecView
         m_data[i] = obj;
     }
 
+    static py::object create(size_t nsize, T ** data) {
+        if (data == NULL)
+            return py::none();
+        return py::cast(new ObjVecView<T>(nsize, data));
+    }
+    static py::object create(size_t nsize, T ** data, TOKAMAK * mach, void (*objfree)(T *, TOKAMAK *)) {
+        if (data == NULL)
+            return py::none();
+        return py::cast(new ObjVecView<T>(nsize, data, mach, objfree));
+    }
+
     private:
     TOKAMAK *m_machine = NULL;
     void (*m_free)(T *, TOKAMAK *) = NULL;

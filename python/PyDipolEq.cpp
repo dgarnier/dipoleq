@@ -328,20 +328,20 @@ PYBIND11_MODULE(core, m) {
         .def_readwrite("SisoTerms", &PLASMA::SisoTerms)
         .def_readwrite("SparTerms", &PLASMA::SparTerms)
         .def_readwrite("SperTerms", &PLASMA::SperTerms)
-        .def_property_readonly("G2p", [](PLASMA& self) {return DVectorView(self.G2pTerms, self.G2p);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("H", [](PLASMA& self) {return DVectorView(self.HTerms, self.H);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Pp", [](PLASMA& self) {return DVectorView(self.PpTerms, self.Pp);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Rot", [](PLASMA& self) {return DVectorView(self.RotTerms, self.Rot);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Siso", [](PLASMA& self) {return DVectorView(self.SisoTerms, self.Siso);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Spar", [](PLASMA& self) {return DVectorView(self.SparTerms, self.Spar);},
-            py::return_value_policy::reference_internal)
-        .def_property_readonly("Sper", [](PLASMA& self) {return DVectorView(self.SperTerms, self.Sper);},
-            py::return_value_policy::reference_internal)
+        .def_property_readonly("G2p", [](PLASMA& self) -> py::object {
+            return DVectorView::create(self.G2pTerms, self.G2p);})
+        .def_property_readonly("H", [](PLASMA& self) -> py::object {
+            return DVectorView::create(self.HTerms, self.H);})
+        .def_property_readonly("Pp", [](PLASMA& self) -> py::object {
+            return DVectorView::create(self.PpTerms, self.Pp);})
+        .def_property_readonly("Rot", [](PLASMA& self) -> py::object {
+            return DVectorView::create(self.RotTerms, self.Rot);})
+        .def_property_readonly("Siso", [](PLASMA& self) -> py::object {
+            return DVectorView::create(self.SisoTerms, self.Siso);})
+        .def_property_readonly("Spar", [](PLASMA& self) -> py::object {
+            return DVectorView::create(self.SparTerms, self.Spar);})
+        .def_property_readonly("Sper", [](PLASMA& self) -> py::object {
+            return DVectorView::create(self.SperTerms, self.Sper);})
 
         // results
         .def_readonly("Ip", &PLASMA::Ip, "Plasma current")
@@ -468,18 +468,18 @@ PYBIND11_MODULE(core, m) {
         .def_readwrite("DelPsi", &PSIGRID::DelPsi)
         .def_readwrite("RMagAxis", &PSIGRID::XMagAxis)
         .def_readwrite("ZMagAxis", &PSIGRID::ZMagAxis)
-        .def_property_readonly("R", [](PSIGRID& self) {
-            return DVectorView(self.Nsize + 1, self.X);})
-        .def_property_readonly("Z", [](PSIGRID& self) {
-            return DVectorView(self.Nsize + 1, self.Z);})
-        .def_property_readonly("IsPlasma", [](PSIGRID& self) {
-            return IMatrixView(self.Nsize, self.IsPlasma);})
-        .def_property_readonly("Psi", [](PSIGRID& self) {
-            return DMatrixView(self.Nsize, self.Psi);})
-        .def_property_readonly("Current", [](PSIGRID& self) {
-            return DMatrixView(self.Nsize, self.Current);})
-        .def_property_readonly("Residual", [](PSIGRID& self) {
-            return DMatrixView(self.Nsize, self.Residual);})
+        .def_property_readonly("R", [](PSIGRID& self) -> py::object {
+            return DVectorView::create(self.Nsize + 1, self.X);})
+        .def_property_readonly("Z", [](PSIGRID& self) -> py::object {
+            return DVectorView::create(self.Nsize + 1, self.Z);})
+        .def_property_readonly("IsPlasma", [](PSIGRID& self) -> py::object {
+            return IMatrixView::create(self.Nsize, self.IsPlasma);})
+        .def_property_readonly("Psi", [](PSIGRID& self) -> py::object {
+            return DMatrixView::create(self.Nsize, self.Psi);})
+        .def_property_readonly("Current", [](PSIGRID& self) -> py::object {
+            return DMatrixView::create(self.Nsize, self.Current);})
+        .def_property_readonly("Residual", [](PSIGRID& self) -> py::object {
+            return DMatrixView::create(self.Nsize, self.Residual);})
         .def("get_contour", &get_flux_contour, "Get a contour at psi, returns r, z")
     ;
 
@@ -565,9 +565,9 @@ PYBIND11_MODULE(core, m) {
             [](COIL& self, std::string name){
                 strncpy(self.Name, name.c_str(), sizeof(COIL::Name)-1);
             }, "Name of the coil")
-        .def_property_readonly("SubCoils", [](COIL& self) {
-            return ObjVecView<SUBCOIL>(self.NumSubCoils, self.SubCoils);},
-            py::return_value_policy::reference_internal, "Return vector of SubCoils")
+        .def_property_readonly("SubCoils", [](COIL& self) -> py::object
+            {return ObjVecView<SUBCOIL>::create(self.NumSubCoils, self.SubCoils);},
+            "Return vector of SubCoils")
         .def_property("NumSubCoils", [](COIL& self) {return self.NumSubCoils;},
             &set_NumSubCoils, "Number of subcoils, setting will erase old subcoils")
         .def_readwrite("CoilCurrent", &COIL::CoilCurrent)
@@ -609,8 +609,8 @@ PYBIND11_MODULE(core, m) {
             }, "Name of the shell")
         .def_readonly("NumSubShells", &SHELL::NumSubShells)
         .def("set_NumSubShells", &set_SHELL_NumSubShells, "Set the number of subshells")
-        .def_property_readonly("SubShells",
-            [](SHELL& self) {return ObjVecView<SUBSHELL>(self.NumSubShells, self.SubShells);},
+        .def_property_readonly("SubShells", [](SHELL& self) -> py::object
+            {return ObjVecView<SUBSHELL>::create(self.NumSubShells, self.SubShells);},
              "Return vector of SubShells")
     ;
 
@@ -828,8 +828,8 @@ PYBIND11_MODULE(core, m) {
             [](TOKAMAK& self, std::string name){
                 strncpy(self.RSname, name.c_str(), sizeof(TOKAMAK::RSname)-1);
             }, "RS name")
-        .def_property_readonly("Coils", [](TOKAMAK& self) {
-            return ObjVecView<COIL>(self.NumCoils, self.Coils, &self, free_COIL);},
+        .def_property_readonly("Coils", [](TOKAMAK& self) -> py::object 
+            {return ObjVecView<COIL>::create(self.NumCoils, self.Coils, &self, free_COIL);},
             "Array of COILS")
         .def_property("NumCoils", [](TOKAMAK& self) {return self.NumCoils;},
                     &set_NumCoils, "Number of coils, setting will erase old coils")
@@ -838,25 +838,25 @@ PYBIND11_MODULE(core, m) {
                     free_Coil(self.Coils[i], self.PsiGrid->Nsize);
                 self.Coils[i] = new_Coil(n);
             }, "Set the number of subcoils for a coil")
-        .def_property_readonly("Limiters", [](TOKAMAK& self) {
-            return ObjVecView<LIMITER>(self.NumLimiters, self.Limiters);
-            }, "Get the limiters")
+        .def_property_readonly("Limiters", [](TOKAMAK& self) -> py::object 
+            { return ObjVecView<LIMITER>::create(self.NumLimiters, self.Limiters);},
+            "Get the limiters")
         .def_property("NumLimiters", [](TOKAMAK& self) {return self.NumLimiters;},
             &set_NumLimiters, "Number of limiters, setting will erase old limiters")
-        .def_property_readonly("Shells", [](TOKAMAK& self) {
-            return ObjVecView<SHELL>(self.NumShells, self.Shells, &self, free_SHELL);
+        .def_property_readonly("Shells", [](TOKAMAK& self) -> py::object {
+            return ObjVecView<SHELL>::create(self.NumShells, self.Shells, &self, free_SHELL);
             }, "Get the shells")
         .def_property("NumShells", [](TOKAMAK& self) {return self.NumShells;},
             &set_NumShells, "Number of shells, setting will erase old shells")
         .def("set_NumSubShells", &set_TOKAMAK_NumSubShells,
             "Set the number of subshells of shell i to n")
-        .def_property_readonly("Measures", [](TOKAMAK& self) {
-            return ObjVecView<MEAS>(self.NumMeasures, self.Measures, &self, free_MEAS);
+        .def_property_readonly("Measures", [](TOKAMAK& self) -> py::object {
+            return ObjVecView<MEAS>::create(self.NumMeasures, self.Measures, &self, free_MEAS);
             }, "Get the measurements")
         .def_property("NumMeasures", [](TOKAMAK& self) {return self.NumMeasures;},
             &set_NumMeasures, "Number of measurements, setting will erase old measurements")
-        .def_property_readonly("Seps", [](TOKAMAK& self) {
-            return ObjVecView<SEPARATRIX>(self.NumSeps, self.Seps);
+        .def_property_readonly("Seps", [](TOKAMAK& self) -> py::object {
+            return ObjVecView<SEPARATRIX>::create(self.NumSeps, self.Seps);
             }, "Get the separatrixes")
         .def_property("NumSeps", [](TOKAMAK& self) {return self.NumSeps;},
             &set_NumSeps, "Number of separatrixes, setting will erase old separatrixes")

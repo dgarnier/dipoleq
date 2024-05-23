@@ -75,10 +75,11 @@ class Machine(core.Machine):
             Machine: The Machine object
         """
 
+        p = Path(filename)
         filename = str(filename)
-        if filename.endswith(".in"):
+        if p.suffix is ".in":
             return cls.from_fileinput(filename)
-        elif filename.endswith(".yaml"):
+        elif p.suffix is ".yaml":
             return cls.from_yaml(filename)
         else:
             raise ValueError(f"Unknown file type: {filename}")
