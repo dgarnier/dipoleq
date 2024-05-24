@@ -144,7 +144,8 @@ def save_flux_functions(flux: Group, m: Machine):
 
 def save_boundaries(loc: Group, m: Machine):
     """Create and save the LCFS and FCFS boundaries"""
-    lcfs_r, lcfs_z = m.PsiGrid.get_contour(m.Plasma.PsiLim)
+    pg = m.PsiGrid
+    lcfs_r, lcfs_z = pg.get_contour(1.0)
     if lcfs_r is not None:
         lcfs = np.vstack((lcfs_r, lcfs_z)).T
         lcfs_ds = loc.create_dataset(DS_NAME.LCFS_NAME, data=lcfs)
@@ -152,10 +153,11 @@ def save_boundaries(loc: Group, m: Machine):
         lcfs_ds.attrs["DIMENSION"] = "cylindrical"
         lcfs_ds.attrs["FORMAT"] = "F7.4"
 
-    if m.Plasma.PsiAxis == m.Plasma.PsiMagAxis:
+    if pg.PsiAxis == pg.PsiMagAxis:
+        # no fcfs when the inner boundary is at the axis.
         return
 
-    fcfs_r, fcfs_z = m.PsiGrid.get_contour(m.Plasma.PsiAxis)
+    fcfs_r, fcfs_z = pg.get_contour(0.0)
     if fcfs_r is not None:
         fcfs = np.vstack((fcfs_r, fcfs_z)).T
         fcfs_ds = loc.create_dataset(DS_NAME.FCFS_NAME, data=fcfs)

@@ -86,10 +86,12 @@ testpaths = ["python/tests"]
 
 
 [tool.cibuildwheel]
-build = "cp310-*"
+build = "cp*"
 test-command = "pytest {project}/python/tests"
 test-extras = ["test"]
 test-skip = ["*universal2:arm64"]
+archs = "auto64"
+skip = "*musllinux*"
 build-verbosity = 1
 
 [tool.cibuildwheel.macos.environment]

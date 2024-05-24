@@ -492,7 +492,8 @@ PYBIND11_MODULE(core, m) {
             return DMatrixView::create(self.Nsize, self.Current);})
         .def_property_readonly("Residual", [](PSIGRID& self) -> py::object {
             return DMatrixView::create(self.Nsize, self.Residual);})
-        .def("get_contour", &get_flux_contour, "Get a contour at psi, returns r, z")
+        .def("get_contour", &get_flux_contour, 
+            "Get a contour at normalized psi, returns r, z")
     ;
 
     py::enum_<MeasType>(m, "MeasType")

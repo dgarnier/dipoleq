@@ -55,6 +55,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix=".DipEqTmp") as tmpdir:
 
         m = Machine.from_file(input_file)
+        m.LHname, m.MGname, m.RSname = "", "", "" # no restart files
         m.solve()
         tmp_h5 = Path(tmpdir) / "dipEq.h5"
         m.to_hdf5(tmp_h5)
