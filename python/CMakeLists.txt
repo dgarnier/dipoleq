@@ -12,8 +12,10 @@ set_target_properties(pydipoleq PROPERTIES
     OUTPUT_NAME "core"
     POSITION_INDEPENDENT_CODE ON
 )
-# just copy it over damnit
+# just copy it over damnit, works for mac, not on windows
+# seems to be a permissions issue on windows
 
+if (NOT WIN32)
 add_custom_command(TARGET pydipoleq POST_BUILD 
     COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_FILE:pydipoleq>
@@ -21,12 +23,14 @@ add_custom_command(TARGET pydipoleq POST_BUILD
         COMMENT "Copying pybind11 module to dipoleq\n"
 )
 
+
 add_custom_command(TARGET pydipoleq POST_BUILD 
     COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dev/stubgen.py 
             $<TARGET_FILE:pydipoleq>
             ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
             COMMENT "Generating Python bindings\n"
-    )
+)
+endif()
 
 
 # this works, even though its not at the top level...
