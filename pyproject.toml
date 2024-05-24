@@ -32,6 +32,10 @@ classifiers = [
 dependencies = [
   "numpy >=1.21",
   "pydantic >=2.7",
+  "pyyaml",
+  "types-pyyaml",
+  "typing-extensions",
+  "h5py",
   "freeqdsk",
 ]
 
@@ -40,7 +44,7 @@ h5togeqdsk = "dipoleq.h5togeqdsk:main"
 dipoleq = "dipoleq.main_cli:main"
 
 [project.optional-dependencies]
-test = ["pytest", "pyyaml", "types-pyyaml", "h5py"]
+test = ["pytest", "pyyaml", "types-pyyaml", "h5py", "dipoleq"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
        "numpy", "pybind11", "pyyaml", "pybind11-stubgen",
@@ -73,7 +77,8 @@ version_file = "python/dipoleq/_version.py"
 
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "7.0"
+pythonpath = ["python"]
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
 log_cli_level = "INFO"
@@ -84,11 +89,10 @@ testpaths = ["python/tests"]
 
 
 [tool.cibuildwheel]
-build = "cp*"
-test-command = "pytest {project}/python/tests"
+build = "cp310-*"
+test-command = "pytest {project}"
 test-extras = ["test"]
 test-skip = ["*universal2:arm64"]
-archs = "auto64"
 skip = "*musllinux*"
 build-verbosity = 1
 
