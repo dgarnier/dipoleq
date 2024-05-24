@@ -36,7 +36,8 @@ dependencies = [
 ]
 
 [project.scripts]
-h5togeqdsk = "dipoleq.scripts.h5togeqdsk:main"
+h5togeqdsk = "dipoleq.h5togeqdsk:main"
+dipoleq = "dipoleq.main_cli:main"
 
 [project.optional-dependencies]
 test = ["pytest", "pyyaml", "types-pyyaml", "h5py"]

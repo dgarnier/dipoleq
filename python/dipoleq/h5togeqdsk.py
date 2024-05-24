@@ -128,8 +128,10 @@ def plot_h5eq(h5eq):
 
     fig, ax = plt.subplots()
     ax.contour(h5eq["Grid"]["R"], h5eq["Grid"]["Z"], h5eq["Grid"]["Psi"], 100)
-    ax.set_xlabel(f'R [{h5eq["Grid"]["R"].attrs["UNITS"].decode()}]')
-    ax.set_ylabel(f'Z [{h5eq["Grid"]["Z"].attrs["UNITS"].decode()}]')
+    runits = h5eq["Grid"]["R"].attrs["UNITS"]
+    zunits = h5eq["Grid"]["Z"].attrs["UNITS"]
+    ax.set_xlabel(f'R [{runits if isinstance(runits, str) else runits.decode()}]')
+    ax.set_ylabel(f'Z [{zunits if isinstance(zunits, str) else zunits.decode()}]')
     ax.set_aspect("equal")
     ax.plot(h5eq["Boundaries"]["LCFS"][:, 0], h5eq["Boundaries"]["LCFS"][:, 1], "b--")
     ax.plot(h5eq["Boundaries"]["FCFS"][:, 0], h5eq["Boundaries"]["FCFS"][:, 1], "b--")
@@ -141,6 +143,25 @@ def plot_h5eq(h5eq):
     plt.show()
 
 
+def write_geqdsk(gdata: dict[str, int | float | np.ndarray], 
+                 filename: str | PathLike[str],
+                 oname: str) -> None:
+    with open(filename, "w") as fh:
+        geqdsk.write(gdata, fh, label=f"DipEq:{oname}")
+
+
+def write_fcfs_csv(h5path: Path, gdata: dict[str, int | float | np.ndarray]) -> None:
+    stem = h5path.stem
+    parent = h5path.parent
+    with open(parent / f"{stem}_fcfs.csv", "w", encoding="utf-8") as fh:
+        fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
+        np.savetxt(fh, fcfs, delimiter=",", header="r,z")
+
+    with open(parent / f"{stem}_flim.csv", "w", encoding="utf-8") as fh:
+        flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
+        np.savetxt(fh, flim, delimiter=",", header="r,z")
+
+
 def h5togeqdsk(
     h5file: Path | PathLike[str],
     plot=False,
@@ -148,22 +169,15 @@ def h5togeqdsk(
     suffix: str = ".geqdsk",
 ) -> dict[str, int | float | np.ndarray]:
     """Save a dipoleq h5 file to a g-eqdsk file"""
-    stem = Path(h5file).stem
+    
+    h5path = Path(h5file)
     with h5py.File(h5file) as h5f:
         if plot:
             plot_h5eq(h5f)
         gdata, oname = dipoleq_h5f_to_freeqdsk(h5f, NormalizeAtAxis=NormalizeAtAxis)
 
-    with open(stem + suffix, "w") as fh:
-        geqdsk.write(gdata, fh, label=f"DipEq:{oname}")
-
-    with open(f"{stem}_fcfs.csv", "w", encoding="utf-8") as fh:
-        fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
-        np.savetxt(fh, fcfs, delimiter=",", header="r,z")
-
-    with open(f"{stem}_flim.csv", "w", encoding="utf-8") as fh:
-        flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
-        np.savetxt(fh, flim, delimiter=",", header="r,z")
+    write_geqdsk(gdata, h5path.with_suffix(suffix), oname)
+    write_fcfs_csv(h5path, gdata)
     return gdata
 
 

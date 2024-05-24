@@ -146,7 +146,7 @@ def save_boundaries(loc: Group, m: Machine):
     """Create and save the LCFS and FCFS boundaries"""
     lcfs_r, lcfs_z = m.PsiGrid.get_contour(m.Plasma.PsiLim)
     if lcfs_r is not None:
-        lcfs = np.vstack((lcfs_r, lcfs_z))
+        lcfs = np.vstack((lcfs_r, lcfs_z)).T
         lcfs_ds = loc.create_dataset(DS_NAME.LCFS_NAME, data=lcfs)
         lcfs_ds.attrs["UNITS"] = "m"
         lcfs_ds.attrs["DIMENSION"] = "cylindrical"
@@ -157,7 +157,7 @@ def save_boundaries(loc: Group, m: Machine):
 
     fcfs_r, fcfs_z = m.PsiGrid.get_contour(m.Plasma.PsiAxis)
     if fcfs_r is not None:
-        fcfs = np.vstack((fcfs_r, fcfs_z))
+        fcfs = np.vstack((fcfs_r, fcfs_z)).T
         fcfs_ds = loc.create_dataset(DS_NAME.FCFS_NAME, data=fcfs)
         fcfs_ds.attrs["UNITS"] = "m"
         fcfs_ds.attrs["DIMENSION"] = "cylindrical"

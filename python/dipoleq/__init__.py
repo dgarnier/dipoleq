@@ -12,6 +12,7 @@ at OpenStar Technologies, LTD.
 from pathlib import Path
 from typing import Any
 
+from matplotlib.pylab import f
 from typing_extensions import Self
 
 from . import core, file_input, input_validator, solver, util
@@ -94,6 +95,7 @@ class Machine(_Machine):
         return m
 
     def solve(self) -> None:
+        """Do the thing!"""
         solver.solve(self)
 
     def diff(self, other: _Machine, verbose: bool = False) -> bool:
