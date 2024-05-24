@@ -12,6 +12,14 @@ set_target_properties(pydipoleq PROPERTIES
     OUTPUT_NAME "core"
     POSITION_INDEPENDENT_CODE ON
 )
+# just copy it over damnit
+
+add_custom_command(TARGET pydipoleq POST_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_FILE:pydipoleq>
+        ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
+    COMMENT "Copying pybind11 module to dipoleq"
+)
 
 add_custom_command(TARGET pydipoleq POST_BUILD 
         COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dev/stubgen.py 

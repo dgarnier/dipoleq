@@ -6,6 +6,7 @@ requires = [
     "pybind11-stubgen",
     "numpy",
 #    "cibuildwheel",
+    "setuptools_scm",
     "wheel",
     "build",
 ]
@@ -44,7 +45,7 @@ h5togeqdsk = "dipoleq.h5togeqdsk:main"
 dipoleq = "dipoleq.main_cli:main"
 
 [project.optional-dependencies]
-test = ["pytest", "pyyaml", "types-pyyaml", "h5py", "dipoleq"]
+test = ["pytest"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
        "numpy", "pybind11", "pyyaml", "pybind11-stubgen",
@@ -53,14 +54,16 @@ dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
 cmake.targets = ["pydipoleq", "dipoleq"]
-# cmake.verbose = true
+cmake.verbose = true
 #install.components = ["python", "cli"]
 install.components = ["python"]
-# wheel.packages = ["python/dipoleq"] # not required
-sdist.include = ["python/dipoleq/*.pyi", "python/dipoleq/py.typed",
-                 "python/dipoleq/_version.py"]
+#wheel.packages = ["python/dipoleq"] # not required
+sdist.include = ["python/dipoleq/_version.py"]
+sdist.exclude = ["idl", "GEM", "fortran", "wheelhouse", "*.ipynb",
+                "Testing/*.hdf", "Testing/*.pdf", 
+                ".vscode", ".github", ".devcontainer"]
 wheel.py-api = "py310"
-# logging.level = "INFO"
+logging.level = "INFO"
 build-dir = "build/{wheel_tag}"
 
 

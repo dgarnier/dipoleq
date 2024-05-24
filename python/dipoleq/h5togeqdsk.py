@@ -176,9 +176,7 @@ def h5togeqdsk(
     with h5py.File(h5file) as h5f:
         if plot:
             plot_h5eq(h5f)
-        gdata, oname = dipoleq_h5f_to_freeqdsk(h5f,
-                                               NormalizeAtAxis=NormalizeAtAxis
-                                               )
+        gdata, oname = dipoleq_h5f_to_freeqdsk(h5f, NormalizeAtAxis=NormalizeAtAxis)
 
     write_geqdsk(gdata, h5path.with_suffix(suffix), oname)
     write_fcfs_csv(h5path, gdata)

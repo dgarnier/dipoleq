@@ -81,7 +81,9 @@ if (BUILD_PYTHON_BINDINGS)
     add_subdirectory(python)
 endif()
 
-add_subdirectory(Testing)
+if (BUILD_CLI)
+    add_subdirectory(Testing)
+endif()
 
 # for some reason.. TARGETS must install from top level
 if (SKBUILD)

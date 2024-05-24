@@ -10,9 +10,14 @@ __pycache__
 dist
 *.so
 .coverage*
-python/dipoleq/*.pyi
-python/dipole/*.so
+python/dipoleq/core.*
 wheelhouse
+/.venv
+/.tox
+/.nox
+/.pytest_cache
+/.mypy_cache
+.python-version
 
 python/dipoleq/_version.py
 /beta*
