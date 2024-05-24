@@ -96,6 +96,7 @@ build = "cp310-*"
 test-command = "pytest {project}"
 test-extras = ["test"]
 test-skip = ["*universal2:arm64"]
+platform = "auto64"
 skip = ["*musllinux*", "*pypy*", "*390x*", "*ppc64le*"]
 build-verbosity = 1
 
