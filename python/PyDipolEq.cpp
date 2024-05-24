@@ -55,9 +55,7 @@ void nrerror(const char error_text[])
 	throw std::runtime_error(error_text);
 }
 
-extern "C" {
-    extern FILE *LogFile;
-};
+extern "C" FILE *LogFile;
 
 class Logger {
 public:

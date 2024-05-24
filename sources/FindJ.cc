@@ -35,7 +35,7 @@
 #define MU0			1.25663706e-06
 #define TWOPI		6.283185307
 
-extern FILE  *LogFile;
+extern "C" FILE  *LogFile;
 
 
 /*

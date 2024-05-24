@@ -83,8 +83,14 @@ void          MakeEqualEq2(TOKAMAK *);
 void          MakeMCarloEq(TOKAMAK *);
 void          MakeMCarloData(TOKAMAK * );
 
-extern FILE  *LogFile;
-extern long   GLOBAL_RAN3_SEED;	/* initilize to some negative number */
+#ifdef __cplusplus
+#define EXTERN extern "C"
+#else 
+#define EXTERN extern
+#endif
+
+EXTERN FILE  *LogFile;
+EXTERN long   GLOBAL_RAN3_SEED;	/* initilize to some negative number */
 
 /*
 **

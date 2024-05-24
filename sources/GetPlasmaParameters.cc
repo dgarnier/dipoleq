@@ -37,7 +37,7 @@
 #define P_EDGE		0.0
 
 
-extern FILE  *LogFile;
+extern "C" FILE  *LogFile;
 
 /*
 ** Local variables

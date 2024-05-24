@@ -130,8 +130,8 @@ def plot_h5eq(h5eq):
     ax.contour(h5eq["Grid"]["R"], h5eq["Grid"]["Z"], h5eq["Grid"]["Psi"], 100)
     runits = h5eq["Grid"]["R"].attrs["UNITS"]
     zunits = h5eq["Grid"]["Z"].attrs["UNITS"]
-    ax.set_xlabel(f'R [{runits if isinstance(runits, str) else runits.decode()}]')
-    ax.set_ylabel(f'Z [{zunits if isinstance(zunits, str) else zunits.decode()}]')
+    ax.set_xlabel(f"R [{runits if isinstance(runits, str) else runits.decode()}]")
+    ax.set_ylabel(f"Z [{zunits if isinstance(zunits, str) else zunits.decode()}]")
     ax.set_aspect("equal")
     ax.plot(h5eq["Boundaries"]["LCFS"][:, 0], h5eq["Boundaries"]["LCFS"][:, 1], "b--")
     ax.plot(h5eq["Boundaries"]["FCFS"][:, 0], h5eq["Boundaries"]["FCFS"][:, 1], "b--")
@@ -143,9 +143,11 @@ def plot_h5eq(h5eq):
     plt.show()
 
 
-def write_geqdsk(gdata: dict[str, int | float | np.ndarray], 
-                 filename: str | PathLike[str],
-                 oname: str) -> None:
+def write_geqdsk(
+    gdata: dict[str, int | float | np.ndarray],
+    filename: str | PathLike[str],
+    oname: str,
+) -> None:
     with open(filename, "w") as fh:
         geqdsk.write(gdata, fh, label=f"DipEq:{oname}")
 
@@ -169,12 +171,14 @@ def h5togeqdsk(
     suffix: str = ".geqdsk",
 ) -> dict[str, int | float | np.ndarray]:
     """Save a dipoleq h5 file to a g-eqdsk file"""
-    
+
     h5path = Path(h5file)
     with h5py.File(h5file) as h5f:
         if plot:
             plot_h5eq(h5f)
-        gdata, oname = dipoleq_h5f_to_freeqdsk(h5f, NormalizeAtAxis=NormalizeAtAxis)
+        gdata, oname = dipoleq_h5f_to_freeqdsk(h5f,
+                                               NormalizeAtAxis=NormalizeAtAxis
+                                               )
 
     write_geqdsk(gdata, h5path.with_suffix(suffix), oname)
     write_fcfs_csv(h5path, gdata)

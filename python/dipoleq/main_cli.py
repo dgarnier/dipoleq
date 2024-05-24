@@ -1,35 +1,37 @@
-
 """DipolEq equilibrium solver
 """
 
+import tempfile
 from argparse import ArgumentParser
 from pathlib import Path
-import tempfile
 
-from .h5togeqdsk import h5togeqdsk
 from . import Machine
+from .h5togeqdsk import h5togeqdsk
 
 
 def main():
     """Run the dipoleq solver from the command line using python"""
 
-    parser = ArgumentParser(description="Solve a dipole equilibrium",
-                            prog="dipoleq")
+    parser = ArgumentParser(description="Solve a dipole equilibrium", prog="dipoleq")
     parser.add_argument(
-        "input_file", metavar="input_file", type=str, 
-        help="configuration, can be .in or .yaml format"
+        "input_file",
+        metavar="input_file",
+        type=str,
+        help="configuration, can be .in or .yaml format",
     )
     parser.add_argument(
-        "--output_file", "-o", 
+        "--output_file",
+        "-o",
         metavar="[out].[h5|geqdsk|csv]",
         action="append",
         type=str,
         help="output file(s), can be .h5, or .geqdsk format or .csv format\n"
-             "or be the same as in input stem if only suffix is given",
+        "or be the same as in input stem if only suffix is given",
         default=[],
     )
     parser.add_argument(
-        "--plot", "-p",
+        "--plot",
+        "-p",
         action="store_true",
         default=False,
         help="Plot the equilibrium",
@@ -40,7 +42,7 @@ def main():
     outputs = args.output_file
     if len(outputs) == 0:
         outputs = [".h5", ".geqdsk", ".csv"]
-    if len(outputs) == 1 and '.' not in outputs[0]:
+    if len(outputs) == 1 and "." not in outputs[0]:
         o = outputs[0]
         outputs = [o + ex for ex in [".h5", ".geqdsk", ".csv"]]
     else:
@@ -50,12 +52,12 @@ def main():
                 absouts.append(input_file.with_suffix(output))
             else:
                 absouts.append(Path(output).absolute())
-    odict = dict((output.suffix, output) for output in absouts)
+    odict = {output.suffix: output for output in absouts}
 
     with tempfile.TemporaryDirectory(prefix=".DipEqTmp") as tmpdir:
 
         m = Machine.from_file(input_file)
-        m.LHname, m.MGname, m.RSname = "", "", "" # no restart files
+        m.LHname, m.MGname, m.RSname = "", "", ""  # no restart files
         m.solve()
         tmp_h5 = Path(tmpdir) / "dipEq.h5"
         m.to_hdf5(tmp_h5)
@@ -72,9 +74,9 @@ def main():
             csvstem = odict[".csv"].stem
             for tcsvf in tmp_h5.parent.glob("*.csv"):
                 csvf = odict[".csv"]
-                if '_' in tcsvf.stem:
-                    ext = tcsvf.stem.split('_')[1]
-                    csvf = csvf.with_stem(csvstem + '_' + ext)
+                if "_" in tcsvf.stem:
+                    ext = tcsvf.stem.split("_")[1]
+                    csvf = csvf.with_stem(csvstem + "_" + ext)
                 tcsvf.rename(csvf)
 
 

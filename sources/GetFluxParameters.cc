@@ -69,13 +69,19 @@
 **	G L O B A L   V A R I A B L E S
 */
 
-extern FILE  *LogFile;
+#ifdef __cplusplus
+#define EXTERN extern "C"
+#else
+#define EXTERN extern
+#endif
 
-extern double gX0, gZ0;			/* the center of the flux surface used to define theta */
-extern double *gX, *gZ;			/* arrays containing the boundary coordinates */
-extern double *gTheta;
-extern double *gXsplines, *gZsplines;
-extern int    gCount;			/* the number of points representing the boundary */
+EXTERN FILE  *LogFile;
+
+EXTERN double gX0, gZ0;			/* the center of the flux surface used to define theta */
+EXTERN double *gX, *gZ;			/* arrays containing the boundary coordinates */
+EXTERN double *gTheta;
+EXTERN double *gXsplines, *gZsplines;
+EXTERN int    gCount;			/* the number of points representing the boundary */
 
 double      **gIntegrand;		/* global integrand for flux integrals */
 double       *gInt;				/* array containing integrand along flux surface */
