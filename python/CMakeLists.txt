@@ -18,16 +18,16 @@ add_custom_command(TARGET pydipoleq POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_FILE:pydipoleq>
         ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
-    COMMENT "Copying pybind11 module to dipoleq"
+        COMMENT "Copying pybind11 module to dipoleq\n"
 )
 
 add_custom_command(TARGET pydipoleq POST_BUILD 
-        COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dev/stubgen.py 
-                ${CMAKE_CURRENT_BINARY_DIR}/core 
-                ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
-        COMMENT "Generating Python bindings"
-)
-    
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dev/stubgen.py 
+            $<TARGET_FILE:pydipoleq>
+            ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
+            COMMENT "Generating Python bindings\n"
+    )
+
 
 # this works, even though its not at the top level...
 # I really don't understand cmake...

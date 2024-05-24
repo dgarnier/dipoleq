@@ -96,7 +96,7 @@ build = "cp310-*"
 test-command = "pytest {project}"
 test-extras = ["test"]
 test-skip = ["*universal2:arm64"]
-skip = "*musllinux*"
+skip = ["*musllinux*", "*pypy*", "*390x*", "*ppc64le*"]
 build-verbosity = 1
 
 [tool.cibuildwheel.macos.environment]

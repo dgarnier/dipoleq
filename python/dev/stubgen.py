@@ -32,9 +32,9 @@ class MyPrinter(Printer):
 def generate_stubs(module_fp: str, stub_output_dir: str):
     """generate stubs for the given module"""
 
-    module_dir = Path(module_fp).parent
-    module_name = Path(module_fp).stem
-    out_dir = Path(stub_output_dir)
+    module_dir = Path(module_fp).parent.absolute()
+    module_name = Path(module_fp).stem.split(".")[0]
+    out_dir = Path(stub_output_dir).absolute()
     old_syspath = sys.path
     sys.path.append(str(module_dir))
 
@@ -43,7 +43,8 @@ def generate_stubs(module_fp: str, stub_output_dir: str):
 
     parser = stub_parser_from_args(args)
     module = parser.handle_module(
-        QualifiedName.from_str(module_name), importlib.import_module(module_name)
+        QualifiedName.from_str(module_name), 
+        importlib.import_module(module_name)
     )
     parser.finalize()
     sys.path = old_syspath
