@@ -12,7 +12,6 @@ at OpenStar Technologies, LTD.
 from pathlib import Path
 from typing import Any
 
-from matplotlib.pylab import f
 from typing_extensions import Self
 
 from . import core, file_input, input_validator, solver, util
