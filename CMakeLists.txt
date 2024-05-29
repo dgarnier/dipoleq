@@ -47,11 +47,7 @@ include_directories("${CMAKE_SOURCE_DIR}/includes")
 
 add_compile_definitions(DIPOLE=1)
 
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    add_compile_options(-fsanitize=address)
-endif()
 
-# add_subdirectory(fortran)
 add_subdirectory(sources EXCLUDE_FROM_ALL)
 
 add_executable(dipoleq)
@@ -60,10 +56,6 @@ if (BUILD_WITH_CLIBPDF)
     target_compile_definitions(dipoleq PUBLIC PDFOUTPUT=1)
 endif()
 
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    target_compile_options(dipoleq PRIVATE -fsanitize=address)
-    target_link_options(dipoleq PRIVATE -fsanitize=address)
-endif()
 
 target_link_libraries(dipoleq PUBLIC DipolEqLib)
 target_include_directories(dipoleq PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/includes")

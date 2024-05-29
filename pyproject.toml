@@ -50,6 +50,7 @@ wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
        "numpy", "pybind11", "pyyaml", "pybind11-stubgen",
        "toml-to-requirements"]
+omas = ["omas"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
@@ -81,7 +82,7 @@ version_file = "python/dipoleq/_version.py"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-# pythonpath = ["python"] # this confuses pytest between 
+pythonpath = ["python"] # this confuses pytest between 
 # the local copy and the installed one.. need to use
 # the installed one for ciwheelbuild
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
@@ -94,12 +95,18 @@ testpaths = ["python/tests"]
 
 
 [tool.cibuildwheel]
-build = "cp310-*"
+build = "cp31{0,1,2}-*"
 test-command = "pytest {project}"
 test-extras = ["test"]
-test-skip = ["*universal2:arm64"]
+test-skip = ["*universal2:arm64", "*win*"] # skip windows
 skip = ["*musllinux*", "*pypy*", "*390x*", "*ppc64le*", "*win32*"]
 build-verbosity = 1
+
+[tool.cibuildwheel.linux]
+archs = ["auto64"]
+
+[tool.cibuildwheel.windows]
+archs = ["auto64"]
 
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "10.15"

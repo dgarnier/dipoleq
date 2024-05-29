@@ -8,7 +8,7 @@ from functools import reduce
 from itertools import chain
 from typing import Annotated, Any, Literal, TypeVar, Union
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
 from .core import (
@@ -31,15 +31,15 @@ MU0 = 4.0e-7 * 3.14159265358979323846
 
 class PsiGridIn(BaseModel):
     Nsize: int = Field(default=256)
-    Rmin: float = Field(alias="Xmin")
-    Rmax: float = Field(alias="Xmax")
+    Rmin: float = Field(validation_alias=AliasChoices("Rmin", "Xmin"))
+    Rmax: float = Field(validation_alias=AliasChoices("Rmax", "Xmax"))
     Zmin: float
     Zmax: float
     Symmetric: bool | None = False
-    BoundThreshold: float
-    ResThreshold: float
-    UnderRelax1: float
-    UnderRelax2: float
+    BoundThreshold: float = 1.0e-6
+    ResThreshold: float = 1.0e-6
+    UnderRelax1: float | None = None
+    UnderRelax2: float | None = None
 
     def do_init(self, pg: PsiGrid) -> None:
         pg.Nsize = self.Nsize
@@ -48,10 +48,14 @@ class PsiGridIn(BaseModel):
         pg.Zmin = self.Zmin
         pg.Zmax = self.Zmax
         pg.Symmetric = 1 if self.Symmetric else 0
-        pg.BoundThreshold = self.BoundThreshold
-        pg.ResThreshold = self.ResThreshold
-        pg.UnderRelax1 = self.UnderRelax1
-        pg.UnderRelax2 = self.UnderRelax2
+        if self.BoundThreshold:
+            pg.BoundThreshold = self.BoundThreshold
+        if self.ResThreshold:
+            pg.ResThreshold = self.ResThreshold
+        if self.UnderRelax1:
+            pg.UnderRelax1 = self.UnderRelax1
+        if self.UnderRelax2:
+            pg.UnderRelax2 = self.UnderRelax2
 
 
 def model_type_literals(mts: list[ModelType]) -> type:
@@ -65,8 +69,8 @@ def model_type_literals(mts: list[ModelType]) -> type:
 
 
 class PlasmaModelBaseModel(BaseModel):
-    Type: Any
-
+    Type: Any = Field(validation_alias=AliasChoices(
+        "Type", "ModelType"))
     @field_validator("Type", mode="after")
     @classmethod
     def check_model_type(cls, v: Any) -> Any:
@@ -233,9 +237,9 @@ class PlasmaIn(BaseModel):
 
 class LimiterIn(BaseModel):
     Name: str | None
-    R1: float = Field(alias="X1")
+    R1: float = Field(validation_alias=AliasChoices("R1", "X1"))
     Z1: float
-    R2: float = Field(alias="X2")
+    R2: float = Field(validation_alias=AliasChoices("R2","X2"))
     Z2: float
     Enabled: int | None = True
 
@@ -252,12 +256,16 @@ class LimiterIn(BaseModel):
 
 class SeparatrixIn(BaseModel):
     Name: str | None
-    R1: float = Field(alias="X1")
+    R1: float = Field(default=0.0,
+                      validation_alias=AliasChoices("R1", "X1"))
     Z1: float
-    R2: float = Field(alias="X2")
+    R2: float = Field(default=0.0, 
+                      validation_alias=AliasChoices("R2", "X2"))
     Z2: float
-    RC: float = Field(alias="XC")
-    ZC: float
+    RC: float = Field(default=0.0, 
+                      validation_alias=AliasChoices("RC", "XC")
+    )
+    ZC: float = 0.0
     Enabled: bool | None = True
 
     def do_init(self, sep: Separatrix) -> None:
@@ -274,9 +282,9 @@ class SeparatrixIn(BaseModel):
 
 
 class SubCoilIn(BaseModel):
-    Name: str | None
+    Name: str | None = None
     Fraction: float
-    R: float = Field(alias="X")
+    R: float = Field(validation_alias=AliasChoices("R", "X"))
     Z: float
 
     def do_init(self, scoil: SubCoil) -> None:
@@ -288,13 +296,19 @@ class SubCoilIn(BaseModel):
 
 
 class CoilIn(BaseModel):
-    Name: str | None
+    Name: str | None = None
     Enabled: bool | None = True
     InitialCurrent: float
-    R: float | None = Field(alias="X")
-    dR: float | None = Field(alias="dX")
-    Z: float | None
-    dZ: float | None
+    R: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("R", "X")
+    )
+    dR: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("dR", "dX")
+    )
+    Z: float | None = None
+    dZ: float | None = None
     NumSubCoils: int | None = None
     SubCoils: list[SubCoilIn] | None = None
 

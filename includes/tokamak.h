@@ -139,7 +139,7 @@ extern "C" {
 
 TOKAMAK *new_Tokamak();
 void init_Tokamak(TOKAMAK *);
-void free_Tokamak(TOKAMAK *);
+void free_Tokamak(TOKAMAK *, int full);
 
 void SetStartTime(TOKAMAK *);
 void SetStopTime(TOKAMAK *);

@@ -224,7 +224,7 @@ void flux_param_idl(int kargc, IDL_VPTR kargv[], char *argk)
    /* now the profiles.... */
 
    if (argc <= 4) {
-       free_Tokamak(td);
+       free_Tokamak(td, TRUE);
        return;
    }
 
@@ -236,7 +236,7 @@ void flux_param_idl(int kargc, IDL_VPTR kargv[], char *argk)
    IDL_VarCopy(temp_v,argv[4]);
 
    if (argc <= 5) {
-       free_Tokamak(td);
+       free_Tokamak(td, TRUE);
        return;
    }
 
@@ -248,7 +248,7 @@ void flux_param_idl(int kargc, IDL_VPTR kargv[], char *argk)
    IDL_VarCopy(temp_v,argv[5]);
 
    if (argc <= 6) {
-       free_Tokamak(td);
+       free_Tokamak(td, TRUE);
        return;
    }
 
@@ -260,7 +260,7 @@ void flux_param_idl(int kargc, IDL_VPTR kargv[], char *argk)
    IDL_VarCopy(temp_v,argv[6]);
 
    if (argc <= 7) {
-       free_Tokamak(td);
+       free_Tokamak(td, TRUE);
        return;
    }
 
@@ -280,7 +280,7 @@ void flux_param_idl(int kargc, IDL_VPTR kargv[], char *argk)
 
 
 
-   free_Tokamak(td);
+   free_Tokamak(td, TRUE);
 
    IDL_KWCleanup(IDL_KW_CLEAN);
 

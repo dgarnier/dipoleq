@@ -328,7 +328,7 @@ int main(int argc, char **argv)
 
 	printf("\n		Finished at %s.\n", td->Stop);
 	fprintf(LogFile, "\n		Finished at %s.\n", td->Stop);
-	free_Tokamak(td);
+	free_Tokamak(td, TRUE);
 
 	fclose(LogFile);
 

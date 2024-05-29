@@ -151,7 +151,7 @@ void          init_Tokamak(TOKAMAK * td)
 		td->Measures[i] = NULL;
 }
 
-void          free_Tokamak(TOKAMAK * td)
+void          free_Tokamak(TOKAMAK * td, int full)
 {
 	int           i, num_subshells = 0;
 	int           nmax = td->PsiGrid->Nsize;
@@ -202,7 +202,7 @@ void          free_Tokamak(TOKAMAK * td)
 	if (td->SValues)
 		free_dvector(td->SValues, 1, td->NumUnkns);
 
-	if (td)
+	if (full && td)
 		free(td);
 }
 

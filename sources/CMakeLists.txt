@@ -121,6 +121,11 @@ endif()
 
 add_library(DipolEqLib STATIC EXCLUDE_FROM_ALL ${dipoleq_SOURCES})
 
+if (LINUX AND (DEBUG_MODE OR SANITIZER_ENABLED))
+    target_link_libraries(DipolEqLib PUBLIC --fsanitize=address)
+    target_compile_definitions(DipolEqLib PUBLIC --fsanaitize=address)
+endif()
+
 # TSPACK?
 # target_compile_definitions(DipolEqLib PRIVATE _USE_TSPACK_=1)
 

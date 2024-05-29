@@ -23,7 +23,6 @@ add_custom_command(TARGET pydipoleq POST_BUILD
         COMMENT "Copying pybind11 module to dipoleq\n"
 )
 
-
 add_custom_command(TARGET pydipoleq POST_BUILD 
     COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dev/stubgen.py 
             $<TARGET_FILE:pydipoleq>

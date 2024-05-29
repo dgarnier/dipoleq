@@ -20,7 +20,7 @@ extern "C" {
 
 #ifndef __GNUC__
 
-#pragma unused( farg1, farg2, darg1, darg2, larg1, larg2, iarg1, iarg2)
+// #pragma unused( farg1, farg2, darg1, darg2, larg1, larg2, iarg1, iarg2)
 static float  farg1 , farg2 ;
 static double darg1 , darg2 ;
 static long   larg1 , larg2 ;

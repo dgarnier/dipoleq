@@ -41,6 +41,7 @@
 
 
 namespace py = pybind11;
+using namespace pybind11::literals;
 
 // make a minimalistic "C" type binding for dipoleq
 // not very pythonic, and not very pybind11.
@@ -264,18 +265,16 @@ PYBIND11_MODULE(core, m) {
     // pybind11-stubgen can't handle forward declarations
     static Logger logger;                    // initialize the logfile
     m.doc() = "Python bindings for DipolEq"; // optional module docstring
-    m.def("__version__", []() { return VERSION; }, py::return_value_policy::copy);
-    m.def("__version_info__", []() {
-        using namespace pybind11::literals;
-        py::dict version_info(
+    py::object __version__ = py::cast(VERSION_FULL);
+    m.attr("__version__") = __version__;
+    py::object __version_info__ = py::dict(
             "version"_a=VERSION,
             "version_full"_a=VERSION_FULL,
             "git_commit"_a=GIT_COMMIT,
             "git_short_hash"_a=GIT_SHORT_HASH,
             "git_distance"_a=GIT_DISTANCE
         );
-        return version_info;})
-    ;
+    m.attr("__version_info__")=__version_info__;
     py::class_<DMatrixView>(m, "MatrixView", py::buffer_protocol())
         .def_buffer(&DMatrixView::get_buffer_info)
     ;
@@ -741,10 +740,12 @@ PYBIND11_MODULE(core, m) {
 
     // and finally the Machine!
     py::class_<TOKAMAK>(m, "Machine")
-        .def(py::init(&new_Tokamak), "Return new Machine struct",
+        .def(py::init(&new_Tokamak),  "Return new Machine struct",
             py::return_value_policy::reference)
         .def(py::init(&FileInput), "Initialize Machine with a file",
             py::return_value_policy::reference)
+        .def("__del__", [](TOKAMAK& self) {free_Tokamak(&self, FALSE);},
+            "Free the machine") // this causes double free errors
         .def("init", [](TOKAMAK& self) {init_Tokamak(&self);},
             "Initialize Machine")
         .def("set_coil_NumSubCoils",
