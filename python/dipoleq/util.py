@@ -2,6 +2,8 @@
 
 """
 
+from contextlib import contextmanager
+
 try:
     from enum import StrEnum
 except ImportError:  # python < 3.11
@@ -21,6 +23,48 @@ import numpy as np
 #    Measures, Coils, Shells, Separatrices, Limiters, SubCoils, SubShells,
 #    ModelType, MeasType, CircleType, VectorView, MatrixView, IMatrixView
 # )
+
+
+@contextmanager
+def redirect_stdout(
+    filename: str | None = None, stdout: bool = True, stderr: bool = True
+):
+    """Redirect stdout to a file, or to a pipe that can be listened to"""
+
+    import os
+    import sys
+
+    if filename:
+        writefd = os.open(filename, os.O_RDWR)
+        read_buffer = open(filename, 1000, "utf-8")
+
+    else:
+        readfd, writefd = os.pipe()
+        read_buffer = os.fdopen(readfd, encoding="utf-8", buffering=1000)
+
+    if stdout:
+        sys.stdout.flush()
+        stdout_fd_save = os.dup(sys.stdout.fileno())
+        os.dup2(writefd, sys.stdout.fileno())
+
+    if stderr:
+        sys.stderr.flush()
+        stderr_fd_save = os.dup(sys.stderr.fileno())
+        os.dup2(writefd, sys.stderr.fileno())
+
+    yield read_buffer  # one could read the pipe of output
+
+    if stderr:
+        os.dup2(stderr_fd_save, sys.stderr.fileno())
+        os.close(stderr_fd_save)  # closed the saved copy
+        # sys.stderr = os.fdopen(sys.stderr.fileno(), 'w+', -1, 'utf-8')
+    if stdout:
+        os.dup2(stdout_fd_save, sys.stdout.fileno())
+        os.close(stdout_fd_save)  # close the saved copy
+        # sys.stdout = os.fdopen(old_stdout_fd, 'w+', -1, 'utf-8')
+
+    os.close(writefd)
+    read_buffer.close()  # also closes readfd
 
 
 def _props(x: Any) -> dict[str, Any]:

@@ -69,8 +69,8 @@ def model_type_literals(mts: list[ModelType]) -> type:
 
 
 class PlasmaModelBaseModel(BaseModel):
-    Type: Any = Field(validation_alias=AliasChoices(
-        "Type", "ModelType"))
+    Type: Any = Field(validation_alias=AliasChoices("Type", "ModelType"))
+
     @field_validator("Type", mode="after")
     @classmethod
     def check_model_type(cls, v: Any) -> Any:
@@ -239,7 +239,7 @@ class LimiterIn(BaseModel):
     Name: str | None
     R1: float = Field(validation_alias=AliasChoices("R1", "X1"))
     Z1: float
-    R2: float = Field(validation_alias=AliasChoices("R2","X2"))
+    R2: float = Field(validation_alias=AliasChoices("R2", "X2"))
     Z2: float
     Enabled: int | None = True
 
@@ -256,15 +256,11 @@ class LimiterIn(BaseModel):
 
 class SeparatrixIn(BaseModel):
     Name: str | None
-    R1: float = Field(default=0.0,
-                      validation_alias=AliasChoices("R1", "X1"))
+    R1: float = Field(default=0.0, validation_alias=AliasChoices("R1", "X1"))
     Z1: float
-    R2: float = Field(default=0.0, 
-                      validation_alias=AliasChoices("R2", "X2"))
+    R2: float = Field(default=0.0, validation_alias=AliasChoices("R2", "X2"))
     Z2: float
-    RC: float = Field(default=0.0, 
-                      validation_alias=AliasChoices("RC", "XC")
-    )
+    RC: float = Field(default=0.0, validation_alias=AliasChoices("RC", "XC"))
     ZC: float = 0.0
     Enabled: bool | None = True
 
@@ -299,14 +295,8 @@ class CoilIn(BaseModel):
     Name: str | None = None
     Enabled: bool | None = True
     InitialCurrent: float
-    R: float | None = Field(
-        default=None,
-        validation_alias=AliasChoices("R", "X")
-    )
-    dR: float | None = Field(
-        default=None,
-        validation_alias=AliasChoices("dR", "dX")
-    )
+    R: float | None = Field(default=None, validation_alias=AliasChoices("R", "X"))
+    dR: float | None = Field(default=None, validation_alias=AliasChoices("dR", "dX"))
     Z: float | None = None
     dZ: float | None = None
     NumSubCoils: int | None = None

@@ -1,6 +1,7 @@
 # Test dipoleq with basic LDX beta = 1 equilibrium
 import os
-from os import PathLike
+
+# from os import PathLike
 from pathlib import Path
 
 from pytest import approx, fixture

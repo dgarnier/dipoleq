@@ -75,13 +75,14 @@ def iterate_solution(m: Machine, makeFit: bool = False):
             break
 
 
-def solve(m: Machine):
+def _solve(m: Machine) -> None:
     """Solve the Grad-Shafranov equation for the machine m
 
     Args:
         m (Machine): Complete machine object with all the necessary
             parameters set.
     """
+
     m.set_start_time()
 
     # don't use restart files, this isn't 1993
@@ -97,3 +98,15 @@ def solve(m: Machine):
 
     m.get_plasma_parameters()
     m.set_stop_time()
+
+    return
+
+
+def solve(m: Machine, quiet=True):
+    from .util import redirect_stdout
+
+    if quiet:
+        with redirect_stdout():
+            _solve(m)
+    else:
+        _solve(m)

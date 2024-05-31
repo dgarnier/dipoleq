@@ -43,8 +43,7 @@ def generate_stubs(module_fp: str, stub_output_dir: str):
 
     parser = stub_parser_from_args(args)
     module = parser.handle_module(
-        QualifiedName.from_str(module_name), 
-        importlib.import_module(module_name)
+        QualifiedName.from_str(module_name), importlib.import_module(module_name)
     )
     parser.finalize()
     sys.path = old_syspath
