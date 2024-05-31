@@ -1,5 +1,4 @@
-"""DipolEq equilibrium solver
-"""
+"""DipolEq equilibrium solver"""
 
 import tempfile
 from argparse import ArgumentParser
@@ -36,6 +35,13 @@ def main():
         default=False,
         help="Plot the equilibrium",
     )
+    parser.add_argument(
+        "--quiet",
+        "-q",
+        action="store_true",
+        default=False,
+        help="Suppress INFO statements while solving",
+    )
     args = parser.parse_args()
 
     input_file = Path(args.input_file).absolute()
@@ -55,10 +61,9 @@ def main():
     odict = {output.suffix: output for output in absouts}
 
     with tempfile.TemporaryDirectory(prefix=".DipEqTmp") as tmpdir:
-
         m = Machine.from_file(input_file)
         m.LHname, m.MGname, m.RSname = "", "", ""  # no restart files
-        m.solve()
+        m.solve(quiet=args.quiet)
         tmp_h5 = Path(tmpdir) / "dipEq.h5"
         m.to_hdf5(tmp_h5)
         h5togeqdsk(tmp_h5, plot=args.plot)

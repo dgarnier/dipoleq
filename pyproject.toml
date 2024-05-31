@@ -5,9 +5,7 @@ requires = [
     "pybind11",
     "pybind11-stubgen",
     "numpy",
-#    "cibuildwheel",
     "setuptools_scm",
-    "wheel",
     "build",
 ]
 build-backend = "scikit_build_core.build"
@@ -51,6 +49,7 @@ wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
        "numpy", "pybind11", "pyyaml", "pybind11-stubgen",
        "toml-to-requirements", "pre-commit"]
+docs = ["myst-parser", "sphinx >=4.0", "sphinx-autodoc-typehints", "sphinx-copybutton"]
 omas = ["omas"]
 
 [tool.scikit-build]

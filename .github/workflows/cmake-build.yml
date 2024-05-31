@@ -1,6 +1,10 @@
 name: Build with CMake
 on: [push, pull_request]
 
+concurrency:                                                                                                                                                                                                                                  
+    group: ${{ github.workflow }}-${{ github.ref }}                                                                                                                                                                                             
+    cancel-in-progress: true    
+
 jobs:
     cmake_build_on_ubuntu:
         runs-on: ubuntu-latest
