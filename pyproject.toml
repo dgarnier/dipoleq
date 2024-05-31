@@ -49,7 +49,7 @@ test = ["pytest"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
        "numpy", "pybind11", "pyyaml", "pybind11-stubgen",
-       "toml-to-requirements"]
+       "toml-to-requirements", "pre-commit"]
 omas = ["omas"]
 
 [tool.scikit-build]
