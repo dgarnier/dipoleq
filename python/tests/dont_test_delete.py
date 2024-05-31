@@ -9,7 +9,7 @@ from pathlib import Path
 
 from pytest import approx, fixture
 
-from dipoleq import _Machine, Machine
+from dipoleq import Machine, _Machine
 
 data_dir = Path(os.path.dirname(os.path.realpath(__file__)))
 
@@ -21,7 +21,7 @@ def test_machine_delete():
     m._free()
     del m
     assert True
-    
+
 
 def test_machine_delete2():
     # see if we get the right current
@@ -30,7 +30,8 @@ def test_machine_delete2():
     m._free()
     del m
     assert True
-    
+
+
 if __name__ == "__main__":
     test_machine_delete()
     test_machine_delete2()

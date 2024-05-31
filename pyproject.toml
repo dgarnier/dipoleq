@@ -38,6 +38,7 @@ dependencies = [
   "typing-extensions",
   "h5py",
   "freeqdsk",
+  "wurlitzer",   # quiet down the c-code
 ]
 
 [project.scripts]
@@ -82,7 +83,7 @@ version_file = "python/dipoleq/_version.py"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-pythonpath = ["python"] # this confuses pytest between 
+# pythonpath = ["python"] # this confuses pytest between 
 # the local copy and the installed one.. need to use
 # the installed one for ciwheelbuild
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
