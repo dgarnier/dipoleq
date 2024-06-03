@@ -37,7 +37,7 @@ if (BUILD_PYTHON_BINDINGS)
     find_package(Python GLOBAL REQUIRED 
         COMPONENTS 
             Interpreter Development.Module NumPy 
-            ${SKBUILD_SABI_COMPONENTS}
+            ${SKBUILD_SABI_COMPONENT}
     )
 endif()
 

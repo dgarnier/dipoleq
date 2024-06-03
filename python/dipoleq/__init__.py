@@ -15,7 +15,7 @@ from typing import Any
 from typing_extensions import Self
 
 from . import core, file_input, input_validator, solver, util
-from ._version import __version__, __version_tuple__  # noqa: F401
+from ._version import __version__, __version_tuple__
 from .core import Machine as _Machine
 from .input_validator import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
@@ -82,10 +82,10 @@ class Machine(_Machine):
         filename = str(filename)
         if p.suffix == ".in":
             return cls.from_fileinput(filename)
-        elif p.suffix == ".yaml":
+        if p.suffix == ".yaml":
             return cls.from_yaml(filename)
-        else:
-            raise ValueError(f"Unknown file type: {filename}")
+
+        raise ValueError(f"Unknown file type: {filename}")
 
     @classmethod
     def from_input_data(cls, valid_input: MachineIn) -> Self:
@@ -93,9 +93,9 @@ class Machine(_Machine):
         valid_input.initalize_machine(m)
         return m
 
-    def solve(self) -> None:
+    def solve(self, quiet: bool = True) -> None:
         """Do the thing!"""
-        solver.solve(self)
+        solver.solve(self, quiet=quiet)
 
     def diff(self, other: _Machine, verbose: bool = False) -> bool:
         """display the differences between two machines
@@ -109,11 +109,10 @@ class Machine(_Machine):
         """
         return util.machine_diff(self, other, verbose=verbose)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, _Machine):
             return False
-        else:
-            return not self.diff(other)
+        return not self.diff(other)
 
     def to_hdf5(self, filename: str | Path | None) -> None:
         """Save the machine data to an HDF5 file

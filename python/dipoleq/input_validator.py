@@ -6,12 +6,21 @@ from __future__ import annotations
 
 from functools import reduce
 from itertools import chain
-from typing import Annotated, Any, Literal, TypeVar, Union
+from typing import Annotated, Any, Generic, Literal, TypeAlias, TypeVar, cast
 
-from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    Field,
+    GetCoreSchemaHandler,
+    field_validator,
+    model_validator,
+)
+from pydantic_core import core_schema
 from typing_extensions import Self
 
 from .core import (
+    CircleType,
     Coil,
     Limiter,
     Machine,
@@ -27,6 +36,44 @@ from .core import (
 )
 
 MU0 = 4.0e-7 * 3.14159265358979323846
+
+
+# deal with pybind11 enum classes
+_T = TypeVar("_T", ModelType, MeasType, CircleType)
+
+
+class PyBindEnumAnnotation(Generic[_T]):
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source: type[Any], handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        if source in [
+            ModelType,
+            MeasType,
+            CircleType,
+        ]:  # this line can't seem to not use specific choices here
+
+            def validate(val: Any) -> _T:
+                if isinstance(val, source):
+                    return cast(_T, val)
+                if isinstance(val, str):
+                    if val.isnumeric():
+                        return cast(_T, source(int(val)))
+                    return cast(_T, source.__members__[val])
+                if isinstance(val, int):
+                    return cast(_T, source(val))
+                raise ValueError(f"{val} is not convertible to {source}")
+
+            return core_schema.no_info_after_validator_function(
+                validate,
+                core_schema.enum_schema(source, list(source.__members__.values())),
+            )
+        return handler.generate_schema(source)
+
+
+MeasTypeA: TypeAlias = Annotated[MeasType, PyBindEnumAnnotation]
+ModelTypeA: TypeAlias = Annotated[ModelType, PyBindEnumAnnotation]
+CircleTypeA: TypeAlias = Annotated[CircleType, PyBindEnumAnnotation]
 
 
 class PsiGridIn(BaseModel):
@@ -58,43 +105,45 @@ class PsiGridIn(BaseModel):
             pg.UnderRelax2 = self.UnderRelax2
 
 
-def model_type_literals(mts: list[ModelType]) -> type:
+def model_type_literals(mts: list[ModelTypeA]) -> TypeAlias:
     """make a list of literals for the model types both name and value"""
     lists_of_vals: list[list[str | int]] = [
         [mt.value, mt.name, str(mt.value)] for mt in mts
     ]
-    list_of_vals: list[str | int] = [v for v in chain.from_iterable(lists_of_vals)]
-    list_of_literals: list[type] = [Literal[v] for v in list_of_vals]
-    return reduce(lambda a, b: Union[a, b], list_of_literals)
+    list_of_vals: list[str | int] = list(chain.from_iterable(lists_of_vals))
+    list_of_literals: list[TypeAlias] = [Literal[v] for v in list_of_vals]
+    return reduce(lambda a, b: a | b, list_of_literals)
+    # return Union[list_of_literals]
 
 
 class PlasmaModelBaseModel(BaseModel):
-    Type: Any = Field(validation_alias=AliasChoices(
-        "Type", "ModelType"))
+    Type: ModelTypeA = Field(validation_alias=AliasChoices("Type", "ModelType"))
+
     @field_validator("Type", mode="after")
     @classmethod
     def check_model_type(cls, v: Any) -> Any:
         if isinstance(v, str):
             if v.isnumeric():
-                return ModelType(int(v))
-            return ModelType.__members__[v]
+                return ModelTypeA(int(v))
+            return ModelTypeA.__members__[v]
         if isinstance(v, int):
-            return ModelType(v)
+            return ModelTypeA(v)
         return v
 
 
 OLD_MODELS = [
-    ModelType.Std,
-    ModelType.IsoNoFlow,
-    ModelType.IsoFlow,
-    ModelType.AnisoNoFlow,
-    ModelType.AnisoFlow,
+    ModelTypeA.Std,
+    ModelTypeA.IsoNoFlow,
+    ModelTypeA.IsoFlow,
+    ModelTypeA.AnisoNoFlow,
+    ModelTypeA.AnisoFlow,
 ]
-PLASMA_BASE_MODEL_TYPES = model_type_literals(OLD_MODELS)
+PLASMA_BASE_MODEL_TYPES: TypeAlias = model_type_literals(OLD_MODELS)
 
 
 class PlasmaModelOld(PlasmaModelBaseModel):
-    Type: PLASMA_BASE_MODEL_TYPES = Field(alias="ModelType")
+    Type: PLASMA_BASE_MODEL_TYPES
+    # = Field(validation_alias=AliasChoices("Type", "ModelType"))
     G2pTerms: int | None
     HTerms: int | None
     PpTerms: int | None
@@ -150,11 +199,11 @@ class PlasmaModelOld(PlasmaModelBaseModel):
 
 # python < 3.11 can't do argument unpacking in a literal
 # so we have to do it manually
-LTS = model_type_literals([ModelType.DipoleStd])
+LTS = model_type_literals([ModelTypeA.DipoleStd])
 
 
 class CDipoleStdIn(PlasmaModelBaseModel):
-    Type: LTS = Field(ModelType.DipoleStd, alias="ModelType")
+    Type: LTS  # = Field(validation_alias=AliasChoices("Type", "ModelType"))
     RPeak: float | None
     ZPeak: float | None
     PsiPeak: float | None
@@ -170,14 +219,14 @@ class CDipoleStdIn(PlasmaModelBaseModel):
             pm.model_input(key, str(getattr(self, key)), "")
 
 
-LDS = model_type_literals([ModelType.DipoleIntStable])
-DIPOLE_INTSTABLE_IDS = Annotated[
-    LDS, Field(ModelType.DipoleIntStable, alias="ModelType")
-]
+LDS = model_type_literals([ModelTypeA.DipoleIntStable])
+# DIPOLE_INTSTABLE_IDS = Annotated[
+#    LDS #, # Field(validation_alias=AliasChoices("Type", "ModelType"))
+# ]
 
 
 class CDipoleIntStableIn(PlasmaModelBaseModel):
-    Type: DIPOLE_INTSTABLE_IDS
+    Type: LDS  # DIPOLE_INTSTABLE_IDS
     RPeak: float | None
     ZPeak: float | None
     PEdge: float | None
@@ -193,7 +242,7 @@ class CDipoleIntStableIn(PlasmaModelBaseModel):
 
 
 PlasmaModel = Annotated[
-    Union[PlasmaModelOld, CDipoleStdIn, CDipoleIntStableIn], Field(discriminator="Type")
+    PlasmaModelOld | CDipoleStdIn | CDipoleIntStableIn, Field(discriminator="Type")
 ]
 
 
@@ -207,13 +256,6 @@ class PlasmaIn(BaseModel):
     PsiXmax: float | None
     Jedge: float | None
     Model: PlasmaModel
-
-    # @field_validator('ModelType')
-    # @classmethod
-    # def check_model_type(cls, v: Any) -> Any:
-    #    if isinstance(v, int):
-    #        return ModelType(v)
-    #    return v
 
     def do_init(self, pl: Plasma) -> None:
         pl.B0 = self.B0
@@ -239,7 +281,7 @@ class LimiterIn(BaseModel):
     Name: str | None
     R1: float = Field(validation_alias=AliasChoices("R1", "X1"))
     Z1: float
-    R2: float = Field(validation_alias=AliasChoices("R2","X2"))
+    R2: float = Field(validation_alias=AliasChoices("R2", "X2"))
     Z2: float
     Enabled: int | None = True
 
@@ -256,15 +298,11 @@ class LimiterIn(BaseModel):
 
 class SeparatrixIn(BaseModel):
     Name: str | None
-    R1: float = Field(default=0.0,
-                      validation_alias=AliasChoices("R1", "X1"))
+    R1: float = Field(default=0.0, validation_alias=AliasChoices("R1", "X1"))
     Z1: float
-    R2: float = Field(default=0.0, 
-                      validation_alias=AliasChoices("R2", "X2"))
+    R2: float = Field(default=0.0, validation_alias=AliasChoices("R2", "X2"))
     Z2: float
-    RC: float = Field(default=0.0, 
-                      validation_alias=AliasChoices("RC", "XC")
-    )
+    RC: float = Field(default=0.0, validation_alias=AliasChoices("RC", "XC"))
     ZC: float = 0.0
     Enabled: bool | None = True
 
@@ -299,14 +337,8 @@ class CoilIn(BaseModel):
     Name: str | None = None
     Enabled: bool | None = True
     InitialCurrent: float
-    R: float | None = Field(
-        default=None,
-        validation_alias=AliasChoices("R", "X")
-    )
-    dR: float | None = Field(
-        default=None,
-        validation_alias=AliasChoices("dR", "dX")
-    )
+    R: float | None = Field(default=None, validation_alias=AliasChoices("R", "X"))
+    dR: float | None = Field(default=None, validation_alias=AliasChoices("dR", "dX"))
     Z: float | None = None
     dZ: float | None = None
     NumSubCoils: int | None = None
@@ -325,11 +357,8 @@ class CoilIn(BaseModel):
         if not self.R or self.R < 0.0:
             if not self.SubCoils:
                 raise ValueError("Coil must have subcoils, or defined limit points")
-        else:
-            if self.dR == 0.0 or self.dZ == 0.0:
-                raise ValueError(
-                    "For coils without subcoils, dR and dZ must be defined"
-                )
+        elif self.dR == 0.0 or self.dZ == 0.0:
+            raise ValueError("For coils without subcoils, dR and dZ must be defined")
         return self
 
     def do_init(self, coil: Coil, psiGrid: PsiGrid) -> None:
@@ -349,11 +378,10 @@ class CoilIn(BaseModel):
         # these should be allocated earlier by machine init
         if self.SubCoils:
             self.NumSubCoils = len(self.SubCoils)
-        if coil.NumSubCoils != self.NumSubCoils:
-            if self.NumSubCoils:
-                coil.NumSubCoils = self.NumSubCoils
+        if coil.NumSubCoils != self.NumSubCoils and self.NumSubCoils:
+            coil.NumSubCoils = self.NumSubCoils
         if self.SubCoils:
-            for selfsc, subcoil in zip(self.SubCoils, coil.SubCoils):
+            for selfsc, subcoil in zip(self.SubCoils, coil.SubCoils, strict=False):
                 selfsc.do_init(subcoil)
         if self.dR and self.dR > 0.0:
             coil.compute_SubCoils(psiGrid)
@@ -361,8 +389,8 @@ class CoilIn(BaseModel):
 
 class SubShellIn(BaseModel):
     Name: str | None
-    Current: float | None = 0.0
-    R: float = Field(alias="X")
+    Current: float = 0.0
+    R: float = Field(validation_alias=AliasChoices("R", "X"))
     Z: float
 
     def do_init(self, sshell: SubShell) -> None:
@@ -389,20 +417,20 @@ class ShellIn(BaseModel):
                 f"NumSubShells {self.NumSubShells} does not match"
                 f" the number of subshells {shell.NumSubShells}"
             )
-        for selfss, subshell in zip(self.SubShells, shell.SubShells):
+        for selfss, subshell in zip(self.SubShells, shell.SubShells, strict=False):
             selfss.do_init(subshell)
 
 
 class MeasureIn(BaseModel):
     Name: str | None
     # Enabled: bool | None = True
-    Type: str
+    type: MeasTypeA
 
     def do_init(self, meas: Measure) -> None:
         if self.Name:
             meas.Name = self.Name
         # meas.Enabled = self.Enabled  # no such field
-        meas.Type = self.Type
+        meas.Type = self.Type  # this is already converted during validation
 
 
 class MachineIn(BaseModel):
@@ -413,9 +441,9 @@ class MachineIn(BaseModel):
     Info: str | None = "DipolEQ Equilibrium"
     Oname: str | None
     Iname: str | None
-    MGname: str | None = ""
-    LHname: str | None = ""
-    RSname: str | None = ""
+    MGname: str = ""
+    LHname: str = ""
+    RSname: str = ""
     RestartStatus: bool | None = False
     RestartUnkns: bool | None = False
     LHGreenStatus: bool | None = False
@@ -485,6 +513,9 @@ class MachineIn(BaseModel):
 
         if not self.Oname:
             self.Oname = self.Name
+
+        if not self.Iname:
+            self.Iname = self.Name
 
         return self
 
@@ -565,7 +596,7 @@ class MachineIn(BaseModel):
         if self.Measures:
             for i, meas in enumerate(self.Measures):
                 if not m.Measures[i]:
-                    m.Measures[i] = m.Measures.new_meas(MeasType(meas.Type))
+                    m.Measures[i] = m.Measures.new_meas(meas.Type)
                 meas.do_init(m.Measures[i])
 
         if self.Shells:

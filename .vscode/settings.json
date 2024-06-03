@@ -85,5 +85,9 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.testing.pytestPath": 
+    "python.testing.pytestPath": "python",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/python"
+    ],
+    "python.testing.cwd": "",
 }

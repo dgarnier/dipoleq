@@ -21,3 +21,4 @@ wheelhouse
 
 python/dipoleq/_version.py
 /beta*
+docs/_build

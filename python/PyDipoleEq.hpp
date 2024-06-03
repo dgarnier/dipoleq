@@ -56,8 +56,8 @@ enum class CircleType {
 class DMatrixView {
 public:
     // matrix is actually nsize+1 x nsize+1
-    DMatrixView(size_t nsize, double ** data) : m_size(nsize+1), m_data(data) {};
-    double& operator()(size_t i, size_t j) { return m_data[i][j]; };
+    DMatrixView(std::size_t nsize, double ** data) : m_size(nsize+1), m_data(data), m_dims(2, nsize+1) {};
+    double& operator()(std::size_t i, std::size_t j) { return m_data[i][j]; };
     py::buffer_info get_buffer_info() {
         return py::buffer_info(
             m_data[0],                             /* Pointer to buffer */
@@ -69,12 +69,18 @@ public:
               sizeof(double) * m_size }   /* nrutil is fortran order */
         );
     }
-    static py::object create(size_t nsize, double ** data) {
+
+    static py::object create(std::size_t nsize, double ** data) {
         if (data == NULL)
             return py::none();
         return py::cast(new DMatrixView(nsize, data));
     }
+    const std::vector<std::size_t>& Shape() const {
+        return m_dims;
+    }
+    
 private:
+    std::vector<std::size_t> m_dims;
     size_t m_size;
     double ** m_data;
 };

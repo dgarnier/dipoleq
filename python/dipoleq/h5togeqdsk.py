@@ -4,14 +4,14 @@
 
 from os import PathLike
 from pathlib import Path
-from typing import Any, Dict, Union
 
 import h5py
 import numpy as np
 from freeqdsk import geqdsk
+from numpy.typing import ArrayLike, NDArray
 
 
-def dipoleq_lim_to_eqdsk(lim):
+def dipoleq_lim_to_eqdsk(lim: NDArray[np.float64]) -> NDArray[np.float64]:
     """lim is a 3D array with shape (nlim, 2, 2)
     with a start and end point for each limiter
     in this we will assume that the start is the end of the last"""
@@ -22,8 +22,8 @@ def dipoleq_lim_to_eqdsk(lim):
 
 
 def dipoleq_h5f_to_freeqdsk(
-    h5f: h5py.File, COCOS: int = 3, NormalizeAtAxis: bool = True
-) -> tuple[dict[str, int | float | np.ndarray], str]:
+    h5f: h5py.Group, COCOS: int = 3, NormalizeAtAxis: bool = True
+) -> tuple[dict[str, int | float | NDArray[np.float64]], str]:
     """Extract geqdsk data from a dipoleq h5 file"""
 
     # future version of geqdsk will have type hints
@@ -42,9 +42,9 @@ def dipoleq_h5f_to_freeqdsk(
         scale_psi = -scale_psi
 
     # commputational domain
-    Grid = h5f["/Grid"]
-    Flux = h5f["/FluxFunctions"]
-    eq0d = h5f["/Scalars"]
+    Grid: h5f.Group = h5f["/Grid"]
+    Flux: h5f.Group = h5f["/FluxFunctions"]
+    eq0d: h5f.Group = h5f["/Scalars"]
 
     R = Grid["R"][()]
     Z = Grid["Z"][()]
@@ -65,9 +65,9 @@ def dipoleq_h5f_to_freeqdsk(
     gdata["rmagx"] = eq0d["RMagX"][()]
     gdata["zmagx"] = eq0d["ZMagX"][()]
     # psi values
-    PsiFCFS = eq0d["PsiFCFS"][()] * scale_psi
-    PsiLCFS = eq0d["PsiLCFS"][()] * scale_psi
-    PsiMagX = eq0d["PsiMagX"][()] * scale_psi
+    PsiFCFS: float = eq0d["PsiFCFS"][()] * scale_psi
+    PsiLCFS: float = eq0d["PsiLCFS"][()] * scale_psi
+    PsiMagX: float = eq0d["PsiMagX"][()] * scale_psi
 
     # 1D values
     # geqdsk assumes that the radial resolution is the same
@@ -81,13 +81,13 @@ def dipoleq_h5f_to_freeqdsk(
     else:
         psi = np.linspace(PsiFCFS, PsiLCFS, len(R))
 
-    def regrid(y):
+    def regrid(y: ArrayLike) -> np.ndarray:
         return np.interp(psi, psi1D, y)
 
     gdata["simagx"] = psi[0]
     gdata["sibdry"] = psi[-1]
     gdata["fpol"] = regrid(Flux["Gpsi"][()] * Fscale)
-    gdata["pres"] = regrid(Flux["ppsi"][()])
+    gdata["pres"] = regrid(Flux["ppsi"][()])  # codespell:ignore pres
     gdata["ffprime"] = regrid(Flux["G2prime"][()] * Fscale / scale_psi)
     gdata["pprime"] = regrid(Flux["pprime"][()] / scale_psi)
     gdata["qpsi"] = regrid(Flux["qpsi"][()])
@@ -98,8 +98,8 @@ def dipoleq_h5f_to_freeqdsk(
     # should be in Wb/rad
 
     # Boundary values
-    lcfs = h5f["/Boundaries/LCFS"][()]
-    fcfs = h5f["/Boundaries/FCFS"][()]
+    lcfs: ArrayLike = h5f["/Boundaries/LCFS"][()]
+    fcfs: ArrayLike = h5f["/Boundaries/FCFS"][()]
     gdata["rbdry"] = lcfs[:, 0]
     gdata["zbdry"] = lcfs[:, 1]
     gdata["ribdry"] = fcfs[:, 0]
@@ -119,7 +119,8 @@ def dipoleq_h5f_to_freeqdsk(
     return (gdata, oname)
 
 
-def plot_h5eq(h5eq):
+def plot_h5eq(h5eq: h5py.Group) -> None:
+    """Plot the equilibrium from a dipoleq h5 group"""
     try:
         import matplotlib.pyplot as plt
     except ImportError:
@@ -148,18 +149,19 @@ def write_geqdsk(
     filename: str | PathLike[str],
     oname: str,
 ) -> None:
-    with open(filename, "w") as fh:
+    path = Path(filename)
+    with path.open("w") as fh:
         geqdsk.write(gdata, fh, label=f"DipEq:{oname}")
 
 
 def write_fcfs_csv(h5path: Path, gdata: dict[str, int | float | np.ndarray]) -> None:
     stem = h5path.stem
     parent = h5path.parent
-    with open(parent / f"{stem}_fcfs.csv", "w", encoding="utf-8") as fh:
+    with (parent / f"{stem}_fcfs.csv").open("w", encoding="utf-8") as fh:
         fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
         np.savetxt(fh, fcfs, delimiter=",", header="r,z")
 
-    with open(parent / f"{stem}_flim.csv", "w", encoding="utf-8") as fh:
+    with (parent / f"{stem}_flim.csv").open("w", encoding="utf-8") as fh:
         flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
         np.savetxt(fh, flim, delimiter=",", header="r,z")
 

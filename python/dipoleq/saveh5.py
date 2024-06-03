@@ -1,15 +1,6 @@
 """Save the solved equilibrium data to an HDF5 file
-    this should be identical to whats in the c code
+this should be identical to what's in the c code
 """
-
-try:
-    from enum import StrEnum
-except ImportError:  # python < 3.11
-    from enum import Enum
-
-    class StrEnum(str, Enum):
-        pass
-
 
 from pathlib import Path
 
@@ -20,6 +11,7 @@ from h5py import Dataset, File, Group
 from .core import IMatrixView, Machine, MatrixView
 from .core import ModelType as MT
 from .core import VectorView
+from .ds_names import DS_NAME, GROUP
 
 # github copilot translation from C++ to Python
 
@@ -27,98 +19,43 @@ from .core import VectorView
 MU0 = 4.0e-7 * 3.14159265358979323846
 
 
-class GROUP(StrEnum):
-    GRID = "/Grid"
-    BOUND = "/Boundaries"
-    FLUX = "/FluxFunctions"
-    SCALAR = "/Scalars"
-
-
-class DS_NAME(StrEnum):
-    CUR_NAME = "Current"
-    PSI_NAME = "Psi"
-    RES_NAME = "Residuals"
-    DIMX_NAME = "R"
-    DIMZ_NAME = "Z"
-    PSIX_NAME = "PsiNorm"
-    MODB_NAME = "B2"
-    BpX_NAME = "Bp_R"
-    BpZ_NAME = "Bp_Z"
-    TFLUX_NAME = "ToroidalFlux"
-    PRESS_NAME = "Pressure"
-    BETA_NAME = "Beta"
-    LCFS_NAME = "LCFS"
-    FCFS_NAME = "FCFS"
-    PSI_1D = "psi"
-    PRESS_1D = "ppsi"
-    G_1D = "Gpsi"
-    PP_1D = "pprime"
-    G2P_1D = "G2prime"
-    FFP_1D = "ffprime"
-    Q_1D = "qpsi"
-    V_1D = "Vprime"
-    VOL_1D = "Vpsi"
-    SHEAR_1D = "Shear"
-    WELL_1D = "Well"
-    B2_1D = "B2Ave"
-    BETA_1D = "BetaAve"
-    J_1D = "JAve"
-    BETAMAX_1D = "BetaMax"
-    R_BETAMAX_1D = "RBetaMax"
-    Z_BETAMAX_1D = "ZBetaMax"
-    B_BETAMAX_1D = "BBetaMax"
-    BMAX_1D = "BMax"
-    R_BMAX_1D = "RBMax"
-    Z_BMAX_1D = "ZBMax"
-    IP_0D = "Ip"
-    BT_0D = "B0"
-    R0_0D = "R0"
-    Z0_0D = "Z0"
-    R0Z0_0D = "R0Z0"
-    PSIAXIS_0D = "PsiMagX"
-    PSIFCFS_0D = "PsiFCFS"
-    PSILCFS_0D = "PsiLCFS"
-    RMAGX_0D = "RMagX"
-    ZMAGX_0D = "ZMagX"
-    OLIM_NAME = "olim"
-    ILIM_NAME = "ilim"
-
-
 ArrayLike = npt.ArrayLike | MatrixView | VectorView | IMatrixView
 
 
 def _save_0D(loc: Group, name: str, units: str, data: float) -> Dataset:
-    ds = loc.create_dataset(name, data=data)
+    ds = loc.create_dataset(name, data=data)  # type: ignore[arg-type]
     ds.attrs["UNITS"] = units
     return ds
 
 
-def _save_1D(loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike):
+def _save_1D(
+    loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike
+) -> Dataset:
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
     ds.attrs["UNITS"] = units
-    ds.dims[0].attach_scale(dim)
+    ds.dims[0].attach_scale(dim)  # type: ignore[attr-defined]
     return ds
 
 
 def _save_2D(
     loc: Group, name: str, units: str, scl_r: Dataset, scl_z: Dataset, data: ArrayLike
-):
+) -> Dataset:
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
     ds.attrs["UNITS"] = units
-    ds.dims[0].attach_scale(scl_r)
-    ds.dims[1].attach_scale(scl_z)
+    ds.dims[0].attach_scale(scl_r)  # type: ignore[attr-defined]
+    ds.dims[1].attach_scale(scl_z)  # type: ignore[attr-defined]
     return ds
 
 
-def save_flux_functions(flux: Group, m: Machine):
+def save_flux_functions(flux: Group, m: Machine) -> None:
     # create flux dimensions
     pl = m.Plasma
     if pl.PsiX_pr:  # if this exists the rest should too
         dimp = flux.create_dataset(DS_NAME.DIMX_NAME, data=pl.PsiX_pr)
         dimp.attrs["UNITS"] = "1"
-        dimp.make_scale("Normalized Magnetic Flux")
+        dimp.make_scale("Normalized Magnetic Flux")  # type: ignore[attr-defined]
 
         _save_1D(flux, DS_NAME.PSI_1D, "Wb", dimp, pl.Psi_pr)
         _save_1D(flux, DS_NAME.PRESS_1D, "Pa", dimp, pl.P_pr)
@@ -142,7 +79,7 @@ def save_flux_functions(flux: Group, m: Machine):
         _save_1D(flux, DS_NAME.Z_BMAX_1D, "m", dimp, pl.ZBMax_pr)
 
 
-def save_boundaries(loc: Group, m: Machine):
+def save_boundaries(loc: Group, m: Machine) -> None:
     """Create and save the LCFS and FCFS boundaries"""
     pg = m.PsiGrid
     lcfs_r, lcfs_z = pg.get_contour(1.0)
@@ -166,11 +103,15 @@ def save_boundaries(loc: Group, m: Machine):
         fcfs_ds.attrs["FORMAT"] = "F7.4"
 
 
-def save_limiters(loc: Group, m: Machine):
+def save_limiters(loc: Group, m: Machine) -> None:
     """Save the limiters"""
 
-    olim = np.array([[[l.R1, l.Z1], [l.R2, l.Z2]] for l in m.Limiters if l.Enabled > 0])
-    ilim = np.array([[[l.R1, l.Z1], [l.R2, l.Z2]] for l in m.Limiters if l.Enabled < 0])
+    olim = np.array(
+        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in m.Limiters if lim.Enabled > 0]
+    )
+    ilim = np.array(
+        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in m.Limiters if lim.Enabled < 0]
+    )
 
     olim_ds = loc.create_dataset(DS_NAME.OLIM_NAME, data=olim)
     olim_ds.attrs["UNITS"] = "m"
@@ -183,7 +124,7 @@ def save_limiters(loc: Group, m: Machine):
     ilim_ds.attrs["FORMAT"] = "F7.4"
 
 
-def save_to_hdf5(m: Machine, filename: str | Path | None = None):
+def save_to_hdf5(m: Machine, filename: str | Path | None = None) -> None:
     """Save the equilibrium data to an HDF5 file"""
     if filename is None:
         filename = m.Oname + ".h5"
@@ -195,7 +136,7 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None):
     R = np.array(pg.R)
     Z = np.array(pg.Z)
 
-    with File(filename, mode="w") as h5f:
+    with File(filename, "w") as h5f:  # type: ignore[call-arg, arg-type]
         # put some info into the file
         h5f.attrs["TITLE"] = "Equilibrium data from dipoleq"
         h5f.attrs["VERSION"] = "0.1"
@@ -210,10 +151,10 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None):
         # create grid dimensions
         dimr = grid.create_dataset(DS_NAME.DIMX_NAME, data=R)
         dimr.attrs["UNITS"] = "m"
-        dimr.make_scale("R")
+        dimr.make_scale("R")  # type: ignore[attr-defined]
         dimz = grid.create_dataset(DS_NAME.DIMZ_NAME, data=Z)
         dimz.attrs["UNITS"] = "m"
-        dimz.make_scale("Z")
+        dimz.make_scale("Z")  # type: ignore[attr-defined]
 
         # write the scalar grid data
         _save_0D(scal, DS_NAME.RMAGX_0D, "m", pg.RMagAxis)
@@ -244,7 +185,7 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None):
         _save_2D(grid, DS_NAME.BpZ_NAME, "T/m", dimr, dimz, Bz)
         _save_2D(grid, DS_NAME.TFLUX_NAME, "Wb/R0B0", dimr, dimz, pl.G)
 
-        match (pl.ModelType):
+        match pl.ModelType:
             case MT.Std | MT.DipoleIntStable | MT.DipoleStd:
                 _save_2D(
                     grid, DS_NAME.PRESS_NAME, "Pa", dimr, dimz, np.array(pl.Piso) / MU0

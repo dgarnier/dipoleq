@@ -5,9 +5,7 @@ requires = [
     "pybind11",
     "pybind11-stubgen",
     "numpy",
-#    "cibuildwheel",
     "setuptools_scm",
-    "wheel",
     "build",
 ]
 build-backend = "scikit_build_core.build"
@@ -38,6 +36,7 @@ dependencies = [
   "typing-extensions",
   "h5py",
   "freeqdsk",
+  "wurlitzer",   # quiet down the c-code
 ]
 
 [project.scripts]
@@ -48,8 +47,9 @@ dipoleq = "dipoleq.main_cli:main"
 test = ["pytest"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
-       "numpy", "pybind11", "pyyaml", "pybind11-stubgen",
-       "toml-to-requirements"]
+       "numpy", "numpy-stubs", "pybind11", "pyyaml", "pybind11-stubgen",
+       "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0"]
+docs = ["myst-parser", "sphinx >=4.0", "sphinx-autodoc-typehints", "sphinx-copybutton"]
 omas = ["omas"]
 
 [tool.scikit-build]
@@ -82,7 +82,7 @@ version_file = "python/dipoleq/_version.py"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-pythonpath = ["python"] # this confuses pytest between 
+# pythonpath = ["python"] # this confuses pytest between 
 # the local copy and the installed one.. need to use
 # the installed one for ciwheelbuild
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
@@ -112,15 +112,18 @@ archs = ["auto64"]
 MACOSX_DEPLOYMENT_TARGET = "10.15"
 
 [tool.ruff]
-src = ["src"]
+force-exclude = true  # make sure we exclude below when running pre-commit
+# src = ["python"]
+extend-exclude = ["ext_libs/clibpdf", "*.r", "*.y"]
+show-fixes = true
 
 [tool.ruff.lint]
 extend-select = [
   "B",           # flake8-bugbear
-  "I",           # isort
+#  "I",           # isort
   "ARG",         # flake8-unused-arguments
   "C4",          # flake8-comprehensions
-  "EM",          # flake8-errmsg
+#  "EM",          # flake8-errmsg
   "ICN",         # flake8-import-conventions
   "G",           # flake8-logging-format
   "PGH",         # pygrep-hooks
@@ -131,20 +134,40 @@ extend-select = [
   "RET",         # flake8-return
   "RUF",         # Ruff-specific
   "SIM",         # flake8-simplify
-  "T20",         # flake8-print
+#  "T20",         # flake8-print
   "UP",          # pyupgrade
   "YTT",         # flake8-2020
   "EXE",         # flake8-executable
   "NPY",         # NumPy specific rules
   "PD",          # pandas-vet
+  "PYI",         # flake8-pyi
 ]
 ignore = [
-  "PLR09",    # Too many X
+  "PLR09",    # Too many <...>
   "PLR2004",  # Magic comparison
+  "ISC001",   # Conflicts with formatter
 ]
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["T20"]
 
 [tool.isort]
 profile = "black"
 
-[tool.ruff.lint.per-file-ignores]
-"tests/**" = ["T20"]
+[tool.codespell]
+ignore-words-list = ["dipoleq","garnier","JAve","pres"]
+
+[tool.mypy]
+files = "python/dipoleq"
+strict = true
+warn_unreachable = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+plugins = ["numpy.typing.mypy_plugin"]
+
+[[tool.mypy.overrides]]
+module = "freeqdsk"
+ignore_missing_imports = true
+
+#[[tool.mypy.overrides]]
+#module = "h5py"
+#disable_error_code = "attr-defined"
+

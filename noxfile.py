@@ -1,5 +1,6 @@
 """Nox sessions."""
 
+import argparse
 import os
 import shlex
 import sys
@@ -116,6 +117,7 @@ def precommit(session: Session) -> None:
         "pre-commit",
         "pre-commit-hooks",
         "pyupgrade",
+        "numpy",
     )
     session.run("pre-commit", *args)
     if args and args[0] == "install":
@@ -125,7 +127,7 @@ def precommit(session: Session) -> None:
 @session(python=python_versions[0])
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
-    args = session.posargs or ["python/dipoleq", "python/tests"]
+    args = session.posargs or ["python/dipoleq"]
     session.install(".[test]")
     session.install("mypy", "pytest")
     session.run("mypy", *args)
@@ -164,3 +166,45 @@ def typeguard(session: Session) -> None:
     session.install(".[test]")
     session.install("pytest", "typeguard", "pygments")
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
+
+
+@nox.session(reuse_venv=True)
+def docs(session: nox.Session) -> None:
+    """
+    Build the docs. Pass "--serve" to serve. Pass "-b linkcheck" to check links.
+    """
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--serve", action="store_true", help="Serve after building")
+    parser.add_argument(
+        "-b", dest="builder", default="html", help="Build target (default: html)"
+    )
+    args, posargs = parser.parse_known_args(session.posargs)
+
+    if args.builder != "html" and args.serve:
+        session.error("Must not specify non-HTML builder with --serve")
+
+    extra_installs = ["sphinx-autobuild"] if args.serve else []
+
+    session.install("-e.[docs]", *extra_installs)
+    session.chdir("docs")
+
+    if args.builder == "linkcheck":
+        session.run(
+            "sphinx-build", "-b", "linkcheck", ".", "_build/linkcheck", *posargs
+        )
+        return
+
+    shared_args = (
+        "-n",  # nitpicky mode
+        "-T",  # full tracebacks
+        f"-b={args.builder}",
+        ".",
+        f"_build/{args.builder}",
+        *posargs,
+    )
+
+    if args.serve:
+        session.run("sphinx-autobuild", *shared_args)
+    else:
+        session.run("sphinx-build", "--keep-going", *shared_args)
