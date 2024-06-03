@@ -1,3 +1,6 @@
+ci:                                                                                                                                                                                                                                           
+  autoupdate_commit_msg: 'chore: update pre-commit hooks'
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: "v4.6.0"
@@ -10,20 +13,33 @@ repos:
       - id: check-toml
       - id: debug-statements
       - id: end-of-file-fixer
+        exclude: '''(/(^ext_libs\/clibpdf\/.*|.+\.y|.+\.r)$)'''
         types: [python, yaml, toml, markdown, json]
         stages: [commit, push, manual]
       - id: mixed-line-ending
+        exclude: '''(/(^ext_libs\/clibpdf\/.*|.+\.y|.+\.r)$)'''
+        types: [python, yaml, toml, markdown, json, c, c++]
       - id: name-tests-test
         args: ["--pytest-test-first"]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+        exclude: '''(/(^ext_libs\/clibpdf\/.*|.+\.y|.+\.r)$)'''
         types: [python, yaml, toml, markdown, json]
         stages: [commit, push, manual]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.4.7"
     hooks:
+      - id: ruff
+        args: [ --fix, --show-fixes ]
+        types: [ python ]
       - id: ruff-format
-        types: [python]
+        types: [ python ]
+  - repo: https://github.com/adamchainz/blacken-docs
+    rev: "1.16.0"
+    hooks:
+      - id: blacken-docs
+        additional_dependencies:
+          - black==22.12.0
   - repo: local
     hooks:
       #- id: bandit
@@ -72,15 +88,23 @@ repos:
       - id: prettier
         types: [yaml, markdown, json, toml]
   - repo: https://github.com/codespell-project/codespell
-    rev: "v2.2.6"
+    rev: "v2.3.0"  # Use the latest version which adds inline ignore support
     hooks:
       - id: codespell
-        args: ["-L", "dipoleq,garnier"]
         types: [python]
+        additional_dependencies:
+          - tomli
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: "v0.16"
     hooks:
       - id: validate-pyproject
         additional_dependencies: ["validate-pyproject-schema-store[all]"]
+  # not ready for mypy
+  #- repo: https://github.com/pre-commit/mirrors-mypy
+  #  rev: "v1.10.0"
+  #  hooks:
+  #    - id: mypy
+  #      types: [python]
+  #      additional_dependencies: ["numpy"]
  
 

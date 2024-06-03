@@ -79,3 +79,6 @@ This may install in your user directory or in a virtual environment. It will als
 ### Usage
 
 Python usage is still in development. More on this soon.
+
+
+[![Code style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json))](https://github.com/astral-sh/ruff)

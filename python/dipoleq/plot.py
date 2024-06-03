@@ -2,31 +2,40 @@
 Plotting functions for dipoleq
 """
 
+from typing import TYPE_CHECKING
+
 import numpy as np
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
 
 from . import Machine
 
 
-def plot_eq(m: Machine, ax=None, **kwargs):
+def plot_eq(m: Machine, ax: Axes | None = None) -> Axes | None:
     """Plot the equilibrium"""
     try:
         import matplotlib.pyplot as plt
     except ImportError:
         print("Matplotlib is required for plotting.")
-        return
+        return None
 
     if ax is None:
-        fig, ax = plt.subplots()
+        _, ax = plt.subplots()
 
     pg = m.PsiGrid
     ax.contour(pg.R, pg.Z, pg.Psi, 100)
-    ax.set_xlabel(f"R [m]")
-    ax.set_ylabel(f"Z [m]")
+    ax.set_xlabel("R [m]")
+    ax.set_ylabel("Z [m]")
     ax.set_aspect("equal")
-    LCFS = pg.get_contour(1.0)
-    FCFS = pg.get_contour(0.0) if pg.PsiAxis != pg.PsiMagAxis else None
-    olim = np.array([[[l.R1, l.Z1], [l.R2, l.Z2]] for l in m.Limiters if l.Enabled > 0])
-    ilim = np.array([[[l.R1, l.Z1], [l.R2, l.Z2]] for l in m.Limiters if l.Enabled < 0])
+    LCFS = np.array(pg.get_contour(1.0))
+    FCFS = np.array(pg.get_contour(0.0)) if pg.PsiAxis != pg.PsiMagAxis else None
+    olim = np.array(
+        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in m.Limiters if lim.Enabled > 0]
+    )
+    ilim = np.array(
+        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in m.Limiters if lim.Enabled < 0]
+    )
 
     ax.plot(LCFS[:, 0], LCFS[:, 1], "b--")
     if FCFS is not None:

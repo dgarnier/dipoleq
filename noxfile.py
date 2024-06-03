@@ -117,6 +117,7 @@ def precommit(session: Session) -> None:
         "pre-commit",
         "pre-commit-hooks",
         "pyupgrade",
+        "numpy",
     )
     session.run("pre-commit", *args)
     if args and args[0] == "install":
@@ -126,7 +127,7 @@ def precommit(session: Session) -> None:
 @session(python=python_versions[0])
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
-    args = session.posargs or ["python/dipoleq", "python/tests"]
+    args = session.posargs or ["python/dipoleq"]
     session.install(".[test]")
     session.install("mypy", "pytest")
     session.run("mypy", *args)

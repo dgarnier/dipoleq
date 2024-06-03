@@ -1,15 +1,11 @@
-"""Utility functions for the dipoleq package
-
-"""
-
-from contextlib import contextmanager
+"""Utility functions for the dipoleq package"""
 
 try:
     from enum import StrEnum
 except ImportError:  # python < 3.11
     from enum import Enum
 
-    class StrEnum(str, Enum):  # type: ignore
+    class StrEnum(str, Enum):  # type: ignore[no-redef]
         pass
 
 
@@ -34,7 +30,7 @@ def _props(x: Any) -> dict[str, Any]:
     }
 
 
-def machine_diff(obj1: Any, obj2: Any, root="", verbose=False) -> bool:
+def machine_diff(obj1: Any, obj2: Any, root: str = "", verbose: bool = False) -> bool:
     """Print the differences between two objects
     Args:
         obj1 (object): The first object

@@ -8,7 +8,7 @@ from . import Machine
 from .h5togeqdsk import h5togeqdsk
 
 
-def main():
+def main() -> None:
     """Run the dipoleq solver from the command line using python"""
 
     parser = ArgumentParser(description="Solve a dipole equilibrium", prog="dipoleq")

@@ -1,19 +1,14 @@
-""" Load the data from the cli tool *.in file
-    Args:
-        file_path (str): The path to the *.in file
-    Returns:
-        dict: The data from the *.in file
+"""Load the data from the cli tool *.in file
+Args:
+    file_path (str): The path to the *.in file
+Returns:
+    dict: The data from the *.in file
 """
 
 from pathlib import Path
 from typing import Any
 
 from .input_validator import MachineIn, PlasmaIn
-
-try:
-    import yaml
-except ImportError:
-    yaml = None
 
 
 def read_dotin(file_path: str | Path) -> dict[str, Any]:
@@ -23,30 +18,30 @@ def read_dotin(file_path: str | Path) -> dict[str, Any]:
     Returns:
         dict: The data from the *.in file
     """
-    with open(file_path, encoding="utf-8") as file:
+    with Path(file_path).open(encoding="utf-8") as file:
         lines = file.readlines()
 
     path = Path(file_path)
 
-    top_dict: dict[str, Any] = dict(
-        Iname=str(path.name),
-        PsiGrid={},
-        Plasma={},
-        Limiters=[],
-        Coils=[],
-        Shells=[],
-        Separatrices=[],
-        Measures=[],
-    )
+    top_dict: dict[str, Any] = {
+        "Iname": str(path.name),
+        "PsiGrid": {},
+        "Plasma": {},
+        "Limiters": [],
+        "Coils": [],
+        "Shells": [],
+        "Separatrices": [],
+        "Measures": [],
+    }
     cur_dict: dict[str, Any] = {}
     cur_coil = {}
     cur_shell = {}
     key = ""
-    for line in lines:
-        line = line.strip()
+    for liner in lines:
+        line = liner.strip()
         if line.startswith("//") or line == "":
             continue
-        elif line.startswith("K_"):
+        if line.startswith("K_"):
             key = line[2:]
             cur_dict = {}
             match key:
@@ -86,7 +81,7 @@ def input_from_dotin(filepath: str | Path) -> MachineIn:
     Args:
         filepath (str): The path to the input file
     Returns:
-        MachineIn: the verfied input data
+        MachineIn: the verified input data
     """
     info = read_dotin(filepath)
 
@@ -110,12 +105,14 @@ def input_from_yaml(filepath: str | Path) -> MachineIn:
     Args:
         filepath (str): The path to the input file
     Returns:
-        MachineIn: the verfied input data
+        MachineIn: the verified input data
     """
-    if yaml is None:
-        raise ImportError("pyyaml is required to read yaml files")
+    try:
+        import yaml
+    except ImportError as exc:
+        raise ImportError("pyyaml is required to read yaml files") from exc
 
-    with open(filepath, encoding="utf-8") as stream:
+    with Path(filepath).open(encoding="utf-8") as stream:
         info = yaml.safe_load(stream)
 
     path = Path(filepath)

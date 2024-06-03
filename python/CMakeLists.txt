@@ -4,8 +4,11 @@
 
 include(FindPyBind11)
 find_package(pybind11 REQUIRED)
-Python_add_library(pydipoleq MODULE WITH_SOABI PyDipolEq.cpp)
-
+if(NOT "${SKBUILD_SABI_COMPONENT}" STREQUAL "")
+    python_add_library(pydipoleq MODULE WITH_SOABI USE_SABI 3.10 PyDipolEq.cpp)
+  else() 
+    python_add_library(pydipoleq MODULE WITH_SOABI PyDipolEq.cpp)
+  endif()
 target_compile_definitions(pydipoleq PRIVATE PYBIND11=1)
 target_link_libraries(pydipoleq PRIVATE pydipoleqlib pybind11::module)
 set_target_properties(pydipoleq PROPERTIES 
