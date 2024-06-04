@@ -36,7 +36,7 @@
 #include "measurement.h"
 
 #include "FileInput.h"
-#include "PyDipoleEq.hpp"
+#include "PyDipolEq.hpp"
 #include "version.hpp"
 
 

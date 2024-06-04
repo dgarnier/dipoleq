@@ -63,7 +63,7 @@ sdist.include = ["python/dipoleq/_version.py"]
 sdist.exclude = ["idl", "GEM", "fortran", "wheelhouse", "*.ipynb",
                 "Testing/*.hdf", "Testing/*.pdf", 
                 ".vscode", ".github", ".devcontainer"]
-wheel.py-api = "py310"
+# wheel.py-api = "py310"  # build for stable API.. doesn't work.. 
 logging.level = "INFO"
 build-dir = "build/{wheel_tag}"
 
