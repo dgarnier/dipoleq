@@ -13,7 +13,7 @@ from pybind11_stubgen.structs import Argument, QualifiedName
 from pybind11_stubgen.writer import Writer
 
 
-class MyPrinter(Printer):
+class MyPrinter(Printer):  # type: ignore[misc]
     """Replace "tokamak" with "Machine" in the argument types"""
 
     SUBS: ClassVar = {"tokamak": "Machine"}

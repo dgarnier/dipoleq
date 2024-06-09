@@ -68,13 +68,13 @@ repos:
       #  types: [python]
       #  require_serial: true
       #  args: [--darglint-ignore-regex, .*]
-      - id: isort
-        name: isort
-        entry: isort
-        require_serial: true
-        language: system
-        types_or: [cython, pyi, python]
-        args: ["--filter-files"]
+      # - id: isort
+      #   name: isort
+      #   entry: isort
+      #   require_serial: true
+      #   language: system
+      #   types_or: [cython, pyi, python]
+      #   args: ["--filter-files"]
       - id: pyupgrade
         name: pyupgrade
         description: Automatically upgrade syntax for newer versions.
@@ -99,12 +99,19 @@ repos:
     hooks:
       - id: validate-pyproject
         additional_dependencies: ["validate-pyproject-schema-store[all]"]
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0  # Use the ref you want to point at
+    hooks:
+    - id: python-use-type-annotations
   # not ready for mypy
-  #- repo: https://github.com/pre-commit/mirrors-mypy
-  #  rev: "v1.10.0"
-  #  hooks:
-  #    - id: mypy
-  #      types: [python]
-  #      additional_dependencies: ["numpy"]
- 
-
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: "v1.10.0"
+  #   hooks:
+  #     - id: mypy
+  #       types: [python]
+  #       additional_dependencies: ["numpy"]
+  #       pass_filenames: false
+  # - repo: https://github.com/scientific-python/cookie
+  #   rev: 2024.04.23
+  #   hooks:
+  #     - id: sp-repo-review 

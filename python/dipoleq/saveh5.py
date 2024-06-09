@@ -8,9 +8,8 @@ import numpy as np
 import numpy.typing as npt
 from h5py import Dataset, File, Group
 
-from .core import IMatrixView, Machine, MatrixView
+from .core import IMatrixView, Machine, MatrixView, VectorView
 from .core import ModelType as MT
-from .core import VectorView
 from .ds_names import DS_NAME, GROUP
 
 # github copilot translation from C++ to Python

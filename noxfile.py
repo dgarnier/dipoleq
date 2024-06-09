@@ -1,5 +1,6 @@
 """Nox sessions."""
 
+# type: ignore[misc]
 import argparse
 import os
 import shlex

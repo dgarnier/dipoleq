@@ -81,7 +81,7 @@ def dipoleq_h5f_to_freeqdsk(
     else:
         psi = np.linspace(PsiFCFS, PsiLCFS, len(R))
 
-    def regrid(y: ArrayLike) -> np.ndarray:
+    def regrid(y: ArrayLike) -> ArrayLike:
         return np.interp(psi, psi1D, y)
 
     gdata["simagx"] = psi[0]

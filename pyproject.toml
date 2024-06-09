@@ -67,7 +67,6 @@ sdist.exclude = ["idl", "GEM", "fortran", "wheelhouse", "*.ipynb",
 logging.level = "INFO"
 build-dir = "build/{wheel_tag}"
 
-
 [tool.scikit-build.cmake.define]
 BUILD_PYTHON_BINDINGS = "ON"
 BUILD_CLI = "OFF"
@@ -120,7 +119,7 @@ show-fixes = true
 [tool.ruff.lint]
 extend-select = [
   "B",           # flake8-bugbear
-#  "I",           # isort
+  "I",           # isort
   "ARG",         # flake8-unused-arguments
   "C4",          # flake8-comprehensions
 #  "EM",          # flake8-errmsg
@@ -150,6 +149,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["T20"]
 
+# don't actually use isort.. use ruff instead
 [tool.isort]
 profile = "black"
 
@@ -157,11 +157,13 @@ profile = "black"
 ignore-words-list = ["dipoleq","garnier","JAve","pres"]
 
 [tool.mypy]
-files = "python/dipoleq"
+files = ["python/dipoleq/*.py"]
 strict = true
 warn_unreachable = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 plugins = ["numpy.typing.mypy_plugin"]
+exclude = ['^noxfile\.py$',
+           'python/dev/*.py$']
 
 [[tool.mypy.overrides]]
 module = "freeqdsk"

@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-
 from dipoleq import Machine
 from dipoleq.core import Machine as coreMachine
 from dipoleq.file_input import input_from_dotin

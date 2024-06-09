@@ -1,7 +1,8 @@
-#!/usr/bin/env python
 # Create density and temperature profiles
 # Author: Darren Garnier, OpenStar Technologies.
 
+
+import h5py
 import numpy as np
 import scipy as sp
 
@@ -9,15 +10,15 @@ import scipy as sp
 def dipoleq_profiles(h5eq, npeak=1e20, eta=0.67, NormalizeAtAxis=True):
     FF = h5eq["FluxFunctions"]
     eq0d = h5eq["Scalars"]
-    L = FF["RBetaMax"] / eq0d["RMagX"][()]
+    # L = FF["RBetaMax"] / eq0d["RMagX"][()]
     p = FF["ppsi"][:]
     p[0] = p[-1]  # don't have zero edge pressure
     psi = FF["psi"][:]
-    d2Vdpsi = np.gradient(FF["Vprime"][:], FF["psi"][:])
+    # d2Vdpsi = np.gradient(FF["Vprime"][:], FF["psi"][:])
     dlnp = FF["pprime"][:] / p
     dlnp[0] = dlnp[1]
-    dlnV = d2Vdpsi / FF["Vprime"][:]
-    d = -dlnp / dlnV
+    # dlnV = d2Vdpsi / FF["Vprime"][:]
+    # d = -dlnp / dlnV
 
     # print(psi.shape, dlnp.shape, d.shape)
     peaks, _ = sp.signal.find_peaks(p)
@@ -82,32 +83,22 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     for h5file in args.h5files:
+        pdir = Path(h5file).parent
         stem = Path(h5file).stem
         with h5py.File(h5file) as h5f:
             oname = str(h5f.attrs["ONAME"], "utf-8")
-            if args.plot:
-                plot_h5eq(h5f)
             psi, n, T = dipoleq_profiles(
                 h5f, npeak=args.npeak, eta=args.eta, NormalizeAtAxis=args.magX
             )
+        if args.plot:
+            # plot_profiles(h5f)
+            pass
 
-        with open(f"{stem}.geqdsk", "w") as fh:
-            geqdsk.write(gdata, fh, label=f"DipQ:{oname}")
-
-        with open(f"{stem}_fcfs.csv", "w", encoding="utf-8") as fh:
-            fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
+        with (pdir / f"{stem}_profile.csv").open("w", encoding="utf-8") as fh:
+            data = np.column_stack(psi, n, T)
             np.savetxt(
                 fh,
-                fcfs,
+                data,
                 delimiter=",",
-                header="r,z",
-            )
-
-        with open(f"{stem}_flim.csv", "w", encoding="utf-8") as fh:
-            flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
-            np.savetxt(
-                fh,
-                flim,
-                delimiter=",",
-                header="r,z",
+                header="psi, n, T",
             )
