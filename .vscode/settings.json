@@ -90,4 +90,10 @@
         "${workspaceFolder}/python"
     ],
     "python.testing.cwd": "",
+    "yaml.completion": false,
+    "yaml.format.enable": true,
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.tabSize": 2
+    },
 }
