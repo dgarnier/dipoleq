@@ -38,7 +38,7 @@ jobs:
       #   run: choco install hdf5
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.18
+        uses: pypa/cibuildwheel@v2.19
         # env:
         #   CIBW_SOME_OPTION: value
         #    ...
