@@ -388,7 +388,7 @@ PYBIND11_MODULE(core, m) {
         .def_property_readonly("Bt", [](PLASMA& self)->py::object {
             return DMatrixView::create(self.Nsize, self.Bt);}, "B_toroidal on grid")
         .def_property_readonly("G", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.G);}, "G = F/(B_0 R_0) on grid")
+            return DMatrixView::create(self.Nsize, self.G);}, ":math:`G = F/(B_0 R_0)` on grid")
         .def_property_readonly("Rho", [](PLASMA& self)->py::object {
             return DMatrixView::create(self.Nsize, self.Rho);}, "Rho on grid")
         .def_property_readonly("Piso", [](PLASMA& self)->py::object {

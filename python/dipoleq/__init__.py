@@ -2,7 +2,7 @@
 
 DipolEq is a Python package for solving the equilibrium of a levitated dipole
 magnetized plasma. It is a Python wrapper around the C code that was originally
-written by Michael Mauel and his group at Columbia University in the early 1999s
+written by Michael Mauel and his group at Columbia University in the early 1990s
 called TokaMac. The C code was later modified by Darren Garnier at Columbia
 for use in the LDX experiment. The Python wrapper was written by Darren Garnier
 at OpenStar Technologies, LTD.
@@ -21,8 +21,10 @@ from .input import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
 
 
-class Machine(_Machine):
-    """Machine class for the Dipole Equilibrium Solver"""
+class Machine(core.Machine):
+    """Machine class for the Dipole Equilibrium Solver
+    Child of core.Machine
+    """
 
     # don't even think about messing with init
     # and pybind11 superclass
@@ -89,23 +91,23 @@ class Machine(_Machine):
 
     @classmethod
     def from_input_data(cls, valid_input: MachineIn) -> Self:
-        """Factory method to create a Machine object from validated input
+        """Generate a Machine object from a pydantic verified MachineIn object
 
         Args:
-            valid_input (MachineIn): Validated input data
+            valid_input (MachineIn): The verified input data
 
         Returns:
-            Machine: Machine object ready to be solved
+            Machine: The Machine object
         """
         m = cls()
         valid_input.initalize_machine(m)
         return m
 
     def solve(self, quiet: bool = True) -> None:
-        """Do the thing!"""
+        """Solve the equilibrium based on the current machine data"""
         solver.solve(self, quiet=quiet)
 
-    def diff(self, other: _Machine, verbose: bool = False) -> bool:
+    def diff(self, other: core.Machine, verbose: bool = False) -> bool:
         """display the differences between two machines
 
         Args:
@@ -118,7 +120,7 @@ class Machine(_Machine):
         return util.machine_diff(self, other, verbose=verbose)
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, _Machine):
+        if not isinstance(other, core.Machine):
             return False
         return not self.diff(other)
 

@@ -9,7 +9,7 @@ import numpy as np
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
 
-from . import Machine
+    from . import Machine
 
 
 def plot_eq(m: Machine, ax: Axes | None = None) -> Axes | None:
@@ -28,8 +28,8 @@ def plot_eq(m: Machine, ax: Axes | None = None) -> Axes | None:
     ax.set_xlabel("R [m]")
     ax.set_ylabel("Z [m]")
     ax.set_aspect("equal")
-    LCFS = np.array(pg.get_contour(1.0))
-    FCFS = np.array(pg.get_contour(0.0)) if pg.PsiAxis != pg.PsiMagAxis else None
+    LCFS = np.array(pg.get_contour(1.0)).T
+    FCFS = np.array(pg.get_contour(0.0)).T if pg.PsiAxis != pg.PsiMagAxis else None
     olim = np.array(
         [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in m.Limiters if lim.Enabled > 0]
     )

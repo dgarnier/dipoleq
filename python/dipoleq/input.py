@@ -325,6 +325,8 @@ class SeparatrixIn(BaseModel):
 
 
 class SubCoilIn(BaseModel):
+    """Subcoil input data."""
+
     Name: str | None = None
     Fraction: float
     R: float = Field(validation_alias=AliasChoices("R", "X"))
@@ -339,6 +341,8 @@ class SubCoilIn(BaseModel):
 
 
 class CoilIn(BaseModel):
+    """Coil input data."""
+
     Name: str | None = None
     Enabled: bool | None = True
     InitialCurrent: float
@@ -393,6 +397,8 @@ class CoilIn(BaseModel):
 
 
 class SubShellIn(BaseModel):
+    "Subshell data."
+
     Name: str | None
     Current: float = 0.0
     R: float = Field(validation_alias=AliasChoices("R", "X"))
@@ -407,6 +413,8 @@ class SubShellIn(BaseModel):
 
 
 class ShellIn(BaseModel):
+    """(Super) Conducting shell input."""
+
     Name: str | None
     Enabled: bool | None = True
     NumSubShells: int | None
@@ -427,6 +435,8 @@ class ShellIn(BaseModel):
 
 
 class MeasureIn(BaseModel):
+    """Measurement input data."""
+
     Name: str | None
     # Enabled: bool | None = True
     Type: MeasTypeA
