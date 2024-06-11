@@ -3,9 +3,12 @@ Forward solve the dipole equilibrium
 This is the same as SimDipEq, but in python
 """
 
-from wurlitzer import pipes  # type: ignore [import-untyped]
+import os
 
 from .core import Machine
+
+if os.name == "posix":
+    from wurlitzer import pipes  # type: ignore [import-untyped]
 
 
 def do_free_boundary(m: Machine, makeFit: bool = False, isFirst: bool = True) -> None:
@@ -107,10 +110,10 @@ def solve(m: Machine, quiet: bool = True) -> None:
 
     Args:
         m (Machine): Solve the equilibrium
-        quiet (bool, optional): Don't output the C code status. Defaults to True.
+        quiet (bool, Optional): Don't output the C code status. Defaults to True.
     """
 
-    if quiet:
+    if quiet and os.name == "posix":
         with pipes():  # as (out, err):
             _solve(m)
     else:

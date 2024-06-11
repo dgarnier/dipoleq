@@ -275,13 +275,14 @@ PYBIND11_MODULE(core, m) {
             "git_distance"_a=GIT_DISTANCE
         );
     m.attr("__version_info__")=__version_info__;
-    py::class_<DMatrixView>(m, "MatrixView", py::buffer_protocol())
+    py::class_<TOKAMAK>(m, "Machine", "DipolEq machine object");   // forward declaration
+    py::class_<DMatrixView>(m, "MatrixView", py::buffer_protocol(), "Matrix view class")
         .def_buffer(&DMatrixView::get_buffer_info)
     ;
-    py::class_<DVectorView>(m, "VectorView", py::buffer_protocol())
+    py::class_<DVectorView>(m, "VectorView", py::buffer_protocol(), "Vector view class")
         .def_buffer(&DVectorView::get_buffer_info)
     ;
-    py::class_<IMatrixView>(m, "IMatrixView", py::buffer_protocol())
+    py::class_<IMatrixView>(m, "IMatrixView", py::buffer_protocol(), "Integer matrix view class")
         .def_buffer([](IMatrixView& self) -> py::buffer_info {
             return self.get_buffer_info();})
     ;
@@ -295,15 +296,15 @@ PYBIND11_MODULE(core, m) {
         .value("DipoleStd", ModelType::DipoleStd)
         .value("DipoleIntStable", ModelType::DipoleIntStable)
     ;
-    py::class_<CPlasmaModel>(m, "CPlasmaModel")
+    py::class_<CPlasmaModel>(m, "CPlasmaModel", "Plasma model base class")
         // FIXME
         // more work here... should make it possible to make 
         // our own python classes that inherit from CPlasmaModel
         // with overriden methods and generic getter and setters
-        .def("update_model", &CPlasmaModel::UpdateModel, "Update the plasma model")
+        .def("update_model", &CPlasmaModel::UpdateModel, py::arg("Machine"), "Update the plasma model")
         .def("model_input", &CPlasmaModel::ModelInput, "Input model parameters")
     ;
-    py::class_<PLASMA>(m, "Plasma")
+    py::class_<PLASMA>(m, "Plasma", "plasma data and methods")
         .def(py::init(&new_Plasma), "Create Plasma")
         .def("init", &init_Plasma, "Initialize Plasma")
         .def("plasmaP", &PlasmaP, "Calculate plasma pressure")
@@ -321,7 +322,7 @@ PYBIND11_MODULE(core, m) {
         .def_readwrite("Z0", &PLASMA::Z0, "Reference vertical position")
         .def_readwrite("B0", &PLASMA::B0, "Vacuum magnetic field at R0, Z0")
         .def_readwrite("Ip0", &PLASMA::Ip0, "initial plasma current")
-        .def_readwrite("B0R0", &PLASMA::B0R0, "B0 * R0")
+        .def_readwrite("B0R0", &PLASMA::B0R0, ":math:`B_0 * R_0`")
         .def_readwrite("Jedge", &PLASMA::Jedge, "Edge current density")
         .def_readwrite("NumBndMomts", &PLASMA::NumBndMomts, "Number of moments of boundary to calculate")
         .def_readwrite("NumPsiPts", &PLASMA::NumPsiPts, "Number of normalized psi points to calculate")
@@ -378,12 +379,12 @@ PYBIND11_MODULE(core, m) {
         .def_readonly("totMagEnergy", &PLASMA::TotMagEnergy, "Total magnetic energy")
         .def_property_readonly("B2", [](PLASMA& self)->py::object {
             return DMatrixView::create(self.Nsize, self.B2);}, "B^2 on grid")
-        .def_property_readonly("GradPsiR", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.GradPsiX);}, "∂Psi/∂R on grid")
+        .def_property_readonly("GradPsiR", [](PLASMA& self) {
+            return DMatrixView::create(self.Nsize, self.GradPsiX);}, "GradPsiR(self) -> MatrixView\n\n:math:`\\del\\psi/\\delR` on grid\n")
         .def_property_readonly("GradPsiZ", [](PLASMA& self)->py::object {
             return DMatrixView::create(self.Nsize, self.GradPsiZ);}, "∂Psi/∂Z on grid")
         .def_property_readonly("GradPsi2", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.GradPsi2);}, "|∂Psi/∂R|^2 + |∂Psi/∂Z|^2 on grid")
+            return DMatrixView::create(self.Nsize, self.GradPsi2);}, ":math:`|d\\psi/dR|^2 + |d\\psi/dZ|^2` on grid")
         .def_property_readonly("Bt", [](PLASMA& self)->py::object {
             return DMatrixView::create(self.Nsize, self.Bt);}, "B_toroidal on grid")
         .def_property_readonly("G", [](PLASMA& self)->py::object {
@@ -397,7 +398,7 @@ PYBIND11_MODULE(core, m) {
         .def_property_readonly("Pper", [](PLASMA& self)->py::object {
             return DMatrixView::create(self.Nsize, self.Pper);}, "Anistropic p_perpendicular pressure on grid")
         .def_property_readonly("Alpha", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.Alpha);}, "Alpha = μ_0*(p_par - p_per)/B^2 on grid")
+            return DMatrixView::create(self.Nsize, self.Alpha);}, "Alpha = :math:`\\mu_0*(p_\\parallel - p_\\perp)/B^2` on grid")
 
         .def_property_readonly("PsiX_pr", [](PLASMA& self)->py::object {
             return DVectorView::create(self.NumPsiPts, self.PsiX_pr);}, "Normalized Psi ordinate")
@@ -443,7 +444,7 @@ PYBIND11_MODULE(core, m) {
             return DVectorView::create(self.NumPsiPts, self.ZBMax_pr);}, "Z of max(B) profile")
     ;
 
-    py::class_<PSIGRID>(m, "PsiGrid")
+    py::class_<PSIGRID>(m, "PsiGrid", "Magnetic flux grid data and methods")
         .def(py::init(&new_PsiGrid), "Create PsiGrid")
         .def("init", &init_PsiGrid, "Initialize PsiGrid")
         .def("go_PDE", &GoPDE, "Solve the PDE on the PsiGrid")
@@ -525,7 +526,7 @@ PYBIND11_MODULE(core, m) {
         .value("brcos", CircleType::brcos)
     ;
 
-    py::class_<LIMITER>(m, "Limiter")
+    py::class_<LIMITER>(m, "Limiter", "Limiter data")
         .def(py::init(&new_Limiter), "Create Limiter")
         .def_readwrite("R1", &LIMITER::X1)
         .def_readwrite("Z1", &LIMITER::Z1)
@@ -541,7 +542,7 @@ PYBIND11_MODULE(core, m) {
             }, "Name of the limiter")
     ;
 
-    py::class_<SUBCOIL>(m, "SubCoil")
+    py::class_<SUBCOIL>(m, "SubCoil", "Subcoil data")
         .def(py::init(&new_SubCoil), "Create SubCoil")
         .def_readwrite("R", &SUBCOIL::X)
         .def_readwrite("Z", &SUBCOIL::Z)
@@ -551,7 +552,7 @@ PYBIND11_MODULE(core, m) {
                 strncpy(self.Name, name.c_str(), sizeof(COIL::Name)-1);
             }, "Name of the subcoil")
     ;
-    py::class_<ObjVecView<SUBCOIL>>(m, "SubCoils")
+    py::class_<ObjVecView<SUBCOIL>>(m, "SubCoils", "Subcoil vector view")
         .def("__getitem__", &ObjVecView<SUBCOIL>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<SUBCOIL>& self, size_t i, SUBCOIL* c) {
@@ -566,7 +567,7 @@ PYBIND11_MODULE(core, m) {
         }, py::return_value_policy::reference_internal, "Add a new subcoil")
     ;
 
-    py::class_<COIL>(m, "Coil")
+    py::class_<COIL>(m, "Coil", "Coil data and methods")
         .def(py::init(&new_Coil), "Create Coil")
         .def_readwrite("Enabled", &COIL::Enabled)
         .def_property("Name", [](COIL& self) {return self.Name;},
@@ -586,7 +587,7 @@ PYBIND11_MODULE(core, m) {
         .def("compute_SubCoils", &compute_SubCoils, "Generate subcoils from coil parameters and grid")
     ;
 
-    py::class_<SUBSHELL>(m, "SubShell")
+    py::class_<SUBSHELL>(m, "SubShell", "Subshell data")
         .def(py::init(&new_SubShell), "Create SubShell")
         .def_property("Name", [](SUBSHELL& self) {return self.Name;},
             [](SUBSHELL& self, std::string name){
@@ -598,7 +599,7 @@ PYBIND11_MODULE(core, m) {
         .def_readwrite("Current", &SUBSHELL::Current)
     ;
 
-    py::class_<ObjVecView<SUBSHELL>>(m, "SubShells")
+    py::class_<ObjVecView<SUBSHELL>>(m, "SubShells", "Subshell vector view")
         .def("__getitem__", &ObjVecView<SUBSHELL>::operator[],
             py::return_value_policy::reference)
         .def("__len__", [](ObjVecView<SUBSHELL>& self) {return self.size();})
@@ -608,7 +609,7 @@ PYBIND11_MODULE(core, m) {
         //    py::return_value_policy::reference, "Add a new subshell")
     ;
 
-    py::class_<SHELL>(m, "Shell")
+    py::class_<SHELL>(m, "Shell", "Shell data and methods" )
         .def(py::init(&new_Shell), "Create Shell")
         .def_readwrite("Enabled", &SHELL::Enabled)
         .def_property("Name", [](SHELL& self) {return self.Name;},
@@ -622,7 +623,7 @@ PYBIND11_MODULE(core, m) {
              "Return vector of SubShells")
     ;
 
-    py::class_<SEPARATRIX>(m, "Separatrix")
+    py::class_<SEPARATRIX>(m, "Separatrix", "Separatrix data")
         .def(py::init(&new_Separatrix), "Create Separatrix")
         .def_property("Name", [](SEPARATRIX& self) {return self.Name;},
             [](SEPARATRIX& self, std::string name){
@@ -641,7 +642,7 @@ PYBIND11_MODULE(core, m) {
         .def_readonly("Zs", &SEPARATRIX::Zs, "Z of separatrix")
     ;
 
-    py::class_<MEAS>(m, "Measure")
+    py::class_<MEAS>(m, "Measure", "Measurement data")
         .def(py::init(&new_Measure), "Create Measurement")
         .def_property("Name", [](MEAS& self) {return self.Name;},
             [](MEAS& self, std::string name){
@@ -676,7 +677,7 @@ PYBIND11_MODULE(core, m) {
             [](MEAS& self, double z2){self.parm.saddle.Z2 = z2;}, "Saddle Loop Z2")
     ;
 
-    py::class_<ObjVecView<COIL>>(m, "Coils")
+    py::class_<ObjVecView<COIL>>(m, "Coils", "Coil vector view")
         .def("__getitem__", &ObjVecView<COIL>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", &ObjVecView<COIL>::insert)
@@ -684,7 +685,7 @@ PYBIND11_MODULE(core, m) {
         .def("new_Coil", [](ObjVecView<COIL>& self, int n) { return new_Coil(n);},
             py::return_value_policy::reference, "Add a new coil")
     ;
-    py::class_<ObjVecView<LIMITER>>(m, "Limiters")
+    py::class_<ObjVecView<LIMITER>>(m, "Limiters", "Limiter vector view")
         .def("__getitem__", &ObjVecView<LIMITER>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<LIMITER>& self, size_t i, LIMITER* c) {
@@ -698,7 +699,7 @@ PYBIND11_MODULE(core, m) {
             return c;
         }, py::return_value_policy::reference_internal, "Add a new limiter")
     ;
-    py::class_<ObjVecView<SEPARATRIX>>(m, "Separatrices")
+    py::class_<ObjVecView<SEPARATRIX>>(m, "Separatrices", "Separatrix vector view")
         .def("__getitem__", &ObjVecView<SEPARATRIX>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<SEPARATRIX>& self, size_t i, SEPARATRIX* c) {
@@ -712,7 +713,7 @@ PYBIND11_MODULE(core, m) {
             return c;
         }, py::return_value_policy::reference, "Add a new separatrix")
     ;
-    py::class_<ObjVecView<MEAS>>(m, "Measures")
+    py::class_<ObjVecView<MEAS>>(m, "Measures", "Measurement vector view")
         .def("__getitem__", &ObjVecView<MEAS>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", [](ObjVecView<MEAS>& self, size_t i, MEAS* c) {
@@ -727,7 +728,7 @@ PYBIND11_MODULE(core, m) {
         }, py::return_value_policy::reference, "Add a new measurement of type mtype")
     ;
 
-    py::class_<ObjVecView<SHELL>>(m, "Shells")
+    py::class_<ObjVecView<SHELL>>(m, "Shells", "Shell vector view")
         .def("__getitem__", &ObjVecView<SHELL>::operator[],
             py::return_value_policy::reference)
         .def("__setitem__", &ObjVecView<SHELL>::insert)
@@ -737,7 +738,7 @@ PYBIND11_MODULE(core, m) {
     ;
 
     // and finally the Machine!
-    py::class_<TOKAMAK>(m, "Machine")
+    py::class_<TOKAMAK>(m.attr("Machine"))
         .def(py::init(&new_Tokamak),  "Return new Machine struct",
             py::return_value_policy::reference)
         .def(py::init(&FileInput), "Initialize Machine with a file",

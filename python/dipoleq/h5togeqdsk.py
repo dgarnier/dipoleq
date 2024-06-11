@@ -2,6 +2,7 @@
 # Convert a dipoleq h5 file to a g-eqdsk file
 # Usage: python h5togeqdsk.py <dipoleq.h5> ...
 
+from collections.abc import Mapping
 from os import PathLike
 from pathlib import Path
 
@@ -75,13 +76,13 @@ def dipoleq_h5f_to_freeqdsk(
     # also.. some code requires that psi normalized STARTS at
     # the magnetic axis
 
-    psi1D = Flux["psi"][()] * scale_psi
+    psi1D: ArrayLike = Flux["psi"][()] * scale_psi
     if NormalizeAtAxis:
         psi = np.linspace(PsiMagX, PsiLCFS, len(R))
     else:
         psi = np.linspace(PsiFCFS, PsiLCFS, len(R))
 
-    def regrid(y: ArrayLike) -> ArrayLike:
+    def regrid(y: ArrayLike) -> NDArray[np.float64]:
         return np.interp(psi, psi1D, y)
 
     gdata["simagx"] = psi[0]
@@ -145,7 +146,7 @@ def plot_h5eq(h5eq: h5py.Group) -> None:
 
 
 def write_geqdsk(
-    gdata: dict[str, int | float | np.ndarray],
+    gdata: Mapping[str, int | float | ArrayLike],
     filename: str | PathLike[str],
     oname: str,
 ) -> None:
@@ -171,7 +172,7 @@ def h5togeqdsk(
     plot=False,
     NormalizeAtAxis=True,
     suffix: str = ".geqdsk",
-) -> dict[str, int | float | np.ndarray]:
+) -> dict[str, int | float | NDArray[np.float64]]:
     """Save a dipoleq h5 file to a g-eqdsk file"""
 
     h5path = Path(h5file)
@@ -185,7 +186,7 @@ def h5togeqdsk(
     return gdata
 
 
-def main():
+def main() -> None:
     from argparse import ArgumentParser
     from pathlib import Path
 

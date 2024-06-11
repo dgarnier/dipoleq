@@ -112,7 +112,12 @@ def model_type_literals(mts: list[ModelTypeA]) -> TypeAlias:
     ]
     list_of_vals: list[str | int] = list(chain.from_iterable(lists_of_vals))
     list_of_literals: list[TypeAlias] = [Literal[v] for v in list_of_vals]
-    return reduce(lambda a, b: a | b, list_of_literals)
+    # list_of_literals: list[TypeVar] = [Literal[v] for v in list_of_vals]
+
+    def unionizer(a: TypeAlias, b: TypeAlias) -> TypeAlias:
+        return a | b
+
+    return reduce(unionizer, list_of_literals)
     # return Union[list_of_literals]
 
 
@@ -424,7 +429,7 @@ class ShellIn(BaseModel):
 class MeasureIn(BaseModel):
     Name: str | None
     # Enabled: bool | None = True
-    type: MeasTypeA
+    Type: MeasTypeA
 
     def do_init(self, meas: Measure) -> None:
         if self.Name:
@@ -466,6 +471,12 @@ class MachineIn(BaseModel):
 
     @model_validator(mode="after")
     def check_numbers(self) -> Self:
+        """check that Num* fields match the number of items in the lists
+        Args:
+            Self: the MachineIn object
+        Returns:
+            Self: the MachineIn object, validated
+        """
         if self.NumCoils:
             if self.NumCoils != len(self.Coils):
                 raise ValueError(

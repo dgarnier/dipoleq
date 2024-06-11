@@ -1,0 +1,23 @@
+# python builtins
+py:class    _io.StringIO
+py:class    _io.BytesIO
+
+# numpy inherited docstrings
+py:class numpy.ndarray
+py:class numpy.float64
+
+# pydantic inherited docstrings
+py:obj dipoleq.input.MachineIn.check_numbers
+py:obj dipoleq.input.MachineIn.all fields
+py:obj dipoleq.input.MachineIn.*
+py:class pydantic.main.BaseModel
+
+# pybind11 missing reference
+# py:class tokamak
+
+# pathlib
+py:class Path
+
+# misc
+# py:class optional
+py:data typing.Any

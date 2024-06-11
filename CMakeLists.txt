@@ -7,7 +7,10 @@ include(get_cpm)
 CPMAddPackage("gh:LecrisUT/CMakeExtraUtils@0.4.1")
 list(APPEND CMAKE_MODULE_PATH "${CMakeExtraUtils_BINARY_DIR}")
 include(DynamicVersion)
-dynamic_version(PROJECT_PREFIX DipolEq_)
+dynamic_version(PROJECT_PREFIX DipolEq_ 
+                FALLBACK_VERSION 0.9.999
+                ALLOW_FAILS
+                )
 
 project(DipolEq VERSION ${PROJECT_VERSION} LANGUAGES C CXX)
 include(CTest)
