@@ -18,7 +18,7 @@ jobs:
               with:
                 fetch-depth: 0 # fetch all history for git describe to work
             - name : Set up Python
-              uses: actions/setup-python@v5
+              uses: actions/setup-python@v5.1.0
               with:
                 python-version: '3.11'
                 cache: 'pip'
