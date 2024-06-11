@@ -4,8 +4,8 @@ This is the same as SimDipEq, but in python
 """
 
 import os
-from .core import Machine
 
+from .core import Machine
 
 if os.name == "posix":
     from wurlitzer import pipes  # type: ignore [import-untyped]
