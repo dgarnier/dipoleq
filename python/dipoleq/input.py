@@ -6,8 +6,6 @@ from __future__ import annotations
 
 from functools import reduce
 from itertools import chain
-from typing import Annotated, Any, Generic, Literal, TypeAlias, TypeVar, cast
-
 from pydantic import (
     AliasChoices,
     BaseModel,
@@ -17,6 +15,8 @@ from pydantic import (
     model_validator,
 )
 from pydantic_core import core_schema
+from typing import (Annotated, Any, Generic, Literal,
+                    TypeAlias, TypeVar, Union, cast)
 from typing_extensions import Self
 
 from .core import (
@@ -112,12 +112,18 @@ def model_type_literals(mts: list[ModelTypeA]) -> TypeAlias:
     ]
     list_of_vals: list[str | int] = list(chain.from_iterable(lists_of_vals))
     list_of_literals: list[TypeAlias] = [Literal[v] for v in list_of_vals]
-    return reduce(lambda a, b: a | b, list_of_literals)
+    #list_of_literals: list[TypeVar] = [Literal[v] for v in list_of_vals]
+    
+    def unionizer(a: TypeAlias, b: TypeAlias) -> TypeAlias:
+        return Union[a, b]
+    
+    return reduce(unionizer, list_of_literals)
     # return Union[list_of_literals]
 
 
 class PlasmaModelBaseModel(BaseModel):
-    Type: ModelTypeA = Field(validation_alias=AliasChoices("Type", "ModelType"))
+    Type: ModelTypeA = Field(
+        validation_alias=AliasChoices("Type", "ModelType"))
 
     @field_validator("Type", mode="after")
     @classmethod
@@ -424,7 +430,7 @@ class ShellIn(BaseModel):
 class MeasureIn(BaseModel):
     Name: str | None
     # Enabled: bool | None = True
-    type: MeasTypeA
+    Type: MeasTypeA
 
     def do_init(self, meas: Measure) -> None:
         if self.Name:
