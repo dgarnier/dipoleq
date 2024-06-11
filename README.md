@@ -20,7 +20,7 @@ The code is licensed under the MIT license. (Except for the ClibPDF code, which 
 
 If you use this code, please reference this paper as source.
 
-> [1] D. T. Garnier, J. Kesner, and M. E. Mauel, “Magnetohydrodynamic  stability in a levitated dipole,” Phys. Plasmas, vol. 6, no. 9, pp. 3431–3434, Jan. 1999, doi: 10.1063/1.873601.
+> D. T. Garnier, J. Kesner, and M. E. Mauel, “Magnetohydrodynamic  stability in a levitated dipole,” Phys. Plasmas, vol. 6, no. 9, pp. 3431–3434, Jan. 1999, doi: 10.1063/1.873601.
 
 ## C Code - Command Line Version
 ### Compilation

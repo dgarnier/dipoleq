@@ -8,7 +8,7 @@ Returns:
 from pathlib import Path
 from typing import Any
 
-from .input_validator import MachineIn, PlasmaIn
+from .input import MachineIn, PlasmaIn
 
 
 def read_dotin(file_path: str | Path) -> dict[str, Any]:

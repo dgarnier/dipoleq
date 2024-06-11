@@ -466,6 +466,12 @@ class MachineIn(BaseModel):
 
     @model_validator(mode="after")
     def check_numbers(self) -> Self:
+        """check that Num* fields match the number of items in the lists
+        Args:
+            Self: the MachineIn object
+        Returns:
+            Self: the MachineIn object, validated
+        """
         if self.NumCoils:
             if self.NumCoils != len(self.Coils):
                 raise ValueError(

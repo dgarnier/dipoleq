@@ -14,10 +14,10 @@ from typing import Any
 
 from typing_extensions import Self
 
-from . import core, file_input, input_validator, solver, util
+from . import core, file_input, input, solver, util
 from ._version import __version__, __version_tuple__
 from .core import Machine as _Machine
-from .input_validator import MachineIn
+from .input import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
 
 
@@ -35,8 +35,8 @@ class Machine(_Machine):
         Args:
             filename (str): The path to the .in file
 
-            Returns:
-                Machine: The Machine object
+        Returns:
+            Machine: The Machine object
         """
         input_data = file_input.input_from_dotin(str(filename))
         return cls.from_input_data(input_data)
@@ -89,6 +89,14 @@ class Machine(_Machine):
 
     @classmethod
     def from_input_data(cls, valid_input: MachineIn) -> Self:
+        """Factory method to create a Machine object from validated input
+
+        Args:
+            valid_input (MachineIn): Validated input data
+
+        Returns:
+            Machine: Machine object ready to be solved
+        """
         m = cls()
         valid_input.initalize_machine(m)
         return m
@@ -102,7 +110,7 @@ class Machine(_Machine):
 
         Args:
             other (Machine): The one to compare to
-            verbose (bool, optional): Be noisy about it. Defaults to False.
+            verbose (bool, Optional): Be noisy about it. Defaults to False.
 
         Returns:
             bool: Are they different?
@@ -128,7 +136,7 @@ __all__ = [
     "MachineIn",
     "core",
     "solver",
-    "input_validator",
+    "input",
     "file_input",
     "util",
     "__version_tuple__",

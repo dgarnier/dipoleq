@@ -49,7 +49,8 @@ wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
        "numpy", "numpy-stubs", "pybind11", "pyyaml", "pybind11-stubgen",
        "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0"]
-docs = ["myst-parser", "sphinx >=4.0", "sphinx-autodoc-typehints", "sphinx-copybutton"]
+docs = ["myst-parser", "sphinx >=4.0", "sphinx-autodoc-typehints", "sphinx-copybutton",
+        "autodoc_pydantic", "numpy", "sphinx_rtd_theme",]
 omas = ["omas"]
 
 [tool.scikit-build]
