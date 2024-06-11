@@ -3,6 +3,8 @@ Forward solve the dipole equilibrium
 This is the same as SimDipEq, but in python
 """
 
+import os
+
 from wurlitzer import pipes  # type: ignore [import-untyped]
 
 from .core import Machine
@@ -110,7 +112,7 @@ def solve(m: Machine, quiet: bool = True) -> None:
         quiet (bool, optional): Don't output the C code status. Defaults to True.
     """
 
-    if quiet:
+    if quiet and os.name != "nt":
         with pipes():  # as (out, err):
             _solve(m)
     else:
