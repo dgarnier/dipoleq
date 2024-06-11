@@ -169,7 +169,7 @@ def typeguard(session: Session) -> None:
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 
 
-@nox.session(reuse_venv=True)
+@nox.session(python=python_versions[0], reuse_venv=True)
 def docs(session: nox.Session) -> None:
     """
     Build the docs. Pass "--serve" to serve. Pass "-b linkcheck" to check links.
