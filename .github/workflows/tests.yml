@@ -88,13 +88,14 @@ jobs:
         run: |
           nox --python=${{ matrix.python }}
 
-      # this is handled by build_wheel now
-      #- name: Upload coverage data
-      #  if: always() && matrix.session == 'tests'
-      #  uses: "actions/upload-artifact@v4"
-      #  with:
-      #    name: coverage-data
-      #    path: ".coverage.*"
+      # this may also be done by ciwheelbuild?
+      - name: Upload coverage data
+        if: always() && matrix.session == 'tests'
+        uses: "actions/upload-artifact@v4"
+        with:
+          name: coverage-data
+          path: ".coverage.*"
+          overwrite: true
 
       #- name: Upload documentation
       #  if: matrix.session == 'docs-build'
@@ -140,3 +141,5 @@ jobs:
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v4.4.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
