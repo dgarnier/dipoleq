@@ -16,7 +16,6 @@ from typing_extensions import Self
 
 from . import core, file_input, input, solver, util
 from ._version import __version__, __version_tuple__
-from .core import Machine as _Machine
 from .input import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
 

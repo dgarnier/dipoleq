@@ -2,28 +2,53 @@ import importlib.util
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, ClassVar
 
 if importlib.util.find_spec("pybind11_stubgen") is None:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pybind11-stubgen"])
 
 from pybind11_stubgen import CLIArgs, arg_parser, stub_parser_from_args
 from pybind11_stubgen.printer import Printer
-from pybind11_stubgen.structs import Argument, QualifiedName
+from pybind11_stubgen.structs import Attribute, Method, QualifiedName, Value
 from pybind11_stubgen.writer import Writer
 
 
 class MyPrinter(Printer):  # type: ignore[misc]
     """Replace "tokamak" with "Machine" in the argument types"""
 
-    SUBS: ClassVar = {"tokamak": "Machine"}
+    # no longer needed as forward declaration of machine
+    # fixed this problem.
 
-    def print_argument(self, arg: Argument) -> Any:
-        "overload to replace 'tokamak' with 'Machine'"
-        result = super().print_argument(arg)
-        for old, new in self.SUBS.items():
-            result = result.replace(old, new)
-        return result
+    # SUBS: ClassVar = {"tokamak": "Machine"}
+    # def print_argument(self, arg: Argument) -> Any:
+    #    "overload to replace 'tokamak' with 'Machine'"
+    #    result = super().print_argument(arg)
+    #    for old, new in self.SUBS.items():
+    #        result = result.replace(old, new)
+    #    return result
+
+    # on the other hand, this a bug in pybind11 I think
+    # or the stub generator.. not sure
+    def print_method(self, method: Method) -> list[str]:
+        """fix the buffer methods"""
+        f = method.function
+        if f.name == "__buffer__":
+            if f.returns is None:
+                f.returns = Value("memoryview", True)
+            for arg in f.args:
+                if arg.name == "flags":
+                    arg.annotation = Value("int", True)
+        if f.name == "__release_buffer__":
+            if f.returns is None:
+                f.returns = Value("None", True)
+            for arg in f.args:
+                if arg.name == "buffer":
+                    arg.annotation = Value("memoryview", True)
+        return super().print_method(method)
+
+    def print_attribute(self, attr: Attribute) -> list[str]:
+        if attr.name == "__version_info__" and str(attr.annotation) == "dict":
+            attr.annotation = Value("dict[str, str]")
+        return super().print_attribute(attr)
 
 
 def generate_stubs(module_fp: str, stub_dir: str) -> None:

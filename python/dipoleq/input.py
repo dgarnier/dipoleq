@@ -43,6 +43,8 @@ _T = TypeVar("_T", ModelType, MeasType, CircleType)
 
 
 class PyBindEnumAnnotation(Generic[_T]):
+    """Validation annotation for pybind11 enum classes."""
+
     @classmethod
     def __get_pydantic_core_schema__(
         cls, source: type[Any], handler: GetCoreSchemaHandler
@@ -122,6 +124,8 @@ def model_type_literals(mts: list[ModelTypeA]) -> TypeAlias:
 
 
 class PlasmaModelBaseModel(BaseModel):
+    """Base class for plasma models. This is not a real model, but a base class"""
+
     Type: ModelTypeA = Field(validation_alias=AliasChoices("Type", "ModelType"))
 
     @field_validator("Type", mode="after")
@@ -137,18 +141,20 @@ class PlasmaModelBaseModel(BaseModel):
 
 
 OLD_MODELS = [
-    ModelTypeA.Std,
-    ModelTypeA.IsoNoFlow,
-    ModelTypeA.IsoFlow,
-    ModelTypeA.AnisoNoFlow,
-    ModelTypeA.AnisoFlow,
+    ModelType.Std,
+    ModelType.IsoNoFlow,
+    ModelType.IsoFlow,
+    ModelType.AnisoNoFlow,
+    ModelType.AnisoFlow,
 ]
-PLASMA_BASE_MODEL_TYPES: TypeAlias = model_type_literals(OLD_MODELS)
+
+PLASMA_BASE_MODEL_TYPES: TypeAlias = model_type_literals(OLD_MODELS)  # type: ignore[valid-type]
 
 
 class PlasmaModelOld(PlasmaModelBaseModel):
+    """Old plasma model data. Covers the standard polynomial models."""
+
     Type: PLASMA_BASE_MODEL_TYPES
-    # = Field(validation_alias=AliasChoices("Type", "ModelType"))
     G2pTerms: int | None
     HTerms: int | None
     PpTerms: int | None
@@ -166,12 +172,14 @@ class PlasmaModelOld(PlasmaModelBaseModel):
 
     @model_validator(mode="after")
     def check_old_plasma_model(self) -> Self:
+        """Check for validation of the old plasma model data."""
         # should also check for consistency of the terms and models
         if self.Type not in OLD_MODELS:
             raise ValueError(f"ModelType {self.Type} is not a valid plasma model")
         return self
 
     def do_init(self, pm: Plasma) -> None:
+        """Initialize the plasma model with the input data."""
         pm.G2pTerms = len(self.G2p) if self.G2p else 0
         if self.G2p:
             for i, v in enumerate(self.G2p):
@@ -204,11 +212,11 @@ class PlasmaModelOld(PlasmaModelBaseModel):
 
 # python < 3.11 can't do argument unpacking in a literal
 # so we have to do it manually
-LTS = model_type_literals([ModelTypeA.DipoleStd])
+LTS: TypeAlias = model_type_literals([ModelType.DipoleStd])  # type: ignore[valid-type]
 
 
 class CDipoleStdIn(PlasmaModelBaseModel):
-    Type: LTS  # = Field(validation_alias=AliasChoices("Type", "ModelType"))
+    Type: LTS
     RPeak: float | None
     ZPeak: float | None
     PsiPeak: float | None
@@ -224,14 +232,11 @@ class CDipoleStdIn(PlasmaModelBaseModel):
             pm.model_input(key, str(getattr(self, key)), "")
 
 
-LDS = model_type_literals([ModelTypeA.DipoleIntStable])
-# DIPOLE_INTSTABLE_IDS = Annotated[
-#    LDS #, # Field(validation_alias=AliasChoices("Type", "ModelType"))
-# ]
+LDS: TypeAlias = model_type_literals([ModelType.DipoleIntStable])  # type: ignore[valid-type]
 
 
 class CDipoleIntStableIn(PlasmaModelBaseModel):
-    Type: LDS  # DIPOLE_INTSTABLE_IDS
+    Type: LDS
     RPeak: float | None
     ZPeak: float | None
     PEdge: float | None
@@ -240,6 +245,7 @@ class CDipoleIntStableIn(PlasmaModelBaseModel):
     fCrit: float | None
 
     def do_init(self, pl: Plasma) -> None:
+        """Initialize the plasma model with the input data."""
         keys = ["RPeak", "ZPeak", "PEdge", "PsiFlat", "NSurf", "fCrit"]
         pm = pl.Model
         for key in keys:

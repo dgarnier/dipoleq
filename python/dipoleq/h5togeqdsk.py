@@ -5,6 +5,7 @@
 from collections.abc import Mapping
 from os import PathLike
 from pathlib import Path
+from typing import cast
 
 import h5py
 import numpy as np
@@ -43,12 +44,12 @@ def dipoleq_h5f_to_freeqdsk(
         scale_psi = -scale_psi
 
     # commputational domain
-    Grid: h5f.Group = h5f["/Grid"]
-    Flux: h5f.Group = h5f["/FluxFunctions"]
-    eq0d: h5f.Group = h5f["/Scalars"]
+    Grid = cast(h5py.Group, h5f["/Grid"])
+    Flux = cast(h5py.Group, h5f["/FluxFunctions"])
+    eq0d = cast(h5py.Group, h5f["/Scalars"])
 
-    R = Grid["R"][()]
-    Z = Grid["Z"][()]
+    R = cast(h5py.Dataset, Grid["R"])[()]
+    Z = cast(h5py.Dataset, Grid["Z"])[()]
 
     # 0D values
     gdata["rdim"] = max(R) - min(R)
@@ -76,7 +77,7 @@ def dipoleq_h5f_to_freeqdsk(
     # also.. some code requires that psi normalized STARTS at
     # the magnetic axis
 
-    psi1D: ArrayLike = Flux["psi"][()] * scale_psi
+    psi1D = Flux["psi"][()] * scale_psi
     if NormalizeAtAxis:
         psi = np.linspace(PsiMagX, PsiLCFS, len(R))
     else:
