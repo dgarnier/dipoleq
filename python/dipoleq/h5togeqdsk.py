@@ -2,10 +2,10 @@
 # Convert a dipoleq h5 file to a g-eqdsk file
 # Usage: python h5togeqdsk.py <dipoleq.h5> ...
 
+import typing as tp
 from collections.abc import Mapping
 from os import PathLike
 from pathlib import Path
-from typing import cast
 
 import h5py
 import numpy as np
@@ -23,6 +23,8 @@ def dipoleq_lim_to_eqdsk(lim: NDArray[np.float64]) -> NDArray[np.float64]:
     return newlim
 
 
+# h5py is not typed, and the stubs is horrible
+@tp.no_type_check
 def dipoleq_h5f_to_freeqdsk(
     h5f: h5py.Group, COCOS: int = 3, NormalizeAtAxis: bool = True
 ) -> tuple[dict[str, int | float | NDArray[np.float64]], str]:
@@ -44,12 +46,12 @@ def dipoleq_h5f_to_freeqdsk(
         scale_psi = -scale_psi
 
     # commputational domain
-    Grid = cast(h5py.Group, h5f["/Grid"])
-    Flux = cast(h5py.Group, h5f["/FluxFunctions"])
-    eq0d = cast(h5py.Group, h5f["/Scalars"])
+    Grid = h5f["/Grid"]
+    Flux = h5f["/FluxFunctions"]
+    eq0d = h5f["/Scalars"]
 
-    R = cast(h5py.Dataset, Grid["R"])[()]
-    Z = cast(h5py.Dataset, Grid["Z"])[()]
+    R = Grid["R"][()]
+    Z = Grid["Z"][()]
 
     # 0D values
     gdata["rdim"] = max(R) - min(R)
@@ -121,6 +123,7 @@ def dipoleq_h5f_to_freeqdsk(
     return (gdata, oname)
 
 
+@tp.no_type_check
 def plot_h5eq(h5eq: h5py.Group) -> None:
     """Plot the equilibrium from a dipoleq h5 group"""
     try:
@@ -129,7 +132,7 @@ def plot_h5eq(h5eq: h5py.Group) -> None:
         print("Matplotlib is required for plotting.")
         return
 
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     ax.contour(h5eq["Grid"]["R"], h5eq["Grid"]["Z"], h5eq["Grid"]["Psi"], 100)
     runits = h5eq["Grid"]["R"].attrs["UNITS"]
     zunits = h5eq["Grid"]["Z"].attrs["UNITS"]
@@ -151,12 +154,16 @@ def write_geqdsk(
     filename: str | PathLike[str],
     oname: str,
 ) -> None:
+    """Write a g-eqdsk file from a dictionary of data"""
     path = Path(filename)
     with path.open("w") as fh:
         geqdsk.write(gdata, fh, label=f"DipEq:{oname}")
 
 
-def write_fcfs_csv(h5path: Path, gdata: dict[str, int | float | np.ndarray]) -> None:
+def write_fcfs_csv(
+    h5path: Path, gdata: dict[str, int | float | NDArray[np.float64]]
+) -> None:
+    """Write the FCFS and FLIM to a CSV file"""
     stem = h5path.stem
     parent = h5path.parent
     with (parent / f"{stem}_fcfs.csv").open("w", encoding="utf-8") as fh:
@@ -170,26 +177,25 @@ def write_fcfs_csv(h5path: Path, gdata: dict[str, int | float | np.ndarray]) -> 
 
 def h5togeqdsk(
     h5file: Path | PathLike[str],
-    plot=False,
-    NormalizeAtAxis=True,
+    plot: bool = False,
+    NormalizeAtAxis: bool = True,
     suffix: str = ".geqdsk",
 ) -> dict[str, int | float | NDArray[np.float64]]:
     """Save a dipoleq h5 file to a g-eqdsk file"""
 
     h5path = Path(h5file)
-    with h5py.File(h5file) as h5f:
+    with h5py.File(h5file) as h5f:  # type: ignore[arg-type]
         if plot:
             plot_h5eq(h5f)
         gdata, oname = dipoleq_h5f_to_freeqdsk(h5f, NormalizeAtAxis=NormalizeAtAxis)
 
     write_geqdsk(gdata, h5path.with_suffix(suffix), oname)
     write_fcfs_csv(h5path, gdata)
-    return gdata
+    return gdata  # type: ignore[no-any-return]
 
 
 def main() -> None:
     from argparse import ArgumentParser
-    from pathlib import Path
 
     parser = ArgumentParser(description="Convert a dipoleq hdf5 file to a g-eqdsk file")
     parser.add_argument(
