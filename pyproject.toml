@@ -174,3 +174,9 @@ ignore_missing_imports = true
 #module = "h5py"
 #disable_error_code = "attr-defined"
 
+[tool.coverage.run]
+relative_files = true
+source = ["dipoleq"]
+
+[tool.coverage.paths]
+source = ["python", ".nox/tests*/lib/python*/site-packages"]
