@@ -3,16 +3,23 @@ name: Labeler
 on:
   push:
     branches:
-      - main
+      - 'main'
+  pull_request:
 
 jobs:
   labeler:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repository
+      -
+        name: Checkout
         uses: actions/checkout@v4
-
-      - name: Run Labeler
+      -
+        name: Run Labeler
         uses: crazy-max/ghaction-github-labeler@v5.0.0
         with:
-          skip-delete: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          yaml-file: .github/labels.yml
+          dry-run: ${{ github.event_name == 'pull_request' }}
+          exclude: |
+            help*
+            *issue
