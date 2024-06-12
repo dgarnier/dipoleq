@@ -48,7 +48,7 @@ test = ["pytest", "matplotlib", "h5py_stubs"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
        "numpy", "pybind11", "pyyaml", "pybind11-stubgen",
-       "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0"]
+       "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade"]
 docs = ["myst-parser", "sphinx >=4.0", "sphinx-autodoc-typehints", "sphinx-copybutton",
         "autodoc_pydantic", "numpy", "sphinx_rtd_theme",]
 omas = ["omas"]
@@ -176,7 +176,7 @@ ignore_missing_imports = true
 
 [tool.coverage.run]
 relative_files = true
-source = ["dipoleq"]
+source_pkgs = ["dipoleq"]
 
 [tool.coverage.paths]
-source = ["python", ".nox/tests*/lib/python*/site-packages"]
+source = ["python", ".nox/**/site-packages"]

@@ -155,7 +155,7 @@ def coverage(session: Session) -> None:
     session.install("coverage[toml]")
 
     if not session.posargs and any(Path().glob(".coverage.*")):
-        session.run("coverage", "combine")
+        session.run("coverage", "combine", "--debug=pathmap")
 
     session.run("coverage", *args)
 
@@ -168,7 +168,7 @@ def typeguard(session: Session) -> None:
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 
 
-@nox.session(python=python_versions[0], reuse_venv=True)
+@nox.session(reuse_venv=True)
 def docs(session: nox.Session) -> None:
     """
     Build the docs. Pass "--serve" to serve. Pass "-b linkcheck" to check links.
