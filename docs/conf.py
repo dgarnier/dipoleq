@@ -26,7 +26,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.inheritance_diagram",
-    # "numpydoc", # numpydoc is required for autodoc to work with numpy-style docstrings
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",  # napoleon is required for autodoc to work with google-style docstrings and numpy-style docstrings
@@ -60,7 +59,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 nitpick_ignore = []
 
-with Path("nitpick-exceptions").open() as f:
+with Path("nitpick-exceptions").open("r", encoding="utf-8") as f:
     for line in f.readlines():
         if line.strip() == "" or line.startswith("#"):
             continue
@@ -68,6 +67,7 @@ with Path("nitpick-exceptions").open() as f:
         target = target.strip()
         nitpick_ignore.append((dtype, target))
 
+print(nitpick_ignore)
 always_document_param_types = True
 
 intersphinx_mapping = {

@@ -12,6 +12,9 @@ py:obj dipoleq.input.MachineIn.all fields
 py:obj dipoleq.input.MachineIn.*
 py:class pydantic.main.BaseModel
 
+# typing
+py:class Self
+
 # pybind11 missing reference
 # py:class tokamak
 
