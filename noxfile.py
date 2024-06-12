@@ -106,17 +106,16 @@ def precommit(session: Session) -> None:
     ]
     session.install(
         "bandit",
-        "black",
         "darglint",
         "flake8",
         "flake8-bugbear",
         "flake8-docstrings",
         "flake8-rst-docstrings",
-        "isort",
         "pep8-naming",
         "pre-commit",
         "pre-commit-hooks",
         "pyupgrade",
+        "ruff",
         "numpy",
     )
     session.run("pre-commit", *args)
@@ -155,7 +154,7 @@ def coverage(session: Session) -> None:
     session.install("coverage[toml]")
 
     if not session.posargs and any(Path().glob(".coverage.*")):
-        session.run("coverage", "combine", "--debug=pathmap")
+        session.run("coverage", "combine")
 
     session.run("coverage", *args)
 

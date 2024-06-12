@@ -177,6 +177,7 @@ ignore_missing_imports = true
 [tool.coverage.run]
 relative_files = true
 source_pkgs = ["dipoleq"]
+omit = ["**/dipoleq/_version.py"]
 
 [tool.coverage.paths]
 source = ["python", ".nox/**/site-packages"]
