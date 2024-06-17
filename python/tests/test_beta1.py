@@ -93,5 +93,11 @@ def test_h5togeqdsk(test_yaml_save: Path) -> None:
     assert gdata["cpasma"] == pytest.approx(32984, rel=1e-4)
 
 
+def test_plot_eq() -> None:
+    m = Machine.from_file(data_dir / "beta1.yaml")
+    m.solve()
+    m.plot_eq()
+
+
 if __name__ == "__main__":
     test_yaml_save(pytest.TempPathFactory())

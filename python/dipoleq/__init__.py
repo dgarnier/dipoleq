@@ -14,7 +14,7 @@ from typing import Any
 
 from typing_extensions import Self
 
-from . import core, file_input, input, solver, util
+from . import core, file_input, input, plot, solver, util
 from ._version import __version__, __version_tuple__
 from .input import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
@@ -131,14 +131,19 @@ class Machine(core.Machine):
         """
         _save_to_hdf5(self, filename)
 
+    def plot_eq(self, **kwargs) -> None:
+        """Plot the equilibrium"""
+        plot.plot_eq(self, **kwargs)
+
 
 __all__ = [
     "Machine",
     "MachineIn",
     "core",
-    "solver",
-    "input",
     "file_input",
+    "input",
+    "plot",
+    "solver",
     "util",
     "__version_tuple__",
     "__version__",

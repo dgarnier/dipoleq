@@ -460,8 +460,8 @@ class MachineIn(BaseModel):
     MaxIterFree: int | None = 50
     Name: str | None = "pyDipolEQ"
     Info: str | None = "DipolEQ Equilibrium"
-    Oname: str | None
-    Iname: str | None
+    Oname: str | None = None
+    Iname: str | None = None
     MGname: str = ""
     LHname: str = ""
     RSname: str = ""

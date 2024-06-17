@@ -2,6 +2,8 @@
 Plotting functions for dipoleq
 """
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -21,7 +23,7 @@ def plot_eq(m: Machine, ax: Axes | None = None) -> Axes | None:
         return None
 
     if ax is None:
-        _, ax = plt.subplots()
+        ax = plt.gca()
 
     pg = m.PsiGrid
     ax.contour(pg.R, pg.Z, pg.Psi, 100)
