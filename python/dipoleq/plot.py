@@ -44,9 +44,9 @@ def plot_eq(m: Machine, ax: Axes | None = None) -> Axes | None:
         ax.plot(FCFS[:, 0], FCFS[:, 1], "b--")
 
     if olim is not None:
-        ax.plot(olim[:, 0], olim[:, 1], "k-")
+        ax.plot(olim[:, :, 0].flatten(), olim[:, :, 1].flatten(), "k-.")
 
     if ilim is not None:
-        ax.plot(ilim[:, 0], ilim[:, 1], "k-")
+        ax.plot(ilim[:, :, 0].flatten(), ilim[:, :, 1].flatten(), "k-.")
 
     return ax
