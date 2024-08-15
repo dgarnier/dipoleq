@@ -29,7 +29,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "numpy >=1.21",
+  "numpy >=1.21, <2",
   "pydantic >=2.7",
   "pyyaml",
   "types-pyyaml",

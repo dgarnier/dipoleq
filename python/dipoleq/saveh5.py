@@ -185,7 +185,7 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None) -> None:
         _save_2D(grid, DS_NAME.TFLUX_NAME, "Wb/R0B0", dimr, dimz, pl.G)
 
         match pl.ModelType:
-            case MT.Std | MT.DipoleIntStable | MT.DipoleStd:
+            case MT.Std | MT.DipoleIntStable | MT.DipoleStd | MT.DipoleStablePsiN:
                 _save_2D(
                     grid, DS_NAME.PRESS_NAME, "Pa", dimr, dimz, np.array(pl.Piso) / MU0
                 )

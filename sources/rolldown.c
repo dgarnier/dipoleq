@@ -196,6 +196,23 @@ void	RmaxVStep(double x, double z, double dummy, int flag)
 	Zlast = z;
 }
 
+void GetRandVfromPsi(TOKAMAK *td, int n, 
+	double *psi, double *rr, double *zz, double *vv)
+{
+	PSIGRID *pg = td->PsiGrid;
+	double r0, z0;
+	theTok = td;  // static global for RmaxVStep because contour doesn't allow for user data
+
+	// find the peak location via psi.. assume its set in Psi[0]
+	contour(pg->X, pg->Z, pg->Psi, 1, pg->Nsize, 1, pg->Nsize,
+		psi[0], CONTOUR_ONLY_CLOSED, CONTOUR_MIDPOINT, RmaxVStep);
+
+	r0 = gRmax;
+	z0 = gZrmax;
+
+	// use the previous routine to get the rest
+	GetRandV(td, r0, z0, n, psi, rr, zz, vv);
+}
 
 void GetRandV(TOKAMAK *td, double r0, double z0,
                   int n, double *psi, double *rr, double *zz, double *vv)

@@ -4,6 +4,7 @@
 #include "CPlasmaModel.h"
 #include "CDipoleStd.h"
 #include "CDipoleIntStable.h"
+#include "CDipoleStablePsiN.h"
 
 #define PI          3.14159265358979323
 #define MU0			1.25663706e-06
@@ -20,6 +21,8 @@ CPlasmaModel * CPlasmaModel::CreateModel(PLASMA *p)
 		case Plasma_DipoleIntStable :
 			it = new CDipoleIntStable(p);
 		break;
+		case Plasma_DipoleStablePsiN :
+			it = new CDipoleStablePsiN(p);
 	}
 	return it;
 }

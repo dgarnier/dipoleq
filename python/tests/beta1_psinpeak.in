@@ -1,0 +1,198 @@
+// Test for DipolEq
+//
+
+K_CodeControl
+	MaxIterFixed = 0
+	MaxIterFree = 50
+	NumCoils = 7
+	NumLimiters = 8
+	NumSeps = 2
+	NumMeasures = 0
+	Name = Vacuum
+// old version can't handle spaces in values
+	Info = Beta_1_Test_Case
+	Oname = beta1_psinpeak
+	MGname = *
+	LHname = *
+	RSname = *
+	RestartStatus = 0
+	RestartUnkns = 0
+	LHGreenStatus = 0
+	MGreenStatus = 0
+	NumEqualEq = 0
+	VacuumOnly = 0
+
+K_PsiGrid
+	Nsize = 256
+	Xmax = 2.6
+	Xmin = 1e-6
+	Zmin = -1.0
+	Zmax = 1.6
+	Symmetric = 0
+	BoundThreshold = 1e-6
+	ResThreshold = 1.0e-9
+	UnderRelax1 = 0.6
+	UnderRelax2 = 0.6
+
+K_Plasma
+	B0 = 0.00001
+	R0 = 0.0001
+	a0 = 2.5
+	Ip0 = .001
+	NumPsiPts = 25
+	PsiXmax = 0.995
+	Jedge = 0.00
+// this is the plasma model
+	ModelType = 7
+	PsiNPeak = 0.1
+	PEdge = 2
+	PsiFlat = .999
+	NSurf = 125
+ 	fCrit = 1
+
+K_Limiter
+	Name = Outer
+	X1 = 2.49
+	Z1 = 0.52
+	X2 = 2.49
+	Z2 = -0.52
+	Enabled = 1
+
+K_Limiter
+	Name = Top1
+	X1 = 2.49
+	Z1 = 0.52
+	X2 = 2.37
+	Z2 = 0.81
+	Enabled = 1
+
+K_Limiter
+	Name = Top2
+	X1 = 2.37
+	Z1 = 0.81
+	X2 = 2.0
+	Z2 = 1.0
+	Enabled = 1
+
+K_Limiter
+	Name = Top3
+	X1 = 2.0
+	Z1 = 1.0
+	X2 = 1.56
+	Z2 = 1.195
+	Enabled = 1
+
+K_Limiter
+	Name = Top4
+	X1 = 1.56
+	Z1 = 1.195
+	X2 = 1.0
+	Z2 = 1.35
+	Enabled = 1
+
+K_Limiter
+	Name = Top5
+	X1 = 1.0
+	Z1 = 1.35
+	X2 = 0.63
+	Z2 = 1.41
+	Enabled = 1
+
+K_Limiter
+	Name = Floating_Coil
+	X1 = 0.2235
+	Z1 = 0.000
+	X2 = 0.24
+	Z2 = 0.000
+	Enabled = -1
+
+K_Limiter
+	Name = Floating_Coil
+	X1 = 0.585
+	Z1 = 0.000
+	X2 = 0.5
+	Z2 = 0.000
+	Enabled = -1
+
+K_Separatrix
+	Name = Upper_Sep
+	X1 = 1.4
+	Z1 = 1.4
+	X2 = 0.6
+	Z2 = 0.05
+	XC = 1.0
+	ZC = 0.05
+	Enabled = 1
+
+K_Separatrix
+	Name = Extra_Sep
+	X1 = 1.5
+	Z1 = 1.0
+	X2 = 2.5
+	Z2 = 0.0
+	XC = 0.65
+	ZC = 0.05
+	Enabled = 0
+
+K_Coil
+	Name = F1_Coil
+	Enabled = 1
+	InitialCurrent = 57132
+	X  = 0.2717
+	dX = 0.0116
+	Z  = 0.0
+	dZ = 0.0695
+
+K_Coil
+	Name = F2_Coil
+	Enabled = 1
+	InitialCurrent = 169119
+	X  = 0.28504
+	dX = 0.01508
+	Z  = 0.0
+	dZ = 0.125
+
+K_Coil
+	Name = F3_Coil
+	Enabled = 1
+	InitialCurrent = 1257939
+	X  = 0.33734
+	dX = 0.08936
+	Z  = 0.0
+	dZ = 0.1615
+
+K_Coil
+	Name = L_Coil
+	Enabled = 1
+	InitialCurrent = 206000
+	X  = 0.483
+	dX = 0.322
+	Z  = 1.5633
+	dZ = 0.00661
+
+K_Coil
+	Name = H_U
+	Enabled = 0
+	InitialCurrent = 0
+	X = 2.35
+	dX = 0.05
+	Z = 1.175
+	dZ = 0.08
+
+K_Coil
+	Name = H_L
+	Enabled = 0
+	InitialCurrent = 0
+	X = 2.35
+	dX = 0.05
+	Z = -1.175
+	dZ = 0.08
+
+K_Coil
+	Name = C_Coil
+	Enabled = 0
+	InitialCurrent = 4050200
+	X = .6727
+	dX = 0.1
+	Z = 0.0
+	dZ = 0.7

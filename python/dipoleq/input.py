@@ -252,8 +252,28 @@ class CDipoleIntStableIn(PlasmaModelBaseModel):
             pm.model_input(key, str(getattr(self, key)), "")
 
 
+LDPN: TypeAlias = model_type_literals([ModelType.DipoleStablePsiN])  # type: ignore[valid-type]
+
+
+class CDipoleStablePsiNIn(PlasmaModelBaseModel):
+    Type: LDPN
+    PsiNPeak: float | None
+    PEdge: float | None
+    PsiFlat: float | None
+    NSurf: int | None
+    fCrit: float | None
+
+    def do_init(self, pl: Plasma) -> None:
+        """Initialize the plasma model with the input data."""
+        keys = ["PsiNPeak", "PEdge", "PsiFlat", "NSurf", "fCrit"]
+        pm = pl.Model
+        for key in keys:
+            pm.model_input(key, str(getattr(self, key)), "")
+
+
 PlasmaModel = Annotated[
-    PlasmaModelOld | CDipoleStdIn | CDipoleIntStableIn, Field(discriminator="Type")
+    PlasmaModelOld | CDipoleStdIn | CDipoleIntStableIn | CDipoleStablePsiNIn,
+    Field(discriminator="Type"),
 ]
 
 

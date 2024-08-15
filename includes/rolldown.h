@@ -30,6 +30,11 @@ void GetRandV(TOKAMAK *td, double r0, double z0,
 /* psi, r, and z should be vectors that are already set up going from 0 - n-1 */
 /* r0 and z0 are the initial positions */
 
+void GetRandVfromPsi(TOKAMAK *td, int n,
+                     double *psi, double *rr, double *zz, double *vv);
+/* psi, r, and z should be vectors that are already set up going from 0 - n-1 */
+/* initial position found from psi[0] */
+
 #ifdef __cplusplus
 }
 #endif

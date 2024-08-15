@@ -96,4 +96,5 @@
         "editor.defaultFormatter": "redhat.vscode-yaml",
         "editor.tabSize": 2
     },
+    "cmake.cmakePath": "${workspaceFolder}/.venv/bin/cmake",
 }
