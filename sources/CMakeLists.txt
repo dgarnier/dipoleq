@@ -16,6 +16,7 @@ list(APPEND dipoleq_SOURCES
     AddCoilJ.c
     AddShellJ.c
     CDipoleIntStable.cc
+    CDipoleStablePsiN.cc
     CDipoleStd.cc
     CPlasmaModel.cc
     DelChiSqr.c

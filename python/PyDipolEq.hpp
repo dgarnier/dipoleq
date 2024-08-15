@@ -16,7 +16,8 @@ enum class ModelType {
     AnisoNoFlow = Plasma_AnisoNoFlow,
     AnisoFlow = Plasma_AnisoFlow,
     DipoleStd = Plasma_DipoleStd,
-    DipoleIntStable = Plasma_DipoleIntStable
+    DipoleIntStable = Plasma_DipoleIntStable,
+    DipoleStablePsiN = Plasma_DipoleStablePsiN
 };
 
 enum class MeasType {

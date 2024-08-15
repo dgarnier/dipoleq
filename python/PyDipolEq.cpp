@@ -295,6 +295,7 @@ PYBIND11_MODULE(core, m) {
         .value("AnisoFlow", ModelType::AnisoFlow)
         .value("DipoleStd", ModelType::DipoleStd)
         .value("DipoleIntStable", ModelType::DipoleIntStable)
+        .value("DipoleStablePsiN", ModelType::DipoleStablePsiN)
     ;
     py::class_<CPlasmaModel>(m, "CPlasmaModel", "Plasma model base class")
         // FIXME

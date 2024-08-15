@@ -32,6 +32,8 @@ struct CPlasmaModel;
 #define	Plasma_AnisoFlow	4
 #define Plasma_DipoleStd	5
 #define Plasma_DipoleIntStable 6
+#define Plasma_DipoleStablePsiN 7
+
 
 /*
 **
