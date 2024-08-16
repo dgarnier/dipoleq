@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from . import Machine
 
 
-def plot_eq(m: Machine, ax: Axes | None = None) -> Axes | None:
+def plot_eq(m: Machine, ax: Axes | None = None, show_peak: bool = True) -> Axes | None:
     """Plot the equilibrium"""
     try:
         import matplotlib.pyplot as plt
@@ -48,5 +48,12 @@ def plot_eq(m: Machine, ax: Axes | None = None) -> Axes | None:
 
     if ilim is not None:
         ax.plot(ilim[:, :, 0].flatten(), ilim[:, :, 1].flatten(), "k-.")
+
+    if show_peak:
+        ipsi_peak = np.argmax(pl.P_pr)
+        psix = np.array(pl.PsiX_pr)
+        psix_peak = psix[ipsi_peak]
+        Rpeak, Zpeak = pg.get_contour(psix_peak)
+        ax.plot(Rpeak, Zpeak, "m--")
 
     return ax
