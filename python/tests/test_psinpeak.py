@@ -32,3 +32,4 @@ def test_psinpeak_py() -> None:
     mIn.Plasma.Model = mPM
     m = Machine.from_input_data(mIn)
     m.solve()
+    m.plot_eq(show_peak=True)

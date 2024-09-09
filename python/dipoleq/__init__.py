@@ -131,7 +131,7 @@ class Machine(core.Machine):
         """
         _save_to_hdf5(self, filename)
 
-    def plot_eq(self, **kwargs) -> None:
+    def plot_eq(self, **kwargs) -> None:  # type: ignore[no-untyped-def]
         """Plot the equilibrium"""
         plot.plot_eq(self, **kwargs)
 

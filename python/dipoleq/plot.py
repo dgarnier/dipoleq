@@ -50,6 +50,7 @@ def plot_eq(m: Machine, ax: Axes | None = None, show_peak: bool = True) -> Axes 
         ax.plot(ilim[:, :, 0].flatten(), ilim[:, :, 1].flatten(), "k-.")
 
     if show_peak:
+        pl = m.Plasma
         ipsi_peak = np.argmax(pl.P_pr)
         psix = np.array(pl.PsiX_pr)
         psix_peak = psix[ipsi_peak]
