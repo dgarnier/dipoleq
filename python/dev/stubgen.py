@@ -43,6 +43,8 @@ class MyPrinter(Printer):  # type: ignore[misc]
             for arg in f.args:
                 if arg.name == "buffer":
                     arg.annotation = Value("memoryview", True)
+        if f.name == "_pybind11_conduit_v1_":
+            return []  # just skip this dunder method (pybind11 and pybind11-stubgen bug)
         return super().print_method(method)
 
     def print_attribute(self, attr: Attribute) -> list[str]:
