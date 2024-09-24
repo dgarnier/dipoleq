@@ -51,6 +51,7 @@ def test_solve_yaml() -> None:
     m = Machine.from_file(data_dir / "beta1.yaml")
     m.solve()
     assert m.Plasma.Ip == pytest.approx(32984, rel=1e-4)
+    assert m.is_diverted() is False
 
 
 def test_read_dotin() -> None:

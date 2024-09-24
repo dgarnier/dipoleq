@@ -14,7 +14,7 @@ from typing import Any
 
 from typing_extensions import Self
 
-from . import core, file_input, input, plot, solver, util
+from . import core, file_input, input, plot, post_process, solver, util
 from ._version import __version__, __version_tuple__
 from .input import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
@@ -143,6 +143,7 @@ __all__ = [
     "file_input",
     "input",
     "plot",
+    "post_process",
     "solver",
     "util",
     "__version_tuple__",
