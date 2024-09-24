@@ -53,8 +53,8 @@ def get_inner_limiter_contact_point(m: Machine) -> tuple[float, float] | None:
 
 
 @_add_method(Machine)
-def get_xpoints(m: Machine) -> list[Separatrix]:
-    """Get the X-points"""
+def get_x_points(m: Machine) -> list[Separatrix]:
+    """Get the X-points (separatrices)"""
     valid_seps = [
         sep
         for sep in m.Seps
@@ -62,3 +62,16 @@ def get_xpoints(m: Machine) -> list[Separatrix]:
     ]
     valid_seps.sort(key=lambda sep: sep.Psi)
     return valid_seps
+
+
+@_add_method(Separatrix)
+def __repr__(sep: Separatrix) -> str:
+    """Pretty print a separatrix"""
+    if sep.IsSeparatrix and sep.Enabled:
+        return (
+            f"<X-point: {sep.Name} Psi: {sep.Psi:.3f}, "
+            f"Rs: {sep.Rs:.3f}, Zs: {sep.Zs:.3f}>"
+        )
+    return (
+        f"<X-point: {sep.Name} Enabled: {sep.Enabled}, " f"Found: {sep.IsSeparatrix}>"
+    )
