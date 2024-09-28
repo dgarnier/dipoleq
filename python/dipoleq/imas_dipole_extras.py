@@ -36,16 +36,17 @@ logger = logging.getLogger(__name__)
 # changing the names and descriptions as needed.
 
 
-def _get_imas_latest_version() -> str:
+def get_imas_latest_version() -> str:
+    """Get the latest IMAS version"""
     imas_versions = IMAS_versions()
-    if len(list(imas_versions.keys())):
+    if len(imas_versions.keys()):
         return str(list(imas_versions.keys())[-1])
     return "3.41.0"  # latest in OMAS as of 2024-09-24
 
 
 def _get_default_equilibrium_imas_struct_defs() -> dict[str, dict[str, Any]]:
-    fn = structures_filenames(_get_imas_latest_version())["equilibrium"]
-    with Path.open(fn, encoding="utf-8") as f:
+    fn = structures_filenames(get_imas_latest_version())["equilibrium"]
+    with Path(fn).open(mode="r", encoding="utf-8") as f:
         return json.load(f)  # type: ignore[no-any-return]
 
 

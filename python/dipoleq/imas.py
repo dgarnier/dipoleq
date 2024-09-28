@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from json2xml.json2xml import Json2xml
+from json2xml.json2xml import Json2xml  # type: ignore[import-untyped]
 from omas import ODS, omas_environment  # type: ignore[import-untyped]
 
 # from .core import Machine
