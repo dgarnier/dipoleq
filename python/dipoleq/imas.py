@@ -1,6 +1,6 @@
 """
-Map to IMAS data structures. Since IMAS is not yet available under public license,
-use OMAS.
+Map to IMAS data structures. Since IMAS is not yet available
+under public license, use OMAS.
 """
 
 import xml.etree.ElementTree as ET

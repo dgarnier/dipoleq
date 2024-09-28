@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from typing import Any
 
+import fixtures.typeguard_exclude  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.core import Machine as coreMachine

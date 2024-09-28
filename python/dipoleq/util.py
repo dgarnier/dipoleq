@@ -10,22 +10,24 @@ except ImportError:  # python < 3.11
 
 
 from collections.abc import Callable
-from typing import Annotated, Any, Literal, TypeVar
+from typing import Annotated, Any, Literal, ParamSpec, TypeVar
 
 import numpy as np
 from numpy.typing import NDArray
 
 # lets pirate onto the c-class with extra functions
 # just have to import this file... nice.
-_T = TypeVar("_T")
+CT = TypeVar("CT")
+T = TypeVar("T")
+P = ParamSpec("P")
 
 
-def add_method(cls: type[_T]) -> Callable[..., Any]:
+def add_method(cls: type[CT]) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """Add a method to a class, used as a decorator to a function.
     The first argument to the method must be the class instance.
     """
 
-    def decorator(func: Callable[[_T, Any], Any]) -> Callable[[_T, Any], Any]:
+    def decorator(func: Callable[P, T]) -> Callable[P, T]:
         setattr(cls, func.__name__, func)
         return func
 
