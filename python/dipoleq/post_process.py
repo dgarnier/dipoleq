@@ -4,55 +4,48 @@ Extra analysis routines for after a solve.
 These are pure python functions that extend the machine object functionality.
 """
 
-from collections.abc import Callable
-from typing import Any, TypeVar
+import numpy as np
 
-from .core import Machine, Separatrix
+from .core import Limiters, Machine, Separatrix
+from .util import ArrayN2, add_method, is_polygon_clockwise, segments_to_polygon
 
-# lets pirate onto the c-class with extra functions
-# just have to import this file... nice.
-_T = TypeVar("_T")
-
-
-def _add_method(cls: type[_T]) -> Callable[..., Any]:
-    def decorator(func: Callable[[_T, Any], Any]) -> Callable[[_T, Any], Any]:
-        setattr(cls, func.__name__, func)
-        return func
-
-    return decorator
+# will re-export extensions to these core classes
+# this is only necessary if including from this file
+# but its not necessary to do that since __init__.py will
+__all__ = ["Machine", "Limiters", "Separatrix"]
 
 
-@_add_method(Machine)
+@add_method(Machine)
 def is_outer_limited(m: Machine) -> bool:
     """Check if the equilibrium is diverted"""
     return any(lim.Enabled > 0 and lim.PsiLim <= m.PsiGrid.PsiLim for lim in m.Limiters)
 
 
-@_add_method(Machine)
+@add_method(Machine)
 def is_diverted(m: Machine) -> bool:
     """Check if the equilibrium is diverted."""
     return not is_outer_limited(m)
 
 
-@_add_method(Machine)
+@add_method(Machine)
 def get_outer_limiter_contact_point(m: Machine) -> tuple[float, float] | None:
     """Get the outer limiter contact point"""
     for lim in m.Limiters:
-        if lim.Enabled > 0 and lim.PsiMin <= m.PsiGrid.PsiLim:
-            return lim.Rmin, lim.Zmin
+        if lim.Enabled > 0 and lim.PsiLim <= m.PsiGrid.PsiLim:
+            return lim.RLim, lim.ZLim
     return None
 
 
-@_add_method(Machine)
+@add_method(Machine)
 def get_inner_limiter_contact_point(m: Machine) -> tuple[float, float] | None:
     """Get the inner limiter contact point"""
     for lim in m.Limiters:
-        if lim.Enabled < 0 and lim.PsiMin >= m.PsiGrid.PsiLim:
-            return lim.Rmin, lim.Zmin
+        if lim.Enabled < 0 and lim.PsiLim >= m.PsiGrid.PsiLim:
+            return lim.RLim, lim.ZLim
     return None
 
 
-@_add_method(Machine)
+@add_method(Machine)
 def get_x_points(m: Machine) -> list[Separatrix]:
     """Get the X-points (separatrices)"""
     valid_seps = [
@@ -64,7 +57,7 @@ def get_x_points(m: Machine) -> list[Separatrix]:
     return valid_seps
 
 
-@_add_method(Separatrix)
+@add_method(Separatrix)
 def __repr__(sep: Separatrix) -> str:
     """Pretty print a separatrix"""
     if sep.IsSeparatrix and sep.Enabled:
@@ -75,3 +68,29 @@ def __repr__(sep: Separatrix) -> str:
     return (
         f"<X-point: {sep.Name} Enabled: {sep.Enabled}, " f"Found: {sep.IsSeparatrix}>"
     )
+
+
+@add_method(Limiters)
+def olim_outline(lims: Limiters) -> ArrayN2:
+    """Get the outer limiter outline, if it exists
+    return as a 2D array of R, Z points
+    and arranged in a clockwise fashion.
+    """
+    olim = np.array(
+        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in lims if lim.Enabled > 0]  # type: ignore[attr-defined]
+    )
+    outline = segments_to_polygon(olim)
+    return outline if is_polygon_clockwise(outline) else np.flipud(outline)
+
+
+@add_method(Limiters)
+def ilim_outline(lims: Limiters) -> ArrayN2:
+    """Get the inner limiter outline, if it exists
+    return as a 2D array of R, Z points
+    and arranged in a counter-clockwise fashion.
+    """
+    ilim = np.array(
+        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in lims if lim.Enabled < 0]  # type: ignore[attr-defined]
+    )
+    outline = segments_to_polygon(ilim)
+    return outline if not is_polygon_clockwise(outline) else np.flipud(outline)
