@@ -313,12 +313,13 @@ PYBIND11_MODULE(core, m) {
         .def("plasmaG", &PlasmaG, "Calculate plasma G")
         .def("plasmaG2p", &PlasmaG2p, "Calculate plasma G2prime")
         .def_readwrite("Nsize", &PLASMA::Nsize, "Size of grid -1, should be factor of 2")
-        .def_property("ModelType", [](PLASMA& self) {return ModelType(self.ModelType);},
-            [](PLASMA& self, ModelType mtype) { self.ModelType = (int) mtype;},
-            "Plasma model type, see ModelType enum")
-        .def_property_readonly("Model", [](PLASMA& self)->py::object {
+        .def_property("ModelType", [](PLASMA &self)
+                      { return ModelType(self.ModelType); }, [](PLASMA &self, ModelType mtype)
+                      { self.ModelType = (int)mtype; }, "Plasma model type, see ModelType enum")
+        .def_property_readonly("Model", [](PLASMA &self) -> py::object
+                               {
             if (self.Model == NULL) return py::none();
-            return py::cast(self.Model);}, "The plasma model object")
+            return py::cast(self.Model); }, "The plasma model object")
         .def_readwrite("R0", &PLASMA::R0, "Reference major radius")
         .def_readwrite("Z0", &PLASMA::Z0, "Reference vertical position")
         .def_readwrite("B0", &PLASMA::B0, "Vacuum magnetic field at R0, Z0")
@@ -337,20 +338,20 @@ PYBIND11_MODULE(core, m) {
         .def_readwrite("SisoTerms", &PLASMA::SisoTerms, "Number of Siso terms in isotropic polynomial plasma models")
         .def_readwrite("SparTerms", &PLASMA::SparTerms, "Number of Spar terms in anisotropic polynomial plasma models")
         .def_readwrite("SperTerms", &PLASMA::SperTerms, "Number of Sper terms in anisotropic polynomial plasma models")
-        .def_property_readonly("G2p", [](PLASMA& self) -> py::object {
-            return DVectorView::create(self.G2pTerms, self.G2p);}, "G^2' polynomial terms")
-        .def_property_readonly("H", [](PLASMA& self) -> py::object {
-            return DVectorView::create(self.HTerms, self.H);}, "H polynomial terms")
-        .def_property_readonly("Pp", [](PLASMA& self) -> py::object {
-            return DVectorView::create(self.PpTerms, self.Pp);}, "p' polynomial terms")
-        .def_property_readonly("Rot", [](PLASMA& self) -> py::object {
-            return DVectorView::create(self.RotTerms, self.Rot);}, "Rotational flow terms")
-        .def_property_readonly("Siso", [](PLASMA& self) -> py::object {
-            return DVectorView::create(self.SisoTerms, self.Siso);}, "Isotropic S polynomial terms")
-        .def_property_readonly("Spar", [](PLASMA& self) -> py::object {
-            return DVectorView::create(self.SparTerms, self.Spar);}, "Anisotropic S parallel terms")
-        .def_property_readonly("Sper", [](PLASMA& self) -> py::object {
-            return DVectorView::create(self.SperTerms, self.Sper);}, "Anisotropic S perpendicular terms")
+        .def_property_readonly("G2p", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.G2pTerms, self.G2p); }, "G^2' polynomial terms")
+        .def_property_readonly("H", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.HTerms, self.H); }, "H polynomial terms")
+        .def_property_readonly("Pp", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.PpTerms, self.Pp); }, "p' polynomial terms")
+        .def_property_readonly("Rot", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.RotTerms, self.Rot); }, "Rotational flow terms")
+        .def_property_readonly("Siso", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.SisoTerms, self.Siso); }, "Isotropic S polynomial terms")
+        .def_property_readonly("Spar", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.SparTerms, self.Spar); }, "Anisotropic S parallel terms")
+        .def_property_readonly("Sper", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.SperTerms, self.Sper); }, "Anisotropic S perpendicular terms")
 
         // results
         .def_readonly("Ip", &PLASMA::Ip, "Plasma current")
@@ -370,80 +371,81 @@ PYBIND11_MODULE(core, m) {
         .def_readonly("RMagAxis", &PLASMA::XMagAxis, "Magnetic axis R")
         .def_readonly("ZMagAxis", &PLASMA::ZMagAxis, "Magnetic axis Z")
         .def_readonly("PsiMagAxis", &PLASMA::PsiMagAxis, "Psi at magnetic axis")
-        .def_readonly("PsiAxis", &PLASMA::PsiAxis, "Psi at axis")
+        .def_readonly("PsiAxis", &PLASMA::PsiAxis, "Psi at axis or inner separatrix")
         .def_readonly("PsiLim", &PLASMA::PsiLim, "Psi at plasma/vacuum boundary")
+        .def_readonly("PsiFCFS", &PLASMA::PsiAxis, "Psi at axis or inner separatrix")
+        .def_readonly("PsiLCFS", &PLASMA::PsiLim, "Psi at outer separatrix")
         .def_readonly("HalfWidth", &PLASMA::HalfWidth, "Half width")
         .def_readonly("Elongation", &PLASMA::Elongation, "Elongation")
 
         .def_readonly("ChiSqr", &PLASMA::ChiSqr, "Chi squared")
         .def_readonly("totKinEnergy", &PLASMA::TotKinEnergy, "Total kinetic energy")
         .def_readonly("totMagEnergy", &PLASMA::TotMagEnergy, "Total magnetic energy")
-        .def_property_readonly("B2", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.B2);}, "B^2 on grid")
-        .def_property_readonly("GradPsiR", [](PLASMA& self) {
-            return DMatrixView::create(self.Nsize, self.GradPsiX);}, "GradPsiR(self) -> MatrixView\n\n:math:`\\del\\psi/\\delR` on grid\n")
-        .def_property_readonly("GradPsiZ", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.GradPsiZ);}, "∂Psi/∂Z on grid")
-        .def_property_readonly("GradPsi2", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.GradPsi2);}, ":math:`|d\\psi/dR|^2 + |d\\psi/dZ|^2` on grid")
-        .def_property_readonly("Bt", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.Bt);}, "B_toroidal on grid")
-        .def_property_readonly("G", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.G);}, ":math:`G = F/(B_0 R_0)` on grid")
-        .def_property_readonly("Rho", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.Rho);}, "Rho on grid")
-        .def_property_readonly("Piso", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.Piso);}, "Isotropic pressure on grid")
-        .def_property_readonly("Ppar", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.Ppar);}, "Anisotropic p_parallel pressure on grid")
-        .def_property_readonly("Pper", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.Pper);}, "Anistropic p_perpendicular pressure on grid")
-        .def_property_readonly("Alpha", [](PLASMA& self)->py::object {
-            return DMatrixView::create(self.Nsize, self.Alpha);}, "Alpha = :math:`\\mu_0*(p_\\parallel - p_\\perp)/B^2` on grid")
+        .def_property_readonly("B2", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.B2); }, "B^2 on grid")
+        .def_property_readonly("GradPsiR", [](PLASMA &self)
+                               { return DMatrixView::create(self.Nsize, self.GradPsiX); }, "GradPsiR(self) -> MatrixView\n\n:math:`\\del\\psi/\\delR` on grid\n")
+        .def_property_readonly("GradPsiZ", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.GradPsiZ); }, "∂Psi/∂Z on grid")
+        .def_property_readonly("GradPsi2", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.GradPsi2); }, ":math:`|d\\psi/dR|^2 + |d\\psi/dZ|^2` on grid")
+        .def_property_readonly("Bt", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Bt); }, "B_toroidal on grid")
+        .def_property_readonly("G", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.G); }, ":math:`G = F/(B_0 R_0)` on grid")
+        .def_property_readonly("Rho", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Rho); }, "Rho on grid")
+        .def_property_readonly("Piso", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Piso); }, "Isotropic pressure on grid")
+        .def_property_readonly("Ppar", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Ppar); }, "Anisotropic p_parallel pressure on grid")
+        .def_property_readonly("Pper", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Pper); }, "Anistropic p_perpendicular pressure on grid")
+        .def_property_readonly("Alpha", [](PLASMA &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Alpha); }, "Alpha = :math:`\\mu_0*(p_\\parallel - p_\\perp)/B^2` on grid")
 
-        .def_property_readonly("PsiX_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.PsiX_pr);}, "Normalized Psi ordinate")
-        .def_property_readonly("Psi_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.Psi_pr);}, "Psi on normalized profile")
-        .def_property_readonly("P_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.P_pr);}, "Pressure profile")
-        .def_property_readonly("G_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.G_pr);}, "G = (F = B_t R)/(B_0 R_0) profile")
-        .def_property_readonly("Pp_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.Pp_pr);}, "p' profile")
-        .def_property_readonly("G2p_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.G2p_pr);}, "G^2' profile")
-        .def_property_readonly("q_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.q_pr);}, "q profile")
-        .def_property_readonly("Volp_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.Volp_pr);}, "dV/dPsi profile")
-        .def_property_readonly("Vol_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.Vol_pr);}, "V profile")
-        .def_property_readonly("S_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.S_pr);}, "S = global shear of q profile")
-        .def_property_readonly("B2_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.B2_pr);}, "<B^2> flux tube averaged profile")
-        .def_property_readonly("Well_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.Well_pr);}, "Magnetic well profile")
-        .def_property_readonly("J_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.J_pr);}, "<J> flux tube averaged current density profile")
-        .def_property_readonly("Beta_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.Beta_pr);}, "<β> flux tube averaged profile")
-        .def_property_readonly("BetaMax_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.BetaMax_pr);}, "max(β) on flux tube profile")
-        .def_property_readonly("RBetaMax_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.XBetaMax_pr);}, "R of max(β) profile")
-        .def_property_readonly("ZBetaMax_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.ZBetaMax_pr);}, "Z of max(β) profile")
-        .def_property_readonly("BBetaMax_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.BBetaMax_pr);}, "B of max(β) profile")
-        .def_property_readonly("BMax_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.BMax_pr);}, "max(B) on flux tube profile")
-        .def_property_readonly("RBMax_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.XBMax_pr);}, "R of max(B) profile")
-        .def_property_readonly("ZBMax_pr", [](PLASMA& self)->py::object {
-            return DVectorView::create(self.NumPsiPts, self.ZBMax_pr);}, "Z of max(B) profile")
-    ;
+        .def_property_readonly("PsiX_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.PsiX_pr); }, "Normalized Psi ordinate")
+        .def_property_readonly("Psi_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.Psi_pr); }, "Psi on normalized profile")
+        .def_property_readonly("P_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.P_pr); }, "Pressure profile")
+        .def_property_readonly("G_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.G_pr); }, "G = (F = B_t R)/(B_0 R_0) profile")
+        .def_property_readonly("Pp_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.Pp_pr); }, "p' profile")
+        .def_property_readonly("G2p_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.G2p_pr); }, "G^2' profile")
+        .def_property_readonly("q_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.q_pr); }, "q profile")
+        .def_property_readonly("Volp_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.Volp_pr); }, "dV/dPsi profile")
+        .def_property_readonly("Vol_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.Vol_pr); }, "V profile")
+        .def_property_readonly("S_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.S_pr); }, "S = global shear of q profile")
+        .def_property_readonly("B2_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.B2_pr); }, "<B^2> flux tube averaged profile")
+        .def_property_readonly("Well_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.Well_pr); }, "Magnetic well profile")
+        .def_property_readonly("J_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.J_pr); }, "<J> flux tube averaged current density profile")
+        .def_property_readonly("Beta_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.Beta_pr); }, "<β> flux tube averaged profile")
+        .def_property_readonly("BetaMax_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.BetaMax_pr); }, "max(β) on flux tube profile")
+        .def_property_readonly("RBetaMax_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.XBetaMax_pr); }, "R of max(β) profile")
+        .def_property_readonly("ZBetaMax_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.ZBetaMax_pr); }, "Z of max(β) profile")
+        .def_property_readonly("BBetaMax_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.BBetaMax_pr); }, "B of max(β) profile")
+        .def_property_readonly("BMax_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.BMax_pr); }, "max(B) on flux tube profile")
+        .def_property_readonly("RBMax_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.XBMax_pr); }, "R of max(B) profile")
+        .def_property_readonly("ZBMax_pr", [](PLASMA &self) -> py::object
+                               { return DVectorView::create(self.NumPsiPts, self.ZBMax_pr); }, "Z of max(B) profile");
 
     py::class_<PSIGRID>(m, "PsiGrid", "Magnetic flux grid data and methods")
         .def(py::init(&new_PsiGrid), "Create PsiGrid")
@@ -464,34 +466,37 @@ PYBIND11_MODULE(core, m) {
         .def_readwrite("Rmin", &PSIGRID::Xmin, "Minimum R of computational grid")
         .def_readwrite("Zmax", &PSIGRID::Zmax, "Maximum Z of computational grid")
         .def_readwrite("Zmin", &PSIGRID::Zmin, "Minimum Z of computational grid")
-        .def_property_readonly("dr", [](PSIGRID& pg){return pg.dx;}, "R grid spacing")
-        .def_property_readonly("dz", [](PSIGRID& pg){return pg.dz;}, "Z grid spacing")
+        .def_property_readonly("dr", [](PSIGRID &pg)
+                               { return pg.dx; }, "R grid spacing")
+        .def_property_readonly("dz", [](PSIGRID &pg)
+                               { return pg.dz; }, "Z grid spacing")
         .def_readwrite("BoundError", &PSIGRID::BoundError)
         .def_readwrite("BoundThreshold", &PSIGRID::BoundThreshold)
         .def_readwrite("ResThreshold", &PSIGRID::ResThreshold)
         .def_readwrite("UnderRelax1", &PSIGRID::UnderRelax1)
         .def_readwrite("UnderRelax2", &PSIGRID::UnderRelax2)
-        .def_readwrite("PsiAxis", &PSIGRID::PsiAxis, "Psi at FCFS or Magnetic Axis")
-        .def_readwrite("PsiMagAxis", &PSIGRID::PsiMagAxis, "Psi at Magnetic Axis")
-        .def_readwrite("PsiLim", &PSIGRID::PsiLim, "Psi at plasma/vacuum boundary")
-        .def_property_readonly("DelPsi", [](PSIGRID& pg){return pg.DelPsi;}, "Change in psi across plasma") 
+        .def_readonly("PsiAxis", &PSIGRID::PsiAxis, "Psi at FCFS or Magnetic Axis")
+        .def_readonly("PsiMagAxis", &PSIGRID::PsiMagAxis, "Psi at Magnetic Axis")
+        .def_readonly("PsiLim", &PSIGRID::PsiLim, "Psi at plasma/vacuum boundary")
+        .def_readonly("PsiFCFS", &PSIGRID::PsiAxis, "Psi at axis or inner separatrix")
+        .def_readonly("PsiLCFS", &PSIGRID::PsiLim, "Psi at outer separatrix")
+        .def_property_readonly("DelPsi", [](PSIGRID &pg)
+                               { return pg.DelPsi; }, "Change in psi across plasma")
         .def_readwrite("RMagAxis", &PSIGRID::XMagAxis, "Magnetic axis R")
         .def_readwrite("ZMagAxis", &PSIGRID::ZMagAxis, "Magnetic axis Z")
-        .def_property_readonly("R", [](PSIGRID& self) -> py::object {
-            return DVectorView::create(self.Nsize + 1, self.X);}, "R grid")
-        .def_property_readonly("Z", [](PSIGRID& self) -> py::object {
-            return DVectorView::create(self.Nsize + 1, self.Z);}, "Z grid")
-        .def_property_readonly("IsPlasma", [](PSIGRID& self) -> py::object {
-            return IMatrixView::create(self.Nsize, self.IsPlasma);}, "grid point is considered inside the plasma.")
-        .def_property_readonly("Psi", [](PSIGRID& self) -> py::object {
-            return DMatrixView::create(self.Nsize, self.Psi);}, "Magnetic flux on grid")
-        .def_property_readonly("Current", [](PSIGRID& self) -> py::object {
-            return DMatrixView::create(self.Nsize, self.Current);}, "Current density on grid * μ_0")
-        .def_property_readonly("Residual", [](PSIGRID& self) -> py::object {
-            return DMatrixView::create(self.Nsize, self.Residual);}, "Current density residual on grid")
-        .def("get_contour", &get_flux_contour, 
-            "Get a contour at normalized psi, returns r, z vectors")
-    ;
+        .def_property_readonly("R", [](PSIGRID &self) -> py::object
+                               { return DVectorView::create(self.Nsize + 1, self.X); }, "R grid")
+        .def_property_readonly("Z", [](PSIGRID &self) -> py::object
+                               { return DVectorView::create(self.Nsize + 1, self.Z); }, "Z grid")
+        .def_property_readonly("IsPlasma", [](PSIGRID &self) -> py::object
+                               { return IMatrixView::create(self.Nsize, self.IsPlasma); }, "grid point is considered inside the plasma.")
+        .def_property_readonly("Psi", [](PSIGRID &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Psi); }, "Magnetic flux on grid")
+        .def_property_readonly("Current", [](PSIGRID &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Current); }, "Current density on grid * μ_0")
+        .def_property_readonly("Residual", [](PSIGRID &self) -> py::object
+                               { return DMatrixView::create(self.Nsize, self.Residual); }, "Current density residual on grid")
+        .def("get_contour", &get_flux_contour, "Get a contour at normalized psi, returns r, z vectors");
 
     py::enum_<MeasType>(m, "MeasType", py::arithmetic(), "Measurement type")
         .value("unk", MeasType::unk)

@@ -31,7 +31,7 @@ def is_diverted(m: Machine) -> bool:
 def get_outer_limiter_contact_point(m: Machine) -> tuple[float, float] | None:
     """Get the outer limiter contact point"""
     for lim in m.Limiters:
-        if lim.Enabled > 0 and lim.PsiLim <= m.PsiGrid.PsiLim:
+        if lim.Enabled > 0 and np.isclose(lim.PsiLim, m.PsiGrid.PsiLim):
             return lim.RLim, lim.ZLim
     return None
 
@@ -40,7 +40,7 @@ def get_outer_limiter_contact_point(m: Machine) -> tuple[float, float] | None:
 def get_inner_limiter_contact_point(m: Machine) -> tuple[float, float] | None:
     """Get the inner limiter contact point"""
     for lim in m.Limiters:
-        if lim.Enabled < 0 and lim.PsiLim >= m.PsiGrid.PsiLim:
+        if lim.Enabled < 0 and np.isclose(lim.PsiLim, m.PsiGrid.PsiAxis):
             return lim.RLim, lim.ZLim
     return None
 
