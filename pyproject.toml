@@ -50,8 +50,8 @@ dev = ["scikit-build-core", "cibuildwheel", "wheel", "build", "json2xml",
        "numpy", "omas", "pybind11", "pyyaml", "pybind11-stubgen",
        "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade",
        "typeguard"]
-docs = ["myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
-        "autodoc_pydantic", "numpy", "sphinx-rtd-theme",]
+docs = ["sphinx<8", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
+        "autodoc_pydantic", "numpy"]
 imas = ["omas", "json2xml"]
 
 [tool.scikit-build]
