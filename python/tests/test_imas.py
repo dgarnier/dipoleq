@@ -5,11 +5,12 @@
 import os
 from pathlib import Path
 
+import fixtures.typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.imas import imas_input_params, load_imas_data_structure
 
-data_dir = Path(os.path.realpath(__file__)).parent
+data_dir = Path(os.path.realpath(__file__)).parent / "data"
 
 
 def test_create_ods() -> None:  # pylint: disable=missing-function-docstring

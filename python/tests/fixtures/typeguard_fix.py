@@ -3,7 +3,7 @@ OMAS has some bugs with typeguard, so lets exclude it by importing it first.
 
 Yes.. this is a hack, but it works for now.
 Need to get OMAS to fix problems with their regular expressions.
-()
+
 """
 
 import importlib

@@ -5,14 +5,14 @@ import os
 from pathlib import Path
 from typing import Any
 
-import fixtures.typeguard_exclude  # noqa: F401  # pylint: disable=unused-import
+import fixtures.typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.core import Machine as coreMachine
 from dipoleq.file_input import input_from_dotin
 from dipoleq.solver import solve
 
-data_dir = Path(os.path.realpath(__file__)).parent
+data_dir = Path(os.path.realpath(__file__)).parent / "data"
 
 
 def props(x: Any) -> dict[str, Any]:
