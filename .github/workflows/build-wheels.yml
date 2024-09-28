@@ -50,6 +50,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
+      # required to create github release
+      contents: write
+      # write permission is required for autolabeler
+      pull-requests: write
+      # required for pipy trusted publisher
       id-token: write
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
     steps:
