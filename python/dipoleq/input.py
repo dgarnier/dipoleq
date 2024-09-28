@@ -126,7 +126,9 @@ def model_type_literals(mts: list[ModelTypeA]) -> TypeAlias:
 class PlasmaModelBaseModel(BaseModel):
     """Base class for plasma models. This is not a real model, but a base class"""
 
-    Type: ModelTypeA = Field(validation_alias=AliasChoices("Type", "ModelType"))
+    Type: ModelTypeA = Field(
+        validation_alias=AliasChoices("Type", "ModelType"), serialization_alias="int"
+    )
 
     @field_validator("Type", mode="after")
     @classmethod

@@ -97,4 +97,5 @@
         "editor.tabSize": 2
     },
     "cmake.cmakePath": "${workspaceFolder}/.venv/bin/cmake",
+    "cmake.generator": "Ninja",
 }

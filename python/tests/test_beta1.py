@@ -5,13 +5,14 @@ import os
 from pathlib import Path
 from typing import Any
 
+import fixtures.typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.core import Machine as coreMachine
 from dipoleq.file_input import input_from_dotin
 from dipoleq.solver import solve
 
-data_dir = Path(os.path.realpath(__file__)).parent
+data_dir = Path(os.path.realpath(__file__)).parent / "data"
 
 
 def props(x: Any) -> dict[str, Any]:
@@ -51,6 +52,7 @@ def test_solve_yaml() -> None:
     m = Machine.from_file(data_dir / "beta1.yaml")
     m.solve()
     assert m.Plasma.Ip == pytest.approx(32984, rel=1e-4)
+    assert m.is_diverted() is False
 
 
 def test_read_dotin() -> None:

@@ -9,15 +9,19 @@ at OpenStar Technologies, LTD.
 
 """
 
+import contextlib
 from pathlib import Path
 from typing import Any
 
 from typing_extensions import Self
 
-from . import core, file_input, input, plot, solver, util
+from . import core, file_input, input, plot, post_process, solver, util
 from ._version import __version__, __version_tuple__
 from .input import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
+
+with contextlib.suppress(ImportError):
+    from . import imas
 
 
 class Machine(core.Machine):
@@ -25,8 +29,9 @@ class Machine(core.Machine):
     Child of core.Machine
     """
 
-    # don't even think about messing with init
-    # and pybind11 superclass
+    def __init__(self) -> None:
+        super().__init__()
+        self.input_data: MachineIn | None = None
 
     @classmethod
     def from_fileinput(cls, filename: str | Path) -> Self:
@@ -100,6 +105,7 @@ class Machine(core.Machine):
         """
         m = cls()
         valid_input.initalize_machine(m)
+        m.input_data = valid_input
         return m
 
     def solve(self, quiet: bool = True) -> None:
@@ -135,6 +141,17 @@ class Machine(core.Machine):
         """Plot the equilibrium"""
         plot.plot_eq(self, **kwargs)
 
+    if "imas" in globals():
+
+        def to_omas(
+            self,
+            ods: imas.ODS | None = None,
+            time_index: int | None = None,
+            time: float = 0.0,
+        ) -> imas.ODS:
+            """Convert the machine data to an IMAS ODS"""
+            return imas.to_omas(self, ods=ods, time_index=time_index, time=time)
+
 
 __all__ = [
     "Machine",
@@ -143,6 +160,7 @@ __all__ = [
     "file_input",
     "input",
     "plot",
+    "post_process",
     "solver",
     "util",
     "__version_tuple__",

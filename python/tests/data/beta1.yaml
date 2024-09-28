@@ -52,9 +52,9 @@ Limiters:
   - Limiter:
     Name: Outer
     X1: 2.49
-    Z1: 0.52
+    Z1: -0.52
     X2: 2.49
-    Z2: -0.52
+    Z2: 0.52
     Enabled: 1
 
   - Limiter:

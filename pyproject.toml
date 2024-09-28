@@ -44,14 +44,15 @@ h5togeqdsk = "dipoleq.h5togeqdsk:main"
 dipoleq = "dipoleq.main_cli:main"
 
 [project.optional-dependencies]
-test = ["pytest", "matplotlib", "h5py_stubs"]
+test = ["pytest", "matplotlib", "h5py_stubs", "omas", "json2xml", "typeguard"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
-dev = ["scikit-build-core", "cibuildwheel", "wheel", "build",
-       "numpy", "pybind11", "pyyaml", "pybind11-stubgen",
-       "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade"]
+dev = ["scikit-build-core", "cibuildwheel", "wheel", "build", "json2xml",
+       "numpy", "omas", "pybind11", "pyyaml", "pybind11-stubgen",
+       "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade",
+       "typeguard"]
 docs = ["myst-parser", "sphinx >=4.0", "sphinx-autodoc-typehints", "sphinx-copybutton",
         "autodoc_pydantic", "numpy", "sphinx_rtd_theme",]
-omas = ["omas"]
+imas = ["omas", "json2xml"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
