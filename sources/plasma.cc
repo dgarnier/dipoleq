@@ -98,9 +98,14 @@ PLASMA       *new_Plasma()
 	p->J_pr = NULL;				/* flux-surface averaged toroidal current */
 	p->Beta_pr = NULL;			/* flux-tube averaged beta */
 
+	p->XBetaMax_pr = NULL;		/* X at BetaMax on a flux surface */
+	p->ZBetaMax_pr = NULL;		/* Z at BetaMax on a flux surface */
 	p->BBetaMax_pr = NULL;		/* beta at BetaMax on a flux surface */
 	p->BMax_pr = NULL;			/* maximum field strength on a flux surface */
-
+	p->XBMax_pr = NULL;			/* X at BMax on a flux surface */
+	p->ZBMax_pr = NULL;			/* Z at BMax on a flux surface */
+	p->XXMax_pr = NULL;			/* X at max X of closed psi contour */
+	p->ZXMax_pr = NULL;			/* Z at max X of closed psi contour */
 
 	p->Psi_pr = NULL;
 	p->PsiX_pr = NULL;
@@ -172,6 +177,15 @@ void          free_Plasma(PLASMA * p)
 		IF_free_dvectorg(p->Well_pr, p->NumPsiPts - 1);
 		IF_free_dvectorg(p->J_pr, p->NumPsiPts - 1);
 		IF_free_dvectorg(p->Beta_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->BetaMax_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->XBetaMax_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->ZBetaMax_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->BBetaMax_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->BMax_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->XBMax_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->ZBMax_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->XXMax_pr, p->NumPsiPts - 1);
+		IF_free_dvectorg(p->ZXMax_pr, p->NumPsiPts - 1);
 
 		IF_free_dvectorg(p->Psi_pr, p->NumPsiPts - 1);
 		IF_free_dvectorg(p->PsiX_pr, p->NumPsiPts - 1);

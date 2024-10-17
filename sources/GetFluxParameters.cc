@@ -861,9 +861,9 @@ void          GetFluxParameters(TOKAMAK * td)
 
     /* F I N D   M A X   F I E L D   P O S I T I O N */
 
-        pl->BMax_pr = dvector(0, npts - 1);
-	pl->XBMax_pr = dvector(0, npts - 1);
-	pl->ZBMax_pr = dvector(0, npts - 1);
+    pl->BMax_pr = dvector(0, npts - 1);
+    pl->XBMax_pr = dvector(0, npts - 1);
+    pl->ZBMax_pr = dvector(0, npts - 1);
 
 	for (ix = 1; ix < nmax; ix++)
 		for (iz = 1; iz < nmax; iz++)
@@ -887,6 +887,30 @@ void          GetFluxParameters(TOKAMAK * td)
 		pl->BMax_pr[i] = sqrt(1.0/gIntMin);
 	}
 
+    /* F I N D   M A X   R A D I A L   E X T E N T */
+
+    pl->XXMax_pr = dvector(0, npts - 1);
+    pl->ZXMax_pr = dvector(0, npts - 1);
+
+	for (ix = 1; ix < nmax; ix++)
+		for (iz = 1; iz < nmax; iz++)
+			if (NearPlasma(pg->IsPlasma, ix, iz)) {
+				gIntegrand[ix][iz] = 1.0/pg->X[ix];
+			}
+
+#ifndef DIPOLE
+    pl->XXMax_pr[0] = pg->XMagAxis;
+    pl->ZXMax_pr[0] = pg->ZMagAxis;
+
+    for (i = 1; i < npts; i++) {
+#else
+    for (i = 0; i < npts; i++) {
+#endif
+		PsiX = i * pl->PsiXmax / (npts - 1.0);
+		FIND_MIN(pg, PsiX);
+		pl->XXMax_pr[i] = gXimin;
+		pl->ZXMax_pr[i] = gZimin;
+	}
 
 
 	/* F L U X   S U R F A C E   A V G   O F   C U R R E N T */

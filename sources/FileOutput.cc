@@ -1020,7 +1020,7 @@ void GS2Output(TOKAMAK * td)
         FILE         *fi;
 	PSIGRID      *pg;
 	PLASMA       *pl;
-	double        Psi, DelPsi, P;
+	double        Psi, DelPsi, P, rho_mid;
 	double        PsiFCFS, PsiLCFS, PsiNorm;
 	int           i,j,k,q,np,npts;
 	int	      ix, iz, Nsize;
@@ -1038,51 +1038,58 @@ void GS2Output(TOKAMAK * td)
 	npts = pl->NumPsiPts;
 	DelPsi = pl->PsiLim - pl->PsiAxis;
 	PsiFCFS = pl->PsiAxis;
-        PsiLCFS = pl->PsiLim;
-        PsiNorm = 1.0;  /* what should this be?  2*PI*Current... what for? */
-
+    PsiLCFS = pl->PsiLim;
+    PsiNorm = 1.0;  /* what should this be?  2*PI*Current... what for? */
 	Nsize = pg->Nsize;
+	np = Nsize+1;
 
 
 	/* Grid Size */
-        /* write(7,200) nr, nz, nrho */
-	fprintf(fi, " %6d %6d %6d\n",Nsize+1,Nsize+1,npts);
-        /* write(7,210) R_max, Z_max */
-        fprintf(fi, " %14.7e %14.7e\n",pg->Xmax,pg->Zmax);
-        /* Rmin, Zmin */
-        /* write(7,210) 1., 0. */
-        fprintf(fi, " %14.7e %14.7e\n",pg->Xmin,pg->Zmin);
-        /* Psi_FCFS, Psi_LCFS, not normalized and 2*pi*current */
-        fprintf(fi, " %14.7e %14.7e %14.7e\n", PsiFCFS, PsiLCFS, PsiNorm);
-        /* Pressure profile p(psi_norm)  n_psi_norm = nrho ?? or nr ??? */
-        /* priyanka has this as nr... but with no good reason. */
-        np = Nsize+1;
-        for (i=0, k=0; i<np; i++) {
-            Psi = PsiFCFS + i*DelPsi/(np-1);
-            P = PlasmaP(pl,Psi);
-            /* Calculate p of psi at normalized rho point */
-            fprintf(fi, " %16.8e", P);
-            if (!(++k % 5)) fprintf(fi,"\n");
-        }
-        if (k % 5) fprintf(fi,"\n");
-        /* Psi (norm?) profile as function of R & Z */
-        /* careful with the i, j direction... */
-        /*   write(7,210) ((Psi(i,j), i=1,nr), j=1,nz) */
-        for (j=0, k=0; j<=Nsize; j++)
-            for(i=0; i<=Nsize; i++) {
-            fprintf(fi, " %16.8e", pg->Psi[i][j]);
-            if (!(++k % 5)) fprintf(fi,"\n");
-        }
-        if (k % 5) fprintf(fi,"\n");
+	/* read(funit, *) nw_in, nh_in, nrho */
+	fprintf(fi, " %6d %6d %6d\n", np, np, npts);
+	/* read(funit, 2020) rwid, zhei */
+	fprintf(fi, " %14.7e %14.7e\n",(pg->Xmax - pg->Xmin), (pg->Zmax - pg->Zmin));
+	/* read(funit, 2020) self%R_mag, self%Z_mag */
+	fprintf(fi, " %14.7e %14.7e\n",pl->XMagAxis, pl->ZMagAxis);
+	/* Psi_FCFS, Psi_LCFS, not normalized and 2*pi*current */
+	/* read(funit, 2020) self%psi_0, self%psi_a, bcentr */
+	fprintf(fi, " %14.7e %14.7e %14.7e\n", PsiFCFS, PsiLCFS, pl->B0R0/pl->XMagAxis);
 
-        /* write(7,210) (rho_mid(i), i=1,nrho) */
+	/* read(funit, 2020) (p(j), j = 1, nw_in)  ! pressure read */
+	for (i=0, k=0; i<np; i++) {
+		/* this seems weird to me.. but its what is in the deq.f90 code */
+		Psi = PsiFCFS + i*DelPsi/(np-1);
+		P = PlasmaP(pl, Psi);
+		/* Calculate p of psi at normalized rho point */
+		fprintf(fi, " %16.8e", P);
+		if (!(++k % 5)) fprintf(fi,"\n");
+	}
+	if (k % 5) fprintf(fi,"\n");
 
-        /* write(7,210) (psi_mid(i), i=1,nrho) */
-	/*  100 format (4(1x,e12.5))
-            200 format (5(1x,i5))
-            210 format (5(e16.8)) */
+	/* Psi (norm?) profile as function of R & Z */
+	/* careful with the i, j direction... */
+	/* read(funit, 2020) ((sdfit_psi(i,j) , i = 1, nw_in) , j = 1, nh_in) */
+	for (j=0, k=0; j<=Nsize; j++)
+		for(i=0; i<=Nsize; i++) {
+		fprintf(fi, " %16.8e", pg->Psi[i][j]);
+		if (!(++k % 5)) fprintf(fi,"\n");
+	}
+	if (k % 5) fprintf(fi,"\n");
 
+	/* read (funit, 2020) (self%rho_mid(i), i = 1, nrho) */
+	/* rho mid defined from kobyashi's thesis */
+	for (i=0, k=0; i<npts; i++) {
+		rho_mid = pl->XXMax_pr[i] - pl->XMagAxis;
+		fprintf(fi, " %16.8e", rho_mid);
+		if (!(++k % 5)) fprintf(fi,"\n");
+	}
+	if (k % 5) fprintf(fi,"\n");
+
+	/* read (funit, 2020) (self%psi_mid(i), i = 1, nrho) */
+	for (i=0, k=0; i<npts; i++) {
+		fprintf(fi, " %16.8e", pl->Psi_pr[i]);
+		if (!(++k % 5)) fprintf(fi,"\n");
+	}
+	if (k % 5) fprintf(fi,"\n");
 	fclose(fi);
-
-
 }

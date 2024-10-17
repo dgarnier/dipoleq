@@ -780,6 +780,7 @@ PYBIND11_MODULE(core, m) {
         .def("get_plasma_parameters", &GetPlasmaParameters, "Get plasma parameters")
         .def("zero_J", &ZeroJ, "Zero J")
         .def("find_J", &FindJ, "Find J")
+        .def("write_GS2_geo", &GS2Output, "Write GS2 geometry file")
         .def_readwrite("MaxIterFixed", &TOKAMAK::MaxIterFixed)
         .def_readwrite("MaxIterFree", &TOKAMAK::MaxIterFree)
         .def_readwrite("IterFixed", &TOKAMAK::IterFixed)
