@@ -608,7 +608,7 @@ void          FluxProfileOutput(TOKAMAK * td)
 				i, PsiX, Psi, P, Pp, pl->Volp_pr[i], pl->Vol_pr[i],
 			 pl->J_pr[i], pl->B2_pr[i], pl->Beta_pr[i],
 			 pl->BetaMax_pr[i], pl->XBetaMax_pr[i], pl->ZBetaMax_pr[i], pl->BBetaMax_pr[i],
-                         pl->BMax_pr[i],pl->XBMax_pr[i],pl->ZBMax_pr[i]);
+						 pl->BMax_pr[i],pl->XBMax_pr[i],pl->ZBMax_pr[i]);
 
 #endif
 	}
@@ -619,7 +619,7 @@ void          FluxProfileOutput(TOKAMAK * td)
 	HDFFluxFuncs(td->Oname,npts,PsiXV,PsiV,PV,GV,PpV,G2V,pl->q_pr,pl->Volp_pr, pl->Vol_pr,
 			pl->S_pr, pl->Well_pr, pl->J_pr, pl->B2_pr, pl->Beta_pr,
 			pl->BetaMax_pr, pl->XBetaMax_pr, pl->ZBetaMax_pr, pl->BBetaMax_pr,
-                         pl->BMax_pr,pl->XBMax_pr,pl->ZBMax_pr);
+						 pl->BMax_pr,pl->XBMax_pr,pl->ZBMax_pr);
 #endif /* HDFOUTPUT */
 
 }
@@ -654,7 +654,7 @@ void          MeasOutput(TOKAMAK * td)
 		fprintf(fi, "    Run was initialized internally.\n");
 	fprintf(fi, "    The final value of chisq = %g; BoundError = %g\n",
 			td->Plasma->ChiSqr, td->PsiGrid->BoundError);
-        if (deg_freedom >= 1)
+		if (deg_freedom >= 1)
 	fprintf(fi, "    The chi-square probability, Q = %g.\n",
 		gammq(0.5*deg_freedom,0.5*td->Plasma->ChiSqr));
 	fprintf(fi, "    Run ended at   %s\n\n", td->Stop);
@@ -726,16 +726,16 @@ void          BndMomentsOutput(TOKAMAK * td)
 		fprintf(fi, "%02d %11.4g %11.4g\n", m, Xm[m], Zm[m]);
 
 	fprintf(fi, "\n");
-        fclose(fi);
+		fclose(fi);
 
 
 #ifdef HDFOUTPUT
-        {
-            int len;
-            double *X,*Z;
+		{
+			int len;
+			double *X,*Z;
 
 #ifdef DIPOLE
-            GetFluxContour(pg,0.0,&X,&Z,&len);
+			GetFluxContour(pg,0.0,&X,&Z,&len);
 			if (X != NULL) {
 				HDFBoundary(td->Oname,FCFS_NAME,0,X,Z,len);
 				free_dvector(X,0,len);
@@ -744,16 +744,16 @@ void          BndMomentsOutput(TOKAMAK * td)
 				fprintf(stderr,"Warning: Could not find the flux contour for FCFS.\n");
 			}
 #endif /* DIPOLE */
-            GetFluxContour(pg,PsiXmax,&X,&Z,&len);
-            if (X != NULL) {
-                HDFBoundary(td->Oname,LCFS_NAME,PsiXmax,X,Z,len);
-                free_dvector(X,0,len);
-                free_dvector(Z,0,len);
-            } else {
+			GetFluxContour(pg,PsiXmax,&X,&Z,&len);
+			if (X != NULL) {
+				HDFBoundary(td->Oname,LCFS_NAME,PsiXmax,X,Z,len);
+				free_dvector(X,0,len);
+				free_dvector(Z,0,len);
+			} else {
 				fprintf(stderr,"Warning: Could not find the flux contour for LCFS.\n");
 			}
 			HDFLimiters(td->Oname, td->Limiters, td->NumLimiters);
-        }
+		}
 #endif /* HDFOUTPUT */
 
 	free_dvector(Zm, 0, nmomts);
@@ -1017,7 +1017,7 @@ void          DCONOutput(TOKAMAK * td)
 
 void GS2Output(TOKAMAK * td)
 {
-        FILE         *fi;
+		FILE         *fi;
 	PSIGRID      *pg;
 	PLASMA       *pl;
 	double        Psi, DelPsi, P, rho_mid;
@@ -1038,8 +1038,8 @@ void GS2Output(TOKAMAK * td)
 	npts = pl->NumPsiPts;
 	DelPsi = pl->PsiLim - pl->PsiAxis;
 	PsiFCFS = pl->PsiAxis;
-    PsiLCFS = pl->PsiLim;
-    PsiNorm = 1.0;  /* what should this be?  2*PI*Current... what for? */
+	PsiLCFS = pl->PsiLim;
+	PsiNorm = 1.0;  /* what should this be?  2*PI*Current... what for? */
 	Nsize = pg->Nsize;
 	np = Nsize+1;
 
@@ -1058,6 +1058,7 @@ void GS2Output(TOKAMAK * td)
 	/* read(funit, 2020) (p(j), j = 1, nw_in)  ! pressure read */
 	for (i=0, k=0; i<np; i++) {
 		/* this seems weird to me.. but its what is in the deq.f90 code */
+		/* it also matches what is typical from EFIT and eqdsk files */
 		Psi = PsiFCFS + i*DelPsi/(np-1);
 		P = PlasmaP(pl, Psi);
 		/* Calculate p of psi at normalized rho point */
@@ -1076,8 +1077,10 @@ void GS2Output(TOKAMAK * td)
 	}
 	if (k % 5) fprintf(fi,"\n");
 
+	/* these are optional irho=4 normalization */
 	/* read (funit, 2020) (self%rho_mid(i), i = 1, nrho) */
 	/* rho mid defined from kobyashi's thesis */
+	/* one might argue this should be divided by XMagAxis */
 	for (i=0, k=0; i<npts; i++) {
 		rho_mid = pl->XXMax_pr[i] - pl->XMagAxis;
 		fprintf(fi, " %16.8e", rho_mid);
