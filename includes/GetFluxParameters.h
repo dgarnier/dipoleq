@@ -23,7 +23,7 @@ extern "C" {
 
 #include "tokamak.h"
 
-void	GetFluxParameters(TOKAMAK *td);
+void    GetFluxParameters(TOKAMAK *td);
 #ifdef __cplusplus
 }
 #endif

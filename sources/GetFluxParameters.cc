@@ -188,7 +188,7 @@ double        quick_Int(PSIGRID * pg, double PsiX, int average)
 	double       *X, *Z;
 	double        PsiBnd;
 
-    MULTI;
+	MULTI;
 	nmax = pg->Nsize;
 	Psi = pg->Psi;
 	X = pg->X;
@@ -213,7 +213,7 @@ double        find_Min(PSIGRID * pg, double PsiX)
 	double       *X, *Z;
 	double        PsiBnd;
 
-    MULTI;
+	MULTI;
 	nmax = pg->Nsize;
 	Psi = pg->Psi;
 	X = pg->X;
@@ -262,8 +262,8 @@ void          Trace_Integrand(double x, double z, double dummy, int flag)
 		  CHKSET(z,<,Zmin);
 		  break;
 	  case CONTOUR_STOP:
-          gX0 = (Xmin+Xmax)/2;
-          gZ0 = (Zmin+Zmax)/2;
+		  gX0 = (Xmin+Xmax)/2;
+		  gZ0 = (Zmin+Zmax)/2;
 		  break;
 	}
 
@@ -360,7 +360,7 @@ double        compute_Int(PSIGRID * pg, double PsiX)
 	double        PsiBnd;
 	double        q;
 
-    MULTI;
+	MULTI;
 
 	nmax = pg->Nsize;
 	Psi = pg->Psi;
@@ -576,12 +576,12 @@ void		ComputeFluxFunctions(TOKAMAK *td)
 			break;
 
 			default :
-			    if (pl->Model) {
-			    	P   = pl->Model->P(Psi);
-			    	Pp  = pl->Model->Pp(Psi);
-			    	G   = pl->Model->G2(Psi);
-			    	G2p = pl->Model->G2p(Psi);
-			    }
+				if (pl->Model) {
+					P   = pl->Model->P(Psi);
+					Pp  = pl->Model->Pp(Psi);
+					G   = pl->Model->G2(Psi);
+					G2p = pl->Model->G2p(Psi);
+				}
 
 		}
 		GV[i]  = G  = sqrt(G);
@@ -663,14 +663,14 @@ void          GetFluxParameters(TOKAMAK * td)
 
 #ifdef USE_ROLL_DOWNHILL_POINTS
 
-        xpsi = dvector(0,npts-1);
-        zpsi = dvector(0,npts-1);
-        vpsi = dvector(0,npts-1);
-        ppsi = dvector(0,npts-1);
+		xpsi = dvector(0,npts-1);
+		zpsi = dvector(0,npts-1);
+		vpsi = dvector(0,npts-1);
+		ppsi = dvector(0,npts-1);
 
-        for (i = 0; i < npts; i++) {
-            ppsi[i] = i * pl->PsiXMax / (npts - 1.0);
-            GetRandV(td, pl->XMagAxis, pl->ZMagAxis, npts, ppsi, xpsi, zpsi, vpsi);
+		for (i = 0; i < npts; i++) {
+			ppsi[i] = i * pl->PsiXMax / (npts - 1.0);
+			GetRandV(td, pl->XMagAxis, pl->ZMagAxis, npts, ppsi, xpsi, zpsi, vpsi);
 #endif
 
 	/* A L L O C A T E   S O M E   M E M O R Y */
@@ -754,7 +754,7 @@ void          GetFluxParameters(TOKAMAK * td)
 #ifndef DIPOLE
 	for (i = 1; i < npts; i++) {
 #else
-    for (i = 0; i < npts; i++) {
+	for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
 		pl->Volp_pr[i] = COMPUTE_INT(pg, PsiX);
@@ -798,7 +798,7 @@ void          GetFluxParameters(TOKAMAK * td)
 #ifndef DIPOLE
 	for (i = 1; i < npts; i++) {
 #else
-    for (i = 0; i < npts; i++) {
+	for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
 		pl->B2_pr[i] = COMPUTE_INT(pg, PsiX) / pl->Volp_pr[i];
@@ -821,16 +821,16 @@ void          GetFluxParameters(TOKAMAK * td)
 
 	for (i = 1; i < npts; i++) {
 #else
-    for (i = 0; i < npts; i++) {
+	for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
 		pl->Beta_pr[i] = COMPUTE_INT(pg, PsiX) / pl->Volp_pr[i];
 
 	}
 
-    /* F I N D   M A X   B E T A   P O S I T I O N */
+	/* F I N D   M A X   B E T A   P O S I T I O N */
 
-    pl->BetaMax_pr  = dvector(0, npts - 1);
+	pl->BetaMax_pr  = dvector(0, npts - 1);
 	pl->XBetaMax_pr = dvector(0, npts - 1);
 	pl->ZBetaMax_pr = dvector(0, npts - 1);
 	pl->BBetaMax_pr = dvector(0, npts - 1);
@@ -842,14 +842,14 @@ void          GetFluxParameters(TOKAMAK * td)
 			}
 
 #ifndef DIPOLE
-    pl->BetaMax_pr[0] = pl->Beta_pr[0];
-    pl->XBetaMax_pr[0] = pg->X[ixa];
-    pl->ZBetaMax_pr[0] = pg->Z[iza];
-    pl->BBetaMax_pr[0] = sqrt(pg->B2[ixa][iza]);
+	pl->BetaMax_pr[0] = pl->Beta_pr[0];
+	pl->XBetaMax_pr[0] = pg->X[ixa];
+	pl->ZBetaMax_pr[0] = pg->Z[iza];
+	pl->BBetaMax_pr[0] = sqrt(pg->B2[ixa][iza]);
 
 	for (i = 1; i < npts; i++) {
 #else
-    for (i = 0; i < npts; i++) {
+	for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
 		FIND_MIN(pg, PsiX);
@@ -859,9 +859,9 @@ void          GetFluxParameters(TOKAMAK * td)
 		pl->BBetaMax_pr[i] = sqrt(gIntMin);
 	}
 
-    /* F I N D   M A X   F I E L D   P O S I T I O N */
+	/* F I N D   M A X   F I E L D   P O S I T I O N */
 
-        pl->BMax_pr = dvector(0, npts - 1);
+	pl->BMax_pr = dvector(0, npts - 1);
 	pl->XBMax_pr = dvector(0, npts - 1);
 	pl->ZBMax_pr = dvector(0, npts - 1);
 
@@ -872,13 +872,13 @@ void          GetFluxParameters(TOKAMAK * td)
 			}
 
 #ifndef DIPOLE
-    pl->XBMax_pr[0] = pg->X[ixa];
-    pl->ZBMax_pr[0] = pg->Z[iza];
-    pl->BMax_pr[0] = sqrt(pg->B2[ixa][iza]);
+	pl->XBMax_pr[0] = pg->X[ixa];
+	pl->ZBMax_pr[0] = pg->Z[iza];
+	pl->BMax_pr[0] = sqrt(pg->B2[ixa][iza]);
 
 	for (i = 1; i < npts; i++) {
 #else
-    for (i = 0; i < npts; i++) {
+	for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
 		FIND_MIN(pg, PsiX);
@@ -887,6 +887,30 @@ void          GetFluxParameters(TOKAMAK * td)
 		pl->BMax_pr[i] = sqrt(1.0/gIntMin);
 	}
 
+	/* F I N D   M A X   R A D I A L   E X T E N T */
+
+	pl->XXMax_pr = dvector(0, npts - 1);
+	pl->ZXMax_pr = dvector(0, npts - 1);
+
+	for (ix = 1; ix < nmax; ix++)
+		for (iz = 1; iz < nmax; iz++)
+			if (NearPlasma(pg->IsPlasma, ix, iz)) {
+				gIntegrand[ix][iz] = 1.0/pg->X[ix];
+			}
+
+#ifndef DIPOLE
+	pl->XXMax_pr[0] = pg->XMagAxis;
+	pl->ZXMax_pr[0] = pg->ZMagAxis;
+
+	for (i = 1; i < npts; i++) {
+#else
+	for (i = 0; i < npts; i++) {
+#endif
+		PsiX = i * pl->PsiXmax / (npts - 1.0);
+		FIND_MIN(pg, PsiX);
+		pl->XXMax_pr[i] = gXimin;
+		pl->ZXMax_pr[i] = gZimin;
+	}
 
 
 	/* F L U X   S U R F A C E   A V G   O F   C U R R E N T */
@@ -903,7 +927,7 @@ void          GetFluxParameters(TOKAMAK * td)
 #ifndef DIPOLE
 	for (i = 1; i < npts; i++) {
 #else
-    for (i = 0; i < npts; i++) {
+	for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
 		pl->J_pr[i] = COMPUTE_INT(pg, PsiX) / pl->Volp_pr[i] / MU0;
@@ -923,7 +947,7 @@ void          GetFluxParameters(TOKAMAK * td)
 #ifndef DIPOLE
 	for (i = 1; i < npts; i++) {
 #else
-    for (i = 0; i < npts; i++) {
+	for (i = 0; i < npts; i++) {
 #endif
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
 		Pp[i] = COMPUTE_INT(pg, PsiX) / pl->Volp_pr[i];

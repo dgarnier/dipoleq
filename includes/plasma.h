@@ -114,9 +114,11 @@ typedef struct plasma {
     double              *XBetaMax_pr;/* X at max local beta on flux tube. */
     double              *ZBetaMax_pr;/* Z at max local beta on flux tube. */
     double              *BBetaMax_pr;/* B at max local beta on flux tube. */
-    double              *BMax_pr;/* max B on flux tube. */
-    double              *XBMax_pr;/* X at max B on flux tube. */
-    double              *ZBMax_pr;/* Z at max B flux tube. */
+    double              *BMax_pr;   /* max B on flux tube. */
+    double              *XBMax_pr;  /* X at max B on flux tube. */
+    double              *ZBMax_pr;  /* Z at max B flux tube. */
+    double              *XXMax_pr;  /* X at max X of closed psi contour */
+    double              *ZXMax_pr;  /* Z at max X of closed psi contour */
 
 	/* calculated at end.. store for python */
 	double 				*Psi_pr; 
