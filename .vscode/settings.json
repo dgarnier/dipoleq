@@ -98,4 +98,5 @@
     },
     "cmake.cmakePath": "${workspaceFolder}/.venv/bin/cmake",
     "cmake.generator": "Ninja",
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++",
 }
