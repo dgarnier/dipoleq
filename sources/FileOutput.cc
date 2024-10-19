@@ -726,34 +726,34 @@ void          BndMomentsOutput(TOKAMAK * td)
 		fprintf(fi, "%02d %11.4g %11.4g\n", m, Xm[m], Zm[m]);
 
 	fprintf(fi, "\n");
-		fclose(fi);
+	fclose(fi);
 
 
 #ifdef HDFOUTPUT
-		{
-			int len;
-			double *X,*Z;
+	{
+		int len;
+		double *X,*Z;
 
 #ifdef DIPOLE
-			GetFluxContour(pg,0.0,&X,&Z,&len);
-			if (X != NULL) {
-				HDFBoundary(td->Oname,FCFS_NAME,0,X,Z,len);
-				free_dvector(X,0,len);
-				free_dvector(Z,0,len);
-			} else {
-				fprintf(stderr,"Warning: Could not find the flux contour for FCFS.\n");
-			}
-#endif /* DIPOLE */
-			GetFluxContour(pg,PsiXmax,&X,&Z,&len);
-			if (X != NULL) {
-				HDFBoundary(td->Oname,LCFS_NAME,PsiXmax,X,Z,len);
-				free_dvector(X,0,len);
-				free_dvector(Z,0,len);
-			} else {
-				fprintf(stderr,"Warning: Could not find the flux contour for LCFS.\n");
-			}
-			HDFLimiters(td->Oname, td->Limiters, td->NumLimiters);
+		GetFluxContour(pg,0.0,&X,&Z,&len);
+		if (X != NULL) {
+			HDFBoundary(td->Oname,FCFS_NAME,0,X,Z,len);
+			free_dvector(X,0,len);
+			free_dvector(Z,0,len);
+		} else {
+			fprintf(stderr,"Warning: Could not find the flux contour for FCFS.\n");
 		}
+#endif /* DIPOLE */
+		GetFluxContour(pg,PsiXmax,&X,&Z,&len);
+		if (X != NULL) {
+			HDFBoundary(td->Oname,LCFS_NAME,PsiXmax,X,Z,len);
+			free_dvector(X,0,len);
+			free_dvector(Z,0,len);
+		} else {
+			fprintf(stderr,"Warning: Could not find the flux contour for LCFS.\n");
+		}
+		HDFLimiters(td->Oname, td->Limiters, td->NumLimiters);
+	}
 #endif /* HDFOUTPUT */
 
 	free_dvector(Zm, 0, nmomts);
