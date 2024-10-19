@@ -24,6 +24,10 @@ extern "C" {
 #include "tokamak.h"
 
 void    GetFluxParameters(TOKAMAK *td);
+
+double  DoFluxContourIntegral(PSIGRID *pg, double **itegrand, double psiX, int average);
+int     NearPlasma(int **ip, int ix, int iz);
+
 #ifdef __cplusplus
 }
 #endif

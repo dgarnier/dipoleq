@@ -95,7 +95,6 @@ double		  gIntegral, gPathInt;
 **  Private Prototypes
 */
 
-int     NearPlasma(int **ip, int ix, int iz);
 void    Trace_Integrand(double x, double z, double p, int flag);
 void    splint_dx(double xa[], double ya[], double y2a[], int n, double x, double *dydx);
 double  Int_Theta(double theta);
@@ -205,6 +204,15 @@ double        quick_Int(PSIGRID * pg, double PsiX, int average)
 	}
 }
 
+double DoFluxContourIntegral(PSIGRID *pg, double **itegrand, double psiX, int average)
+{
+	double result;
+	double **old_integrand = gIntegrand;
+	gIntegrand = itegrand;
+	result = quick_Int(pg, psiX, average);
+	gIntegrand = old_integrand;
+	return result;
+}
 
 double        find_Min(PSIGRID * pg, double PsiX)
 {

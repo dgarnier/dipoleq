@@ -94,3 +94,41 @@ def ilim_outline(lims: Limiters) -> ArrayN2:
     )
     outline = segments_to_polygon(ilim)
     return outline if not is_polygon_clockwise(outline) else np.flipud(outline)
+
+
+# because we need both plasma and psigrid.. (even though it should be just in psigrid)
+@add_method(Machine)
+def flux_surface_average(m: Machine, data: np.ndarray) -> np.ndarray:
+    """Calculate the flux surface average of f.
+    Parameters
+    ----------
+    psi : PsiGrid
+        The psi grid.
+
+    f : np.ndarray
+        The function to average, defined on the psi grid.
+
+    Returns
+    -------
+    np.ndarray
+        The flux surface average of f on the 1d normalized psi grid.
+    """
+    integrand_mv = m.PsiGrid.get_new_integrand()
+    integrand = np.asarray(integrand_mv)
+    if integrand.shape != data.shape:
+        raise ValueError("Value shape does not match psigrid shape")
+    one_over_b_mv = m.PsiGrid.get_new_integrand()
+    one_over_b = np.asarray(one_over_b_mv)
+    one_over_b[:] = (
+        2
+        * np.pi
+        * np.array(m.PsiGrid.R)[:, None]
+        / np.sqrt(np.array(m.Plasma.GradPsi2))
+    )
+    return np.array(
+        [
+            m.PsiGrid.contour_integral(integrand_mv, psi_n, False)
+            / m.PsiGrid.contour_integral(one_over_b_mv, psi_n, False)
+            for psi_n in m.Plasma.PsiX_pr
+        ]
+    )

@@ -3,6 +3,7 @@
 #include <pybind11/pybind11.h>
 
 #include "plasma.h"
+#include "nrutil.h"
 #include "measurement.h"
 #include "tokamak.h"
 
@@ -58,6 +59,10 @@ class DMatrixView {
 public:
     // matrix is actually nsize+1 x nsize+1
     DMatrixView(std::size_t nsize, double ** data) : m_size(nsize+1), m_data(data), m_dims(2, nsize+1) {};
+    DMatrixView(std::size_t nsize) : m_size(nsize+1), m_dims(2, nsize+1) {
+        m_data = ::dmatrix0(0, nsize, 0, nsize);
+        m_data_owner = true;
+    };
     double& operator()(std::size_t i, std::size_t j) { return m_data[i][j]; };
     py::buffer_info get_buffer_info() {
         return py::buffer_info(
@@ -79,11 +84,22 @@ public:
     const std::vector<std::size_t>& Shape() const {
         return m_dims;
     }
+
+    virtual ~DMatrixView() {
+        if (m_data_owner && (m_data != NULL)) {
+            free_dmatrix(m_data, 0, m_size, 0, m_size);
+        }
+    }
+
+    double ** dmatrix() {
+        return m_data;
+    }
     
 private:
     std::vector<std::size_t> m_dims;
     size_t m_size;
     double ** m_data;
+    bool m_data_owner = false;
 };
 
 class IMatrixView {

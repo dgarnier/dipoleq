@@ -293,6 +293,23 @@ def to_omas(
         eq1d["dpressure_dpsi"] = np.array(pl.Pp_pr)
         eq1d["q"] = np.array(pl.q_pr)
 
+        # 1D grid derivived quantities
+        # area, b_field_average, b_field_max, b_field_min
+        # beta_pol, darea_dpsi, darea_drho_tor, dpsi_drho_tor
+        # dvolume_dpsi, dvolume_drho_tor
+        # elongation, geometric_axis(r,z)
+        # gm(1-9) = flux surface average of
+        # 1 1/R^2, 2 [grad_rho_tor]^2/R^2, 3 [grad_rho_tor]^2, 4 1/B^2, 5 B^2
+        # 6 [grad_rho_tor]^2/B^2, 7 [grad_rho_tor], 8 R, 9 1/R
+        # gm1 = (flux surface average of 1/R^2)
+        # gm2 = (flux surface average of [grad_rho_tor]^2/R^2)
+        # gm3 = (flux surface average of [grad_rho_tor]^2)
+        # gm4 = (flux surface average of 1/B^2)
+        # gm5 = (flux surface average of B^2)
+
+        eq1d["area"] = np.array(pl.Area_pr)
+        eq1d[""]
+
         # 2D quantities
         MU0 = 4.0e-7 * 3.14159265358979323846
         eq2d = eqt["profiles_2d.0"]
