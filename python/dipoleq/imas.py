@@ -293,22 +293,39 @@ def to_omas(
         eq1d["dpressure_dpsi"] = np.array(pl.Pp_pr)
         eq1d["q"] = np.array(pl.q_pr)
 
+        R, _ = np.meshgrid(pg.R, pg.Z)
+        B2 = np.asarray(pl.B2)
+
         # 1D grid derivived quantities
-        # area, b_field_average, b_field_max, b_field_min
-        # beta_pol, darea_dpsi, darea_drho_tor, dpsi_drho_tor
+        # area  (IMAS says this is "cross-sectional area")
+        # not sure if we should be removing internal flux surface areas or not...
+
+        # b_field_average, b_field_max, b_field_min
+        eq1d["b_field_average"] = m.flux_surface_average(np.sqrt(B2))
+        eq1d["b_field_max"] = np.array(pl.BMax_pr)
+        eq1d["b_field_min"] = np.array(pl.BBetaMax_pr)
+        # beta_pol
+        # darea_dpsi, darea_drho_tor, dpsi_drho_tor
         # dvolume_dpsi, dvolume_drho_tor
+        eq1d["dvolume_dpsi"] = np.array(pl.Volp_pr)
         # elongation, geometric_axis(r,z)
         # gm(1-9) = flux surface average of
-        # 1 1/R^2, 2 [grad_rho_tor]^2/R^2, 3 [grad_rho_tor]^2, 4 1/B^2, 5 B^2
-        # 6 [grad_rho_tor]^2/B^2, 7 [grad_rho_tor], 8 R, 9 1/R
         # gm1 = (flux surface average of 1/R^2)
+        eq1d["gm1"] = m.flux_surface_average(1.0 / R**2)
         # gm2 = (flux surface average of [grad_rho_tor]^2/R^2)
         # gm3 = (flux surface average of [grad_rho_tor]^2)
         # gm4 = (flux surface average of 1/B^2)
+        eq1d["gm4"] = m.flux_surface_average(1.0 / B2)
         # gm5 = (flux surface average of B^2)
+        eq1d["gm5"] = m.flux_surface_average(B2)
+        # gm6 = (flux surface average of [grad_rho_tor]^2/B^2)
+        # gm7 = (flux surface average of [grad_rho_tor])
+        # gm8 = (flux surface average of R)
+        eq1d["gm8"] = m.flux_surface_average(R)
+        # gm9 = (flux surface average of 1/R)
+        eq1d["gm9"] = m.flux_surface_average(1.0 / R)
 
-        eq1d["area"] = np.array(pl.Area_pr)
-        eq1d[""]
+        # eq1d["area"] = np.array(pl.Area_pr)
 
         # 2D quantities
         MU0 = 4.0e-7 * 3.14159265358979323846

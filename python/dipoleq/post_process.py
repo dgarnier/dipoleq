@@ -5,9 +5,17 @@ These are pure python functions that extend the machine object functionality.
 """
 
 import numpy as np
+import numpy.typing as npt
+from scipy.integrate import cumulative_trapezoid
 
 from .core import Limiters, Machine, Separatrix
-from .util import ArrayN2, add_method, is_polygon_clockwise, segments_to_polygon
+from .util import (
+    ArrayN2,
+    add_method,
+    area_of_polygon,
+    is_polygon_clockwise,
+    segments_to_polygon,
+)
 
 # will re-export extensions to these core classes
 # this is only necessary if including from this file
@@ -98,37 +106,86 @@ def ilim_outline(lims: Limiters) -> ArrayN2:
 
 # because we need both plasma and psigrid.. (even though it should be just in psigrid)
 @add_method(Machine)
-def flux_surface_average(m: Machine, data: np.ndarray) -> np.ndarray:
-    """Calculate the flux surface average of f.
+def integral_flux_function(
+    m: Machine,
+    data: npt.ArrayLike,
+    average: bool = False,
+    psi_norm: npt.ArrayLike | None = None,
+) -> np.ndarray:
+    """Calculate the flux surface integral of data on the psi grid as a flux function.
     Parameters
     ----------
     psi : PsiGrid
         The psi grid.
 
-    f : np.ndarray
-        The function to average, defined on the psi grid.
+    data : npt.ArrayLike
+        The function to integrate, defined on the psi grid.
 
     Returns
     -------
     np.ndarray
-        The flux surface average of f on the 1d normalized psi grid.
+        The flux surface average of data on the 1d normalized psi grid.
     """
     integrand_mv = m.PsiGrid.get_new_integrand()
     integrand = np.asarray(integrand_mv)
+    if not hasattr(data, "shape"):
+        data = np.asarray(data)
     if integrand.shape != data.shape:
-        raise ValueError("Value shape does not match psigrid shape")
+        raise ValueError("Data shape does not match psigrid shape")
     one_over_b_mv = m.PsiGrid.get_new_integrand()
     one_over_b = np.asarray(one_over_b_mv)
-    one_over_b[:] = (
-        2
-        * np.pi
-        * np.array(m.PsiGrid.R)[:, None]
-        / np.sqrt(np.array(m.Plasma.GradPsi2))
-    )
+    np.copyto(one_over_b, 1.0 / np.sqrt(np.asarray(m.Plasma.B2)))
+    np.copyto(integrand, data * one_over_b)
+    if psi_norm is None:
+        psi_norm = np.asarray(m.Plasma.PsiX_pr)
     return np.array(
         [
             m.PsiGrid.contour_integral(integrand_mv, psi_n, False)
             / m.PsiGrid.contour_integral(one_over_b_mv, psi_n, False)
-            for psi_n in m.Plasma.PsiX_pr
+            if average
+            else m.PsiGrid.contour_integral(integrand_mv, psi_n, False)
+            for psi_n in psi_norm
         ]
     )
+
+
+def area_of_first_FCFS(m: Machine) -> float:
+    """Calculate the area of the first flux surface.
+    Parameters
+    ----------
+    psi : PsiGrid
+        The psi grid.
+
+    Returns
+    -------
+    float
+        The area of the first flux surface.
+    """
+    if np.isclose(m.PsiGrid.PsiFCFS, m.PsiGrid.PsiMagAxis):
+        return 0.0
+
+    fcfsr, fcfsx = m.PsiGrid.get_contour(0)
+    return area_of_polygon(np.column_stack((fcfsr, fcfsx)))
+
+
+def rho_toroidal(m: Machine) -> np.ndarray:
+    """Calculate the toroidal flux coordinate rho_toroidal from the normalized psi grid.
+    Parameters
+    ----------
+    psi : PsiGrid
+        The psi grid.
+
+    Returns
+    -------
+    np.ndarray
+        The toroidal flux coordinate rho_toroidal on the 1d normalized psi grid.
+    """
+
+    G = np.asarray(m.Plasma.G)
+    R, _ = np.meshgrid(m.PsiGrid.R, m.PsiGrid.Z)
+    dphi_dpsi_over_B0R0 = m.integral_flux_function(G / R**2) / (2 * np.pi)
+    # I think this isn't quite right, but it is close for the first point
+    phi_over_B0R0 = cumulative_trapezoid(
+        dphi_dpsi_over_B0R0, m.Plasma.Psi_pr, initial=area_of_first_FCFS(m)
+    )
+    return np.sqrt(phi_over_B0R0 * m.Plasma.R0 / np.pi)

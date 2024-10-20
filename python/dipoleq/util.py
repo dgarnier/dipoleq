@@ -79,6 +79,17 @@ def is_polygon_clockwise(polygon: ArrayN2) -> bool:
     return bool(np.linalg.det(orientm) < 0)
 
 
+def area_of_polygon(polygon: ArrayN2) -> float:
+    """Calculate the area of a polygon"""
+    if is_polygon_closed(polygon):
+        polygon = polygon[:-1]
+
+    return 0.5 * np.abs(
+        np.dot(polygon[:, 0], np.roll(polygon[:, 1], 1))
+        - np.dot(polygon[:, 1], np.roll(polygon[:, 0], 1))
+    )
+
+
 def _props(x: Any) -> dict[str, Any]:
     """Gets just the properties of an object"""
     return {

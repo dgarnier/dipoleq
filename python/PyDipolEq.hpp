@@ -89,6 +89,7 @@ public:
         if (m_data_owner && (m_data != NULL)) {
             free_dmatrix(m_data, 0, m_size, 0, m_size);
         }
+        m_data = NULL;
     }
 
     double ** dmatrix() {
