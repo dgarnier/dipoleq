@@ -1072,7 +1072,7 @@ void GS2Output(TOKAMAK * td)
 	/* read(funit, 2020) ((sdfit_psi(i,j) , i = 1, nw_in) , j = 1, nh_in) */
 	for (j=0, k=0; j<=Nsize; j++)
 		for(i=0; i<=Nsize; i++) {
-		fprintf(fi, " %16.8e", pg->Psi[i][j]);
+		fprintf(fi, "%16.8e", pg->Psi[i][j]);
 		if (!(++k % 5)) fprintf(fi,"\n");
 	}
 	if (k % 5) fprintf(fi,"\n");
@@ -1083,14 +1083,14 @@ void GS2Output(TOKAMAK * td)
 	/* one might argue this should be divided by XMagAxis */
 	for (i=0, k=0; i<npts; i++) {
 		rho_mid = pl->XXMax_pr[i] - pl->XMagAxis;
-		fprintf(fi, " %16.8e", rho_mid);
+		fprintf(fi, "%16.8e", rho_mid);
 		if (!(++k % 5)) fprintf(fi,"\n");
 	}
 	if (k % 5) fprintf(fi,"\n");
 
 	/* read (funit, 2020) (self%psi_mid(i), i = 1, nrho) */
 	for (i=0, k=0; i<npts; i++) {
-		fprintf(fi, " %16.8e", pl->Psi_pr[i]);
+		fprintf(fi, "%16.8e", pl->Psi_pr[i]);
 		if (!(++k % 5)) fprintf(fi,"\n");
 	}
 	if (k % 5) fprintf(fi,"\n");
