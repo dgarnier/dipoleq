@@ -10,6 +10,8 @@ at OpenStar Technologies, LTD.
 """
 
 import contextlib
+import shutil
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +19,7 @@ from typing_extensions import Self
 
 from . import core, file_input, input, plot, post_process, solver, util
 from ._version import __version__, __version_tuple__
+from .h5togeqdsk import h5togeqdsk as _h5togeqdsk
 from .input import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
 
@@ -136,6 +139,18 @@ class Machine(core.Machine):
             filename (str | Path | None): The path to the file
         """
         _save_to_hdf5(self, filename)
+
+    def to_geqdsk(self, filename: str | Path, NormalizeAtAxis: bool = False) -> None:
+        """Save the machine data to a g-eqdsk file
+
+        Args:
+            filename (str | Path): The path to the file
+        """
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            h5file = Path(tmpdirname) / "temp.h5"
+            self.to_hdf5(h5file)
+            _h5togeqdsk(h5file, plot=False, NormalizeAtAxis=NormalizeAtAxis)
+            shutil.move(tmpdirname + "/temp.geqdsk", filename)
 
     def plot_eq(self, **kwargs) -> None:  # type: ignore[no-untyped-def]
         """Plot the equilibrium"""
