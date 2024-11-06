@@ -26,7 +26,7 @@ def dipoleq_lim_to_eqdsk(lim: NDArray[np.float64]) -> NDArray[np.float64]:
 # h5py is not typed, and the stubs is horrible
 @tp.no_type_check
 def dipoleq_h5f_to_freeqdsk(
-    h5f: h5py.Group, COCOS: int = 3, NormalizeAtAxis: bool = True
+    h5f: h5py.Group, COCOS: int = 1, NormalizeAtAxis: bool = True
 ) -> tuple[dict[str, int | float | NDArray[np.float64]], str]:
     """Extract geqdsk data from a dipoleq h5 file"""
 
@@ -36,8 +36,8 @@ def dipoleq_h5f_to_freeqdsk(
     # gdata = Dict[str, Union[int, float, ArrayLike]]
 
     # HDF5 and DipolEq is COCOS=11 (and HDF5 is in COCOS=11 for ITER)
-    # this converts to COCOS=1 (for EFIT and g-eqdsk)
     # EFIT is COCOS=3 according to COCOS paper
+    # however, eqdsk is COCOS=1
 
     gdata = {}
 
