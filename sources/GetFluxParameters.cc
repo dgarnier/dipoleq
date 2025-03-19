@@ -500,33 +500,25 @@ MULTI;
 void          Fill_q_integrand(PSIGRID * pg, PLASMA * pl)
 {
 	int           ix, iz, nmax;
-	double        r, theta;
-	double        xa, za;
-	double        dx, dz;
-	double       *X, *Z, **dPsiX, **dPsiZ;
+    double        r;
+    double        xa, za;
+    double        dx, dz;
+    double       *X, *Z;
 
 	xa = pg->XMagAxis;
 	za = pg->ZMagAxis;
 
 	nmax = pg->Nsize;
-	dPsiX = pl->GradPsiX;
-	dPsiZ = pl->GradPsiZ;
-	X = pg->X;
-	Z = pg->Z;
+    X = pg->X;
+    Z = pg->Z;
 
 	for (ix = 1; ix < nmax; ix++)
 		for (iz = 1; iz < nmax; iz++)
 			if (NearPlasma(pg->IsPlasma, ix, iz)) {
-				dx = X[ix] - xa;
-				dz = Z[iz] - za;
-				r = sqrt(dx * dx + dz * dz);
-				if (r == 0.0)	/* then we're at the magnetic axis & atan2 is not defined */
-					gIntegrand[ix][iz] = 0.5 * (gIntegrand[ix - 1][iz] + gIntegrand[ix][iz - 1]);
-				else {
-					theta = atan2(dz, dx);
-					gIntegrand[ix][iz] =
-						pl->Bt[ix][iz] * r / (dPsiX[ix][iz] * cos(theta) + dPsiZ[ix][iz] * sin(theta));
-				}
+                dx = X[ix] - xa;
+                dz = Z[iz] - za;
+                r = sqrt(dx * dx + dz * dz);
+                gIntegrand[ix][iz] = pl->Bt[ix][iz] * r / sqrt(pl->GradPsi2[ix][iz]);
 			} else
 				gIntegrand[ix][iz] = 0.0;
 }
@@ -714,20 +706,17 @@ void          GetFluxParameters(TOKAMAK * td)
 
 	/* S A F E T Y   F A C T O R   P R O F I L E */
 
-	/*
-	**	From Grimm, et al, in "Methods of Computational Physics"
-	**	(Killeen, ed.) Vol 16., p. 253, Academic Press, New York, 1976.
-	**
-	**	Eq. 9 used with the definition of q, gives the forumla
-	**
-	**		q = Int( Bt r dtheta / ( dPsi/dx cos(theta) + dPsi/dz sin(theta)) )
-	**
-	**	where the integral is around the flux surface from 0 to 2pi.
-	**
-	**	We use the magnetic axis as the reference point for the evaluation of
-	**	(r, theta).  Note, we use a right-handed definition of theta.
-	**
-	*/
+    /*
+     * From O. Sauter et al. in "Computer Physics Communications" Vol 184. (2013).
+     * Tokamak Coordinate Convections: COCOS
+     * DOI: 10.1016/j.cpc.2012.09.010
+     *
+     * Using the definition of q (Eq. 7), and Eq. 8 (with COCOS 1/2), gives the formula
+     *
+     *      q = Int( Bt dl_p / |grad Psi| ) / 2pi = Int( Bt r dtheta / |grad Psi|) / 2pi
+     *
+     * where the integral is around the flux surface.
+     */
 
 	pl->q_pr = dvector(0, npts - 1);
 	pl->q_pr[0] = pl->q0;
