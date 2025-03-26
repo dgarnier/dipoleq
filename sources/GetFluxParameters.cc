@@ -102,7 +102,6 @@ double  Int_Theta(double theta);
 double  Int_Theta1(double theta);
 double  compute_Int(PSIGRID * pg, double PsiX);
 double  compute_Int1(PSIGRID * pg, double PsiX);
-void   	Fill_q_integrand(PSIGRID * pg, PLASMA * pl);
 void	quick_Int_Step(double x, double z, double psi, int flag);
 double  quick_Int(PSIGRID * pg, double PsiX, int average);
 
@@ -492,36 +491,6 @@ MULTI;
 	return q;
 }
 
-/*
-**	F I L L _ Q _ I N T E G R A N D
-**
-**
-*/
-void          Fill_q_integrand(PSIGRID * pg, PLASMA * pl)
-{
-	int           ix, iz, nmax;
-    double        r;
-    double        xa, za;
-    double        dx, dz;
-    double       *X, *Z;
-
-	xa = pg->XMagAxis;
-	za = pg->ZMagAxis;
-
-	nmax = pg->Nsize;
-    X = pg->X;
-    Z = pg->Z;
-
-	for (ix = 1; ix < nmax; ix++)
-		for (iz = 1; iz < nmax; iz++)
-			if (NearPlasma(pg->IsPlasma, ix, iz)) {
-                dx = X[ix] - xa;
-                dz = Z[iz] - za;
-                gIntegrand[ix][iz] = pl->Bt[ix][iz] / sqrt(pl->GradPsi2[ix][iz]);
-			} else
-				gIntegrand[ix][iz] = 0.0;
-}
-
 
 /*
 **  ComputeFluxFunctions
@@ -720,7 +689,13 @@ void          GetFluxParameters(TOKAMAK * td)
 	pl->q_pr = dvector(0, npts - 1);
 	pl->q_pr[0] = pl->q0;
 
-	Fill_q_integrand(pg, pl);
+	for (ix = 1; ix < nmax; ix++) {
+		for (iz = 1; iz < nmax; iz++) {
+			if (NearPlasma(pg->IsPlasma, ix, iz)) {
+				gIntegrand[ix][iz] = pl->Bt[ix][iz] / sqrt(pl->GradPsi2[ix][iz]);
+			}
+		}
+	}
 
 	for (i = 1; i < npts; i++) {
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
