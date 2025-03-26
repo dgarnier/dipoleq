@@ -517,8 +517,7 @@ void          Fill_q_integrand(PSIGRID * pg, PLASMA * pl)
 			if (NearPlasma(pg->IsPlasma, ix, iz)) {
                 dx = X[ix] - xa;
                 dz = Z[iz] - za;
-                r = sqrt(dx * dx + dz * dz);
-                gIntegrand[ix][iz] = pl->Bt[ix][iz] * r / sqrt(pl->GradPsi2[ix][iz]);
+                gIntegrand[ix][iz] = pl->Bt[ix][iz] / sqrt(pl->GradPsi2[ix][iz]);
 			} else
 				gIntegrand[ix][iz] = 0.0;
 }
@@ -711,9 +710,9 @@ void          GetFluxParameters(TOKAMAK * td)
      * Tokamak Coordinate Convections: COCOS
      * DOI: 10.1016/j.cpc.2012.09.010
      *
-     * Using the definition of q (Eq. 7), and Eq. 8 (with COCOS 1/2), gives the formula
+     * Using the definition of q (Eq. 7), and Eq. 8 (with COCOS 11), gives the formula
      *
-     *      q = Int( Bt dl_p / |grad Psi| ) / 2pi = Int( Bt r dtheta / |grad Psi|) / 2pi
+     *      q = Int( Bt / |grad Psi| dl_p )
      *
      * where the integral is around the flux surface.
      */
@@ -725,7 +724,7 @@ void          GetFluxParameters(TOKAMAK * td)
 
 	for (i = 1; i < npts; i++) {
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
-		pl->q_pr[i] = COMPUTE_INT1(pg, PsiX);
+		pl->q_pr[i] = COMPUTE_INT(pg, PsiX);
 	}
 
 	/* d V O L U M E  / d P S I */
