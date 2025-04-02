@@ -3,7 +3,7 @@ ci:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v4.6.0"
+    rev: "v5.0.0"
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
@@ -15,7 +15,7 @@ repos:
       - id: end-of-file-fixer
         exclude: '''(/(^ext_libs\/clibpdf\/.*|.+\.y|.+\.r)$)'''
         types: [python, yaml, toml, markdown, json]
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
       - id: mixed-line-ending
         exclude: '''(/(^ext_libs\/clibpdf\/.*|.+\.y|.+\.r)$)'''
         types: [python, yaml, toml, markdown, json, c, c++]
@@ -26,7 +26,7 @@ repos:
       - id: trailing-whitespace
         exclude: '''(/(^ext_libs\/clibpdf\/.*|.+\.y|.+\.r)$)'''
         types: [python, yaml, toml, markdown, json]
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.4.8"
     hooks:
@@ -35,12 +35,6 @@ repos:
         types: [ python ]
       - id: ruff-format
         types: [ python ]
-  - repo: https://github.com/adamchainz/blacken-docs
-    rev: "1.16.0"
-    hooks:
-      - id: blacken-docs
-        additional_dependencies:
-          - black==22.12.0
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.16.0
     hooks:
@@ -51,11 +45,6 @@ repos:
         language: system
         types: [python]
         args: [--py310-plus]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        types: [yaml, markdown, json, toml]
   - repo: https://github.com/codespell-project/codespell
     rev: "v2.3.0"  # Use the latest version which adds inline ignore support
     hooks:
@@ -64,7 +53,7 @@ repos:
         additional_dependencies:
           - tomli
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: "v0.18"
+    rev: "v0.24.1"
     hooks:
       - id: validate-pyproject
         additional_dependencies: ["validate-pyproject-schema-store[all]"]

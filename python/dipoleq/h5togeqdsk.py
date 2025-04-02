@@ -168,11 +168,11 @@ def write_fcfs_csv(
     parent = h5path.parent
     with (parent / f"{stem}_fcfs.csv").open("w", encoding="utf-8") as fh:
         fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
-        np.savetxt(fh, fcfs, delimiter=",", header="r,z")
+        np.savetxt(fh, fcfs, delimiter=",", header="r,z")  # type: ignore[arg-type]
 
     with (parent / f"{stem}_flim.csv").open("w", encoding="utf-8") as fh:
         flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
-        np.savetxt(fh, flim, delimiter=",", header="r,z")
+        np.savetxt(fh, flim, delimiter=",", header="r,z")  # type: ignore[arg-type]
 
 
 def h5togeqdsk(
@@ -184,7 +184,7 @@ def h5togeqdsk(
     """Save a dipoleq h5 file to a g-eqdsk file"""
 
     h5path = Path(h5file)
-    with h5py.File(h5file) as h5f:  # type: ignore[arg-type]
+    with h5py.File(h5file, mode="r") as h5f:
         if plot:
             plot_h5eq(h5f)
         gdata, oname = dipoleq_h5f_to_freeqdsk(h5f, NormalizeAtAxis=NormalizeAtAxis)
