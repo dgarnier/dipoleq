@@ -127,7 +127,9 @@ def precommit(session: Session) -> None:
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or ["python/dipoleq"]
-    session.install(".[test]")
+    pyproject = nox.project.load_toml("pyproject.toml")
+    session.install(*pyproject["project"]["dependencies"])
+    session.install(*nox.project.dependency_groups(pyproject, "test"))
     session.install("mypy", "pytest")
     session.run("mypy", *args)
     if not session.posargs:
@@ -137,7 +139,9 @@ def mypy(session: Session) -> None:
 @session(python=python_versions)
 def tests(session: Session) -> None:
     """Run the test suite."""
-    session.install(".[test]")
+    pyproject = nox.project.load_toml("pyproject.toml")
+    session.install(".")
+    session.install(*nox.project.dependency_groups(pyproject, "test"))
     session.install("coverage[toml]", "pytest", "pygments")
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
@@ -162,7 +166,9 @@ def coverage(session: Session) -> None:
 @session(python=python_versions[0])
 def typeguard(session: Session) -> None:
     """Runtime type checking using Typeguard."""
-    session.install(".[test]")
+    pyproject = nox.project.load_toml("pyproject.toml")
+    session.install(*pyproject["project"]["dependencies"])
+    session.install(*nox.project.dependency_groups(pyproject, "test"))
     session.install("pytest", "typeguard", "pygments")
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 

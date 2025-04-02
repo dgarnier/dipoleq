@@ -49,6 +49,7 @@ test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5
         "omas", "json2xml", "typeguard"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml",
+       "nox >= 2025.02.09",
        "numpy", "omas", "pybind11", "pyyaml", "pybind11-stubgen",
        "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade",
        "typeguard"]
