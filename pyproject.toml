@@ -101,7 +101,7 @@ testpaths = ["python/tests"]
 [tool.cibuildwheel]
 build = "cp31{0,1,2,3}-*"
 test-command = "pytest {project}"
-test-extras = ["test"]
+test-groups = ["test"]
 test-skip = ["*universal2:arm64", "*win*"] # skip windows
 skip = ["*musllinux*", "*pypy*", "*390x*", "*ppc64le*", "*win32*"]
 build-verbosity = 1
@@ -113,7 +113,7 @@ archs = ["auto64"]
 archs = ["auto64"]
 
 [tool.cibuildwheel.macos.environment]
-MACOSX_DEPLOYMENT_TARGET = "10.15"
+MACOSX_DEPLOYMENT_TARGET = "11.0"
 
 [tool.ruff]
 force-exclude = true  # make sure we exclude below when running pre-commit
