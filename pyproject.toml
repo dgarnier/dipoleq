@@ -43,7 +43,8 @@ dependencies = [
 h5togeqdsk = "dipoleq.h5togeqdsk:main"
 dipoleq = "dipoleq.main_cli:main"
 
-[project.optional-dependencies]
+#[project.optional-dependencies]
+[dependency-groups]
 test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@python-3.10-allowed", 
         "omas", "json2xml", "typeguard"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
