@@ -1,6 +1,5 @@
 [build-system]
 requires = [
-    "cmake",
     "scikit-build-core",
     "pybind11",
     "pybind11-stubgen",
@@ -26,11 +25,12 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 
 dependencies = [
-  "numpy >=1.21, <2",
-  "pydantic >=2.7",
+  "numpy >=1.26, <2.3",
+  "pydantic >=2.10, <3.0",
   "pyyaml",
   "types-pyyaml",
   "typing-extensions",
@@ -44,9 +44,10 @@ h5togeqdsk = "dipoleq.h5togeqdsk:main"
 dipoleq = "dipoleq.main_cli:main"
 
 [project.optional-dependencies]
-test = ["pytest", "matplotlib", "h5py_stubs", "omas", "json2xml", "typeguard"]
+test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@python-3.10-allowed", 
+        "omas", "json2xml", "typeguard"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
-dev = ["scikit-build-core", "cibuildwheel", "wheel", "build", "json2xml",
+dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml",
        "numpy", "omas", "pybind11", "pyyaml", "pybind11-stubgen",
        "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade",
        "typeguard"]
@@ -56,8 +57,8 @@ imas = ["omas", "json2xml"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
-cmake.targets = ["pydipoleq", "dipoleq"]
-cmake.verbose = true
+build.targets = ["pydipoleq", "dipoleq"]
+build.verbose = true
 #install.components = ["python", "cli"]
 install.components = ["python"]
 #wheel.packages = ["python/dipoleq"] # not required
@@ -96,7 +97,7 @@ testpaths = ["python/tests"]
 
 
 [tool.cibuildwheel]
-build = "cp31{0,1,2}-*"
+build = "cp31{0,1,2,3}-*"
 test-command = "pytest {project}"
 test-extras = ["test"]
 test-skip = ["*universal2:arm64", "*win*"] # skip windows

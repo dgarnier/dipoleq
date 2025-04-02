@@ -33,7 +33,7 @@ def _save_1D(
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
     ds.attrs["UNITS"] = units
-    ds.dims[0].attach_scale(dim)  # type: ignore[attr-defined]
+    ds.dims[0].attach_scale(dim)
     return ds
 
 
@@ -43,8 +43,8 @@ def _save_2D(
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
     ds.attrs["UNITS"] = units
-    ds.dims[0].attach_scale(scl_r)  # type: ignore[attr-defined]
-    ds.dims[1].attach_scale(scl_z)  # type: ignore[attr-defined]
+    ds.dims[0].attach_scale(scl_r)
+    ds.dims[1].attach_scale(scl_z)
     return ds
 
 
@@ -54,7 +54,7 @@ def save_flux_functions(flux: Group, m: Machine) -> None:
     if pl.PsiX_pr:  # if this exists the rest should too
         dimp = flux.create_dataset(DS_NAME.DIMX_NAME, data=pl.PsiX_pr)
         dimp.attrs["UNITS"] = "1"
-        dimp.make_scale("Normalized Magnetic Flux")  # type: ignore[attr-defined]
+        dimp.make_scale("Normalized Magnetic Flux")
 
         _save_1D(flux, DS_NAME.PSI_1D, "Wb", dimp, pl.Psi_pr)
         _save_1D(flux, DS_NAME.PRESS_1D, "Pa", dimp, pl.P_pr)
@@ -135,7 +135,7 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None) -> None:
     R = np.array(pg.R)
     Z = np.array(pg.Z)
 
-    with File(filename, "w") as h5f:  # type: ignore[call-arg, arg-type]
+    with File(filename, "w") as h5f:
         # put some info into the file
         h5f.attrs["TITLE"] = "Equilibrium data from dipoleq"
         h5f.attrs["VERSION"] = "0.1"
@@ -150,10 +150,10 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None) -> None:
         # create grid dimensions
         dimr = grid.create_dataset(DS_NAME.DIMX_NAME, data=R)
         dimr.attrs["UNITS"] = "m"
-        dimr.make_scale("R")  # type: ignore[attr-defined]
+        dimr.make_scale("R")
         dimz = grid.create_dataset(DS_NAME.DIMZ_NAME, data=Z)
         dimz.attrs["UNITS"] = "m"
-        dimz.make_scale("Z")  # type: ignore[attr-defined]
+        dimz.make_scale("Z")
 
         # write the scalar grid data
         _save_0D(scal, DS_NAME.RMAGX_0D, "m", pg.RMagAxis)
