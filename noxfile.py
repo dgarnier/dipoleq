@@ -128,7 +128,7 @@ def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or ["python/dipoleq"]
     pyproject = nox.project.load_toml("pyproject.toml")
-    session.install(*pyproject["project"]["dependencies"])
+    session.install(".")
     session.install(*nox.project.dependency_groups(pyproject, "test"))
     session.install("mypy", "pytest")
     session.run("mypy", *args)
@@ -167,7 +167,7 @@ def coverage(session: Session) -> None:
 def typeguard(session: Session) -> None:
     """Runtime type checking using Typeguard."""
     pyproject = nox.project.load_toml("pyproject.toml")
-    session.install(*pyproject["project"]["dependencies"])
+    session.install(".")
     session.install(*nox.project.dependency_groups(pyproject, "test"))
     session.install("pytest", "typeguard", "pygments")
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
