@@ -597,7 +597,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	double      **Psi;
 	double       *X, *Z, dx, dz, hx, hz;
 	double        Bt[4], dPsiX2[4], dPsiZ2[4], dPsiXZ[4];
-	double        t1, t2, t3;
+	double        t1, t2, t3, t4;
 	double        PsiX;			/* normalized Psi */
 	double        DelPsi;
 	double       *Pp;			/* �<P>/�Psi */
