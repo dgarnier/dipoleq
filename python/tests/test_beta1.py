@@ -135,7 +135,7 @@ def test_dipoleq_is_cocos_11() -> None:
     # which are not equal to 2pi, but the vast majority (>99%) should be.
     assert (
         np.count_nonzero(violations) < 0.01 * grad_shafranov_scale.size
-    ) # COCOS 11,12,15,16
+    )  # COCOS 11,12,15,16
 
 
 if __name__ == "__main__":
