@@ -669,7 +669,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	dPsiXZ[3] = (Psi[ixa + 1][iza + 2] + Psi[ixa - 1][iza] - Psi[ixa + 1][iza] - Psi[ixa - 1][iza + 2]);
 	t4 = BILIN(dPsiXZ[0], dPsiXZ[1], dPsiXZ[2], dPsiXZ[3]) / 4 / dx / dz;
 	if (t2 && t3 && t4)
-		pl->q0 = TWOPI * t1 / sqrt(2 * t2 * t3 - t4 * t4);
+		pl->q0 = TWOPI * t1 / sqrt(4 * t2 * t3 - t4 * t4);
 	else
 		pl->q0 = 1.0e3;			/* a big number */
 	pl->qCircular = 5.0e6 * DSQR(pl->HalfWidth) *
