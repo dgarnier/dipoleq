@@ -596,7 +596,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	int           i;
 	double      **Psi;
 	double       *X, *Z, dx, dz, hx, hz;
-	double        Bt[4], dPsiX2[4], dPsiZ2[4];
+	double        Bt[4], dPsiX2[4], dPsiZ2[4], dPsiXZ[4];
 	double        t1, t2, t3;
 	double        PsiX;			/* normalized Psi */
 	double        DelPsi;
@@ -652,7 +652,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	Bt[2] = pl->Bt[ixa + 1][iza + 1];
 	Bt[3] = pl->Bt[ixa][iza + 1];
 	t1 = BILIN(Bt[0], Bt[1], Bt[2], Bt[3]);
-	/* d2 Psi/ dx2 and d2 Psi/ dz2 */
+	/* d2 Psi/ dx2,  d2 Psi/ dz2 and d2 Psi / dxdz */
 	dPsiX2[0] = (Psi[ixa + 1][iza] - 2.0 * Psi[ixa][iza] + Psi[ixa - 1][iza]);
 	dPsiX2[1] = (Psi[ixa + 2][iza] - 2.0 * Psi[ixa + 1][iza] + Psi[ixa][iza]);
 	dPsiX2[2] = (Psi[ixa + 2][iza + 1] - 2.0 * Psi[ixa + 1][iza + 1] + Psi[ixa][iza + 1]);
@@ -663,8 +663,13 @@ void          GetFluxParameters(TOKAMAK * td)
 	dPsiZ2[2] = (Psi[ixa + 1][iza + 2] - 2.0 * Psi[ixa + 1][iza + 1] + Psi[ixa + 1][iza]);
 	dPsiZ2[3] = (Psi[ixa][iza + 2] - 2.0 * Psi[ixa][iza + 1] + Psi[ixa][iza]);
 	t3 = BILIN(dPsiZ2[0], dPsiZ2[1], dPsiZ2[2], dPsiZ2[3]) / dz / dz;
-	if (t2 && t3)
-		pl->q0 = TWOPI * t1 / sqrt(t2 * t3);
+	dPsiXZ[0] = (Psi[ixa + 1][iza + 1] + Psi[ixa - 1][iza - 1] - Psi[ixa + 1][iza - 1] - Psi[ixa - 1][iza + 1]);
+	dPsiXZ[1] = (Psi[ixa + 2][iza + 1] + Psi[ixa][iza - 1] - Psi[ixa + 2][iza - 1] - Psi[ixa][iza + 1]);
+	dPsiXZ[2] = (Psi[ixa + 2][iza + 2] + Psi[ixa][iza] - Psi[ixa + 2][iza] - Psi[ixa][iza + 2]);
+	dPsiXZ[3] = (Psi[ixa + 1][iza + 2] + Psi[ixa - 1][iza] - Psi[ixa + 1][iza] - Psi[ixa - 1][iza + 2]);
+	t4 = BILIN(dPsiXZ[0], dPsiXZ[1], dPsiXZ[2], dPsiXZ[3]) / 4 / dx / dz;
+	if (t2 && t3 && t4)
+		pl->q0 = TWOPI * t1 / sqrt(2 * t2 * t3 - t4 * t4);
 	else
 		pl->q0 = 1.0e3;			/* a big number */
 	pl->qCircular = 5.0e6 * DSQR(pl->HalfWidth) *
@@ -686,9 +691,6 @@ void          GetFluxParameters(TOKAMAK * td)
      * where the integral is around the flux surface.
      */
 
-	pl->q_pr = dvector(0, npts - 1);
-	pl->q_pr[0] = pl->q0;
-
 	for (ix = 1; ix < nmax; ix++) {
 		for (iz = 1; iz < nmax; iz++) {
 			if (NearPlasma(pg->IsPlasma, ix, iz)) {
@@ -697,7 +699,15 @@ void          GetFluxParameters(TOKAMAK * td)
 		}
 	}
 
-	for (i = 1; i < npts; i++) {
+	pl->q_pr = dvector(0, npts - 1);
+#ifndef DIPOLE
+	pl->q_pr[0] = pl->q0;
+	i = 1;
+#else
+    i = 0;
+#endif
+
+	for (; i < npts; i++) {
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
 		pl->q_pr[i] = COMPUTE_INT(pg, PsiX);
 	}
