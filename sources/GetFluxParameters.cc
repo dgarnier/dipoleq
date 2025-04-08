@@ -680,14 +680,14 @@ void          GetFluxParameters(TOKAMAK * td)
 	/* S A F E T Y   F A C T O R   P R O F I L E */
 
 	/*
-	**  From Sauter et al, in "Computer Physics Communications"
-	**  Vol 184., p. 293, 2013.
+	**	From Sauter et al, in "Computer Physics Communications"
+	**	Vol 184., p. 293, 2013.
 	**
-	**  Eq. 8 used with the definition of q (Eq. 7) and the COCOS 11 conventions, gives the formula
+	**	Eq. 8 used with the definition of q (Eq. 7) and the COCOS 11 conventions, gives the formula
 	**
-	**      q = Int( Bt / |grad Psi| dl_p )
+	**		q = Int( Bt / |grad Psi| dl_p )
 	**
-	**  where the integral is around the flux surface.
+	**	where the integral is around the flux surface.
 	*/
 
 	for (ix = 1; ix < nmax; ix++) {
