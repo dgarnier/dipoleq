@@ -106,9 +106,8 @@ def test_dipoleq_is_cocos_11() -> None:
     m = Machine.from_file(data_dir / "beta1.in")
     m.solve()
 
-    # From O. Sauter et al. in "Computer Physics Communications" Vol 184. (2013).
-    # Tokamak Coordinate Convections: COCOS
-    # DOI: 10.1016/j.cpc.2012.09.010
+    # From Sauter et al, in "Computer Physics Communications"
+    # Vol 184., p. 293, 2013.
     # Table I contains the expected values of various signs, which can be used to
     # distinguish between different COCOS versions.
     # It is difficult to check the difference between COCOS 11 and COCOS 12, because
