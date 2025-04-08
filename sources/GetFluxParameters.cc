@@ -680,16 +680,15 @@ void          GetFluxParameters(TOKAMAK * td)
 	/* S A F E T Y   F A C T O R   P R O F I L E */
 
     /*
-     * From O. Sauter et al. in "Computer Physics Communications" Vol 184. (2013).
-     * Tokamak Coordinate Convections: COCOS
-     * DOI: 10.1016/j.cpc.2012.09.010
-     *
-     * Using the definition of q (Eq. 7), and Eq. 8 (with COCOS 11), gives the formula
-     *
-     *      q = Int( Bt / |grad Psi| dl_p )
-     *
-     * where the integral is around the flux surface.
-     */
+    **  From Sauter et al, in "Computer Physics Communications"
+    **  Vol 184., p. 293, 2013.
+    **
+    **  Eq. 8 used with the definition of q (Eq. 7) and the COCOS 11 conventions, gives the formula
+    **
+    **      q = Int( Bt / |grad Psi| dl_p )
+    **
+    **  where the integral is around the flux surface.
+    */
 
 	for (ix = 1; ix < nmax; ix++) {
 		for (iz = 1; iz < nmax; iz++) {
