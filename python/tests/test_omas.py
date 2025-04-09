@@ -8,7 +8,7 @@ from pathlib import Path
 import fixtures.typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
-from dipoleq.imas import imas_input_params, load_imas_data_structure, ODS
+from dipoleq.omas import omas_input_params, load_omas_data_structure, ODS
 import warnings
 
 data_dir = Path(os.path.realpath(__file__)).parent / "data"
@@ -22,21 +22,21 @@ def test_create_ods() -> None:  # pylint: disable=missing-function-docstring
 
 
 @pytest.fixture(scope="session")
-def test_imas_save(tmp_path_factory: pytest.TempPathFactory) -> Path:
+def test_omas_save(tmp_path_factory: pytest.TempPathFactory) -> Path:
     # check that one can solve and save to h5 from yaml input
     m1 = Machine.from_yaml(data_dir / "beta1.yaml")
     m1.solve()
     ods = m1.to_omas()
-    fpath = tmp_path_factory.mktemp("data") / "beta1_imas.h5"
+    fpath = tmp_path_factory.mktemp("data") / "beta1_omas.h5"
     ods.save(str(fpath))
     return fpath
 
 
-def test_imas_params(test_imas_save: Path) -> None:
+def test_omas_params(test_omas_save: Path) -> None:
     """IMAS XML input parameter re-read test"""
-    ods = load_imas_data_structure(test_imas_save)
+    ods = load_omas_data_structure(test_omas_save)
     assert ods["equilibrium.code.name"] == "DipolEQ"
-    input_data = imas_input_params(ods)
+    input_data = omas_input_params(ods)
     assert input_data
     assert input_data["Oname"] == "beta1"
     m1 = Machine.from_dict(input_data)
@@ -49,12 +49,12 @@ def test_imas_params(test_imas_save: Path) -> None:
 
 
 @pytest.fixture(scope="session")
-def test_imas_save_nc(tmp_path_factory: pytest.TempPathFactory) -> Path:
+def test_omas_save_nc(tmp_path_factory: pytest.TempPathFactory) -> Path:
     # check that one can solve and save to h5 from yaml input
     m1 = Machine.from_yaml(data_dir / "beta1.yaml")
     m1.solve()
     ods = m1.to_omas()
-    fpath = tmp_path_factory.mktemp("data") / "beta1_imas.nc"
+    fpath = tmp_path_factory.mktemp("data") / "beta1_omas.nc"
     warnings.filterwarnings('ignore')
     ods.save(str(fpath))
     return fpath
@@ -62,7 +62,7 @@ def test_imas_save_nc(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 def test_imas_nc(test_imas_save_nc: Path) -> None:
     ods = load_imas_data_structure(test_imas_save_nc)
-    reference_ods = load_imas_data_structure(data_dir / "beta1_reference.nc")
+    reference_ods = load_imas_data_structure(data_dir / "beta1_omas_reference.nc")
 
     diff = ods.diff(reference_ods)
     assert not diff, diff

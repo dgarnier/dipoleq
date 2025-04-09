@@ -24,7 +24,7 @@ from .input import MachineIn
 from .saveh5 import save_to_hdf5 as _save_to_hdf5
 
 with contextlib.suppress(ImportError):
-    from . import imas
+    from . import omas
 
 
 class Machine(core.Machine):
@@ -156,16 +156,16 @@ class Machine(core.Machine):
         """Plot the equilibrium"""
         plot.plot_eq(self, **kwargs)
 
-    if "imas" in globals():
+    if "omas" in globals():
 
         def to_omas(
             self,
-            ods: imas.ODS | None = None,
+            ods: omas.ODS | None = None,
             time_index: int | None = None,
             time: float = 0.0,
-        ) -> imas.ODS:
-            """Convert the machine data to an IMAS ODS"""
-            return imas.to_omas(self, ods=ods, time_index=time_index, time=time)
+        ) -> omas.ODS:
+            """Convert the machine data to an OMAS ODS"""
+            return omas.to_omas(self, ods=ods, time_index=time_index, time=time)
 
 
 __all__ = [

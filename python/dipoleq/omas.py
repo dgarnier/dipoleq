@@ -13,7 +13,7 @@ from omas import ODS, omas_environment  # type: ignore[import-untyped]
 
 # from .core import Machine
 from ._version import __version__, __version_tuple__
-from .imas_dipole_extras import add_inner_boundary_to_imas
+from .omas_dipole_extras import add_inner_boundary_to_omas
 from .input import MachineIn
 from .post_process import Machine
 from .util import is_polygon_closed
@@ -22,36 +22,36 @@ from .util import is_polygon_closed
 __all__ = [
     "to_omas",
     "ODS",
-    "load_imas_data_structure",
-    "imas_input_params",
+    "load_omas_data_structure",
+    "omas_input_params",
 ]
 
 
-def machine_imas_data_structure(m: Machine) -> ODS:
+def machine_omas_data_structure(m: Machine) -> ODS:
     """Create an OMAS data structure for a machine object.
     Doesn't contain anything about the equilibrium itself,
     which is reported per time slice.  So, need to do an
-    add_imas_equilibrium_timeslice for each time slice after
+    add_omas_equilibrium_timeslice for each time slice after
     this.
     """
     # need this for consistency check to pass
     # extend the data dictionary for the inner boundary
-    add_inner_boundary_to_imas()
+    add_inner_boundary_to_omas()
     # by default, consistency check is on, and cocos=11
     ods = ODS(cocos=11)
     add_limiters(m, ods)
     return ods
 
 
-def load_imas_data_structure(filename: str | Path) -> ODS:
+def load_omas_data_structure(filename: str | Path) -> ODS:
     """Load an OMAS data structure from a file"""
-    add_inner_boundary_to_imas()
+    add_inner_boundary_to_omas()
     ods = ODS()
     ods.load(str(filename))
     return ods
 
 
-def add_imas_code_info(ods: ODS, input_data: MachineIn | None = None) -> None:
+def add_omas_code_info(ods: ODS, input_data: MachineIn | None = None) -> None:
     """Add the code info to an OMAS data structure"""
     code = ods["code"]
     code["name"] = "DipolEQ"
@@ -79,7 +79,7 @@ def add_imas_code_info(ods: ODS, input_data: MachineIn | None = None) -> None:
     # negative if not to be used
 
 
-def imas_input_params(ods: ODS) -> dict[str, Any] | None:
+def omas_input_params(ods: ODS) -> dict[str, Any] | None:
     """Create a DipolEQ input data from an OMAS data structure"""
     # need to create the MachineIn object from the input data
     # which is stored in the code section of the OMAS data structure.
@@ -109,17 +109,17 @@ def imas_input_params(ods: ODS) -> dict[str, Any] | None:
     return data if isinstance(data, dict) else None
 
 
-def add_imas_equilibrium(m: Machine, ods: ODS) -> ODS:
+def add_omas_equilibrium(m: Machine, ods: ODS) -> ODS:
     """Add the equilibrium data to an OMAS data structure"""
     ieq = ods["equilibrium"]
     input_data = getattr(m, "input_data", None)
-    add_imas_code_info(ieq, input_data=input_data)
+    add_omas_code_info(ieq, input_data=input_data)
     ieq["vacuum_toroidal_field.r0"] = m.Plasma.R0
     return ods
 
 
 def add_limiters(m: Machine, ods: ODS) -> ODS:
-    """Add the limiter as a IMAS wall structure
+    """Add the limiter as a OMAS wall structure
     For limiters, there are different types.
     Each type can have a name, index, and description.
     index = 0 = single contour
@@ -129,7 +129,7 @@ def add_limiters(m: Machine, ods: ODS) -> ODS:
     """
     # add data providence to wall structure
     wall = ods["wall"]
-    add_imas_code_info(wall)
+    add_omas_code_info(wall)
 
     # IMAS units should be contiguous and clockwise
     # of course, the inner limiter will be done in reverse
@@ -176,8 +176,8 @@ def add_limiters(m: Machine, ods: ODS) -> ODS:
 
 
 def add_boundary(m: Machine, ts: ODS) -> None:
-    """Add the boundary data to an IMAS equilibrium time slice"""
-    # the values here are taken from the IMAS schema
+    """Add the boundary data to an OMAS equilibrium time slice"""
+    # the values here are taken from the OMAS schema
     # https://gafusion.github.io/omas/schema/schema_equilibrium.html
     # make boundary not quite at the separatrix
     # this is the 99.5% flux surface
@@ -192,8 +192,8 @@ def add_boundary(m: Machine, ts: ODS) -> None:
 
 
 def add_boundary_separatrix(m: Machine, ts: ODS) -> None:
-    """Add the boundary separatrix data to an IMAS equilibrium time slice"""
-    # the values here are taken from the IMAS schema
+    """Add the boundary separatrix data to an OMAS equilibrium time slice"""
+    # the values here are taken from the OMAS schema
     # https://gafusion.github.io/omas/schema/schema_equilibrium.html
     sep_r, sep_z = m.PsiGrid.get_contour(1.0)
     bsep = ts["boundary_separatrix"]
@@ -251,17 +251,17 @@ def to_omas(
     pl = m.Plasma
     pg = m.PsiGrid
     if ods is None:
-        ods = machine_imas_data_structure(m)
+        ods = machine_omas_data_structure(m)
 
     if not ods["equilibrium"]:
         # add the structure and the wall from the machine
-        ods = add_imas_equilibrium(m, ods)
+        ods = add_omas_equilibrium(m, ods)
 
     if time_index is None:
         time_index = len(ods["equilibrium.time_slice"])
     eqt = ods["equilibrium.time_slice"][time_index]
 
-    # the values here are taken from the IMAS schema
+    # the values here are taken from the OMAS schema
     # https://gafusion.github.io/omas/schema/schema_equilibrium.html
 
     psi = np.array(pl.Psi_pr)  # flux values, 1d
