@@ -60,9 +60,9 @@ def test_omas_save_nc(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return fpath
 
 
-def test_imas_nc(test_imas_save_nc: Path) -> None:
-    ods = load_imas_data_structure(test_imas_save_nc)
-    reference_ods = load_imas_data_structure(data_dir / "beta1_omas_reference.nc")
+def test_omas_nc(test_omas_save_nc: Path) -> None:
+    ods = load_omas_data_structure(test_omas_save_nc)
+    reference_ods = load_omas_data_structure(data_dir / "beta1_omas_reference.nc")
 
     diff = ods.diff(reference_ods)
     assert not diff, diff
