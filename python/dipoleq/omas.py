@@ -134,18 +134,18 @@ def add_limiters(m: Machine, ods: ODS) -> ODS:
     # IMAS units should be contiguous and clockwise
     # of course, the inner limiter will be done in reverse
     # since it limits on the outside of its surface.
-    wall0 = ods["wall.description_2d[0]"]
-    wall0["type.name"] = "Limiter(s)"
-    wall0["type.index"] = 1  # multiple limiter units, no vessel
-    wall0["type.description"] = (
+    wall0 = ods["wall"]["description_2d[0]"]
+    wall0["type"]["name"] = "Limiter(s)"
+    wall0["type"]["index"] = 1  # multiple limiter units, no vessel
+    wall0["type"]["description"] = (
         "As a dipole, this will contain outer and inner limiters"
     )
-    wall0["limiter.type.index"] = 0  # official single contour limiter
-    wall0["limiter.type.name"] = "Limiter Contour(s)"
+    wall0["limiter"]["type"]["index"] = 0  # official single contour limiter
+    wall0["limiter"]["type"]["name"] = "Limiter Contour(s)"
 
     # outer limiter first
     outline = m.Limiters.olim_outline()
-    unit = wall0["limiter.unit[0]"]
+    unit = wall0["limiter"]["unit[0]"]
     unit["name"] = "Outer limiter"
     unit["identifier"] = "outer_limiter"
     if is_polygon_closed(outline):  # determine closed by last
@@ -153,14 +153,14 @@ def add_limiters(m: Machine, ods: ODS) -> ODS:
         outline = outline[:-1]  # remove last point for closed
     # else:
     #    unit['outline.closed'] = 0
-    unit["outline.r"] = outline[:, 0]
-    unit["outline.z"] = outline[:, 1]
-    unit["component_type.name"] = "outer_limiter"
-    unit["component_type.index"] = 5  # 5 = limiter
+    unit["outline"]["r"] = outline[:, 0]
+    unit["outline"]["z"] = outline[:, 1]
+    unit["component_type"]["name"] = "outer_limiter"
+    unit["component_type"]["index"] = 5  # 5 = limiter
 
     # inner limiter
     outline = m.Limiters.ilim_outline()
-    unit = wall0["limiter.unit[1]"]
+    unit = wall0["limiter"]["unit[1]"]
     unit["name"] = "inner_limiter"
     unit["identifier"] = "inner_limiter"
     if is_polygon_closed(outline):  # determine closed by last
@@ -168,10 +168,10 @@ def add_limiters(m: Machine, ods: ODS) -> ODS:
         outline = outline[:-1]
     # else:
     #    unit['outline.closed'] = 0
-    unit["outline.r"] = outline[:, 0]
-    unit["outline.z"] = outline[:, 1]
-    unit["component_type.name"] = "inner_limiter"
-    unit["component_type.index"] = -5  # 5 = limiter, but "private/custom" type
+    unit["outline"]["r"] = outline[:, 0]
+    unit["outline"]["z"] = outline[:, 1]
+    unit["component_type"]["name"] = "inner_limiter"
+    unit["component_type"]["index"] = -5  # 5 = limiter, but "private/custom" type
     return ods
 
 
@@ -185,8 +185,8 @@ def add_boundary(m: Machine, ts: ODS) -> None:
     psi_norm = m.Plasma.PsiXmax  # set by input
     bound = ts["boundary"]
     bnd_r, bnd_z = pg.get_contour(psi_norm)
-    bound["outline.r"] = bnd_r
-    bound["outline.z"] = bnd_z
+    bound["outline"]["r"] = bnd_r
+    bound["outline"]["z"] = bnd_z
     bound["psi_norm"] = psi_norm
     bound["psi"] = (pg.PsiLim - pg.PsiAxis) * psi_norm + pg.PsiAxis
 
@@ -197,8 +197,8 @@ def add_boundary_separatrix(m: Machine, ts: ODS) -> None:
     # https://gafusion.github.io/omas/schema/schema_equilibrium.html
     sep_r, sep_z = m.PsiGrid.get_contour(1.0)
     bsep = ts["boundary_separatrix"]
-    bsep["outline.r"] = sep_r
-    bsep["outline.z"] = sep_z
+    bsep["outline"]["r"] = sep_r
+    bsep["outline"]["z"] = sep_z
     bsep["psi"] = m.PsiGrid.PsiLim
     if m.is_diverted():  # type: ignore[attr-defined]
         bsep["type"] = 1
@@ -206,14 +206,14 @@ def add_boundary_separatrix(m: Machine, ts: ODS) -> None:
         bsep["type"] = 0
         active_point = m.get_outer_limiter_contact_point()  # type: ignore[attr-defined]
         if active_point is not None:
-            bsep["active_limiter_point.r"] = active_point[0]
-            bsep["active_limiter_point.z"] = active_point[1]
+            bsep["active_limiter_point"]["r"] = active_point[0]
+            bsep["active_limiter_point"]["z"] = active_point[1]
     # not sure how useful this is if not diverted, but
     # decided to add them anyway.. would be more helpful
     # with the flux values there.
     for i, xp in enumerate(m.get_x_points()):  # type: ignore[attr-defined]
-        bsep[f"x_point[{i}].r"] = xp.Rs
-        bsep[f"x_point[{i}].z"] = xp.Zs
+        bsep[f"x_point[{i}]"]["r"] = xp.Rs
+        bsep[f"x_point[{i}]"]["z"] = xp.Zs
         # this doesn't exist in IMAS schema
         # bsep[f'x_point[{i}].psi'] = xp.Psi
 
@@ -234,14 +234,14 @@ def add_inner_boundary_separatrix(m: Machine, ts: ODS) -> None:
         return
     sep_r, sep_z = m.PsiGrid.get_contour(0.0)
     bsep = ts["inner_boundary_separatrix"]
-    bsep["outline.r"] = sep_r
-    bsep["outline.z"] = sep_z
+    bsep["outline"]["r"] = sep_r
+    bsep["outline"]["z"] = sep_z
     bsep["psi"] = m.PsiGrid.PsiAxis
     bsep["type"] = 0
     active_point = m.get_inner_limiter_contact_point()  # type: ignore[attr-defined]
     if active_point is not None:
-        bsep["active_limiter_point.r"] = active_point[0]
-        bsep["active_limiter_point.z"] = active_point[1]
+        bsep["active_limiter_point"]["r"] = active_point[0]
+        bsep["active_limiter_point"]["z"] = active_point[1]
 
 
 def to_omas(
@@ -277,8 +277,8 @@ def to_omas(
         glob["psi_axis"] = pg.PsiMagAxis
         glob["psi_boundary"] = pg.PsiLim
         glob["psi_inner_boundary"] = pg.PsiAxis
-        glob["magnetic_axis.r"] = pg.RMagAxis
-        glob["magnetic_axis.z"] = pg.ZMagAxis
+        glob["magnetic_axis"]["r"] = pg.RMagAxis
+        glob["magnetic_axis"]["z"] = pg.ZMagAxis
         glob["ip"] = pl.Ip
 
         # B0, R0 is weird
@@ -296,13 +296,13 @@ def to_omas(
         # 2D quantities
         MU0 = 4.0e-7 * 3.14159265358979323846
         eq2d = eqt["profiles_2d.0"]
-        eq2d["type.index"] = (
+        eq2d["type"]["index"] = (
             0  # total fields.. could also be broken down into components
         )
-        eq2d["grid_type.index"] = 1  # regular R,Z grid
-        eq2d["grid_type.name"] = "RZ"
-        eq2d["grid.dim1"] = R = np.array(m.PsiGrid.R)
-        eq2d["grid.dim2"] = np.array(m.PsiGrid.Z)
+        eq2d["grid_type"]["index"] = 1  # regular R,Z grid
+        eq2d["grid_type"]["name"] = "RZ"
+        eq2d["grid"]["dim1"] = R = np.array(m.PsiGrid.R)
+        eq2d["grid"]["dim2"] = np.array(m.PsiGrid.Z)
         eq2d["psi"] = np.array(m.PsiGrid.Psi)
         eq2d["j_tor"] = np.asarray(m.PsiGrid.Current) / MU0
         eq2d["b_field_r"] = np.asarray(pl.GradPsiZ) / (2 * np.pi * R)
