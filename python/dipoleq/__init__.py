@@ -26,6 +26,9 @@ from .saveh5 import save_to_hdf5 as _save_to_hdf5
 with contextlib.suppress(ImportError):
     from . import omas
 
+with contextlib.suppress(ImportError):
+    from . import imas
+
 
 class Machine(core.Machine):
     """Machine class for the Dipole Equilibrium Solver
@@ -166,6 +169,16 @@ class Machine(core.Machine):
         ) -> omas.ODS:
             """Convert the machine data to an OMAS ODS"""
             return omas.to_omas(self, ods=ods, time_index=time_index, time=time)
+    
+    if "imas" in globals():
+        
+        def to_imas(
+            self,
+            db: imas.DBEntry,
+            time_index: int | None = None,
+            time: float = 0.0,
+        ) -> None:
+            imas.to_imas(self, db, time_index=time_index, time=time)
 
 
 __all__ = [
