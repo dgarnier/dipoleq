@@ -10,6 +10,64 @@ import xml.etree.ElementTree as ET
 from .util import is_polygon_closed
 
 
+def add_imas_code_info(ds: ODS, input_data: MachineIn | None = None) -> None:
+    """Add the code info to an OMAS data structure"""
+    code = ds["code"]
+    code["name"] = "DipolEQ"
+    code["description"] = "Dipole equilibrium solver"
+    code["repository"] = "https://github.com/dgarnier/dipoleq"
+    # return tag of release or commit hash depending on if its a release or not
+    code["version"] = (
+        f"v{__version__}"
+        if len(__version_tuple__) < 5
+        else str(__version_tuple__[4]).split(".", maxsplit=1)[0]
+    )
+    # could add the input data as XML, but... ugh
+    # needs pydantic_xml, xmltodict doesn't preserve types going roundtrip.
+    # but pydantic works.. so lets just save as json.
+    if input_data:
+        input_dict = input_data.model_dump(mode="json", exclude_unset=True)
+        xml = Json2xml(input_dict, wrapper="Machine", pretty=True).to_xml()
+        code["parameters"] = xml
+
+    # input_data.model_dump(mode=)
+    # could add which libraries and commits to add, but, really
+    # this is enough to reproduce the results
+    # one would encode the input data as XML into a string
+    # code['output_flag'][eq_time_index] = 0 if run is successful,
+    # negative if not to be used
+
+
+def imas_input_params(equilibrium: ODS) -> dict[str, Any] | None:
+    """Create a DipolEQ input data from an equilibrium data structure"""
+    # need to create the MachineIn object from the input data
+    # which is stored in the code section of the data structure.
+    # this is a bit of a pain, but it is what it is.
+    # the input data is stored as XML in the code section
+    # so we need to extract it and then load it into the MachineIn object.
+    if equilibrium["code.name"] != "DipolEQ":
+        return None
+
+    def xml_to_dict(node: ET.Element) -> Any:
+        """Compatible conversion from XML based on Json2xml output"""
+        match node.attrib.get("type", "dict"):
+            case "dict":
+                return {child.tag: xml_to_dict(child) for child in node}
+            case "list":
+                return [xml_to_dict(child) for child in node]
+            case "str":
+                return node.text
+            case "int":
+                return int(node.text) if node.text is not None else None
+            case "float":
+                return float(node.text) if node.text is not None else None
+            case "bool":
+                return node.text and node.text.lower() in ("true", "yes", "t", "1")
+
+    data = xml_to_dict(ET.fromstring(equilibrium["code.parameters"]))
+    return data if isinstance(data, dict) else None
+
+
 def add_limiters(m: Machine, wall: ODS) -> None:
     """Add the limiter as a IMAS/OMAS wall structure
     For limiters, there are different types.
@@ -83,34 +141,6 @@ def add_boundary(m: Machine, ts: ODS) -> None:
     bound["psi"] = (pg.PsiLim - pg.PsiAxis) * psi_norm + pg.PsiAxis
 
 
-def add_imas_code_info(ds: ODS, input_data: MachineIn | None = None) -> None:
-    """Add the code info to an OMAS data structure"""
-    code = ds["code"]
-    code["name"] = "DipolEQ"
-    code["description"] = "Dipole equilibrium solver"
-    code["repository"] = "https://github.com/dgarnier/dipoleq"
-    # return tag of release or commit hash depending on if its a release or not
-    code["version"] = (
-        f"v{__version__}"
-        if len(__version_tuple__) < 5
-        else str(__version_tuple__[4]).split(".", maxsplit=1)[0]
-    )
-    # could add the input data as XML, but... ugh
-    # needs pydantic_xml, xmltodict doesn't preserve types going roundtrip.
-    # but pydantic works.. so lets just save as json.
-    if input_data:
-        input_dict = input_data.model_dump(mode="json", exclude_unset=True)
-        xml = Json2xml(input_dict, wrapper="Machine", pretty=True).to_xml()
-        code["parameters"] = xml
-
-    # input_data.model_dump(mode=)
-    # could add which libraries and commits to add, but, really
-    # this is enough to reproduce the results
-    # one would encode the input data as XML into a string
-    # code['output_flag'][eq_time_index] = 0 if run is successful,
-    # negative if not to be used
-
-
 def add_boundary_separatrix(m: Machine, ts: ODS) -> None:
     """Add the boundary separatrix data to an IMAS/OMAS equilibrium time slice"""
     # the values here are taken from the IMAS/OMAS schema
@@ -146,36 +176,6 @@ def add_boundary_separatrix(m: Machine, ts: ODS) -> None:
     # triangularity_inner, triangularity_outer
     # squareness (in alpha)
     # strikepoint(s), gap(s)
-
-
-def imas_input_params(equilibrium: ODS) -> dict[str, Any] | None:
-    """Create a DipolEQ input data from an equilibrium data structure"""
-    # need to create the MachineIn object from the input data
-    # which is stored in the code section of the data structure.
-    # this is a bit of a pain, but it is what it is.
-    # the input data is stored as XML in the code section
-    # so we need to extract it and then load it into the MachineIn object.
-    if equilibrium["code.name"] != "DipolEQ":
-        return None
-
-    def xml_to_dict(node: ET.Element) -> Any:
-        """Compatible conversion from XML based on Json2xml output"""
-        match node.attrib.get("type", "dict"):
-            case "dict":
-                return {child.tag: xml_to_dict(child) for child in node}
-            case "list":
-                return [xml_to_dict(child) for child in node]
-            case "str":
-                return node.text
-            case "int":
-                return int(node.text) if node.text is not None else None
-            case "float":
-                return float(node.text) if node.text is not None else None
-            case "bool":
-                return node.text and node.text.lower() in ("true", "yes", "t", "1")
-
-    data = xml_to_dict(ET.fromstring(equilibrium["code.parameters"]))
-    return data if isinstance(data, dict) else None
 
 
 def add_inner_boundary_separatrix(m: Machine, ts: ODS) -> None:
