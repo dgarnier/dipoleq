@@ -157,11 +157,11 @@ def add_boundary_separatrix(m: Machine, ts: ODS | IDSStructure, pre_resize: bool
 def mas_input_params(equilibrium: ODS | IDSToplevel) -> dict[str, Any] | None:
     """Create a DipolEQ input data from an equilibrium IDS"""
     # need to create the MachineIn object from the input data
-    # which is stored in the code section of the IMAS data structure.
+    # which is stored in the code section of the data structure.
     # this is a bit of a pain, but it is what it is.
     # the input data is stored as XML in the code section
     # so we need to extract it and then load it into the MachineIn object.
-    if equilibrium["code"]["name"] != "DipolEQ":
+    if equilibrium["code.name"] != "DipolEQ":
         return None
 
     def xml_to_dict(node: ET.Element) -> Any:
@@ -180,7 +180,7 @@ def mas_input_params(equilibrium: ODS | IDSToplevel) -> dict[str, Any] | None:
             case "bool":
                 return node.text and node.text.lower() in ("true", "yes", "t", "1")
 
-    data = xml_to_dict(ET.fromstring(equilibrium["code"]["parameters"]))
+    data = xml_to_dict(ET.fromstring(equilibrium["code.parameters"]))
     return data if isinstance(data, dict) else None
 
 
@@ -191,11 +191,11 @@ def add_inner_boundary_separatrix(m: Machine, ts: ODS | IDSStructure) -> None:
         return
     sep_r, sep_z = m.PsiGrid.get_contour(0.0)
     bsep = ts["inner_boundary_separatrix"]
-    bsep["outline"]["r"] = sep_r
-    bsep["outline"]["z"] = sep_z
+    bsep["outline.r"] = sep_r
+    bsep["outline.z"] = sep_z
     bsep["psi"] = m.PsiGrid.PsiAxis
     bsep["type"] = 0
     active_point = m.get_inner_limiter_contact_point()  # type: ignore[attr-defined]
     if active_point is not None:
-        bsep["active_limiter_point"]["r"] = active_point[0]
-        bsep["active_limiter_point"]["z"] = active_point[1]
+        bsep["active_limiter_point.r"] = active_point[0]
+        bsep["active_limiter_point.z"] = active_point[1]
