@@ -1,16 +1,14 @@
 from .post_process import Machine
-from omas import ODS
 from typing import Any
-from imas.ids_toplevel import IDSToplevel
-from imas.ids_structure import IDSStructure
 from ._version import __version__, __version_tuple__
 from .input import MachineIn
 from json2xml.json2xml import Json2xml  # type: ignore[import-untyped]
 import xml.etree.ElementTree as ET
 from .util import is_polygon_closed
+from .ds import DS
 
 
-def add_imas_code_info(ds: ODS, input_data: MachineIn | None = None) -> None:
+def add_imas_code_info(ds: DS, input_data: MachineIn | None = None) -> None:
     """Add the code info to an OMAS data structure"""
     code = ds["code"]
     code["name"] = "DipolEQ"
@@ -38,7 +36,7 @@ def add_imas_code_info(ds: ODS, input_data: MachineIn | None = None) -> None:
     # negative if not to be used
 
 
-def imas_input_params(equilibrium: ODS) -> dict[str, Any] | None:
+def imas_input_params(equilibrium: DS) -> dict[str, Any] | None:
     """Create a DipolEQ input data from an equilibrium data structure"""
     # need to create the MachineIn object from the input data
     # which is stored in the code section of the data structure.
@@ -68,7 +66,7 @@ def imas_input_params(equilibrium: ODS) -> dict[str, Any] | None:
     return data if isinstance(data, dict) else None
 
 
-def add_limiters(m: Machine, wall: ODS) -> None:
+def add_limiters(m: Machine, wall: DS) -> None:
     """Add the limiter as a IMAS/OMAS wall structure
     For limiters, there are different types.
     Each type can have a name, index, and description.
@@ -124,7 +122,7 @@ def add_limiters(m: Machine, wall: ODS) -> None:
     return wall
 
 
-def add_boundary(m: Machine, ts: ODS) -> None:
+def add_boundary(m: Machine, ts: DS) -> None:
     """Add the boundary data to an IMAS/OMAS equilibrium time slice"""
     # the values here are taken from the IMAS/OMAS schema
     # https://imas-data-dictionary.readthedocs.io/en/latest/generated/ids/equilibrium.html
@@ -141,7 +139,7 @@ def add_boundary(m: Machine, ts: ODS) -> None:
     bound["psi"] = (pg.PsiLim - pg.PsiAxis) * psi_norm + pg.PsiAxis
 
 
-def add_boundary_separatrix(m: Machine, ts: ODS) -> None:
+def add_boundary_separatrix(m: Machine, ts: DS) -> None:
     """Add the boundary separatrix data to an IMAS/OMAS equilibrium time slice"""
     # the values here are taken from the IMAS/OMAS schema
     # https://imas-data-dictionary.readthedocs.io/en/latest/generated/ids/equilibrium.html
@@ -178,7 +176,7 @@ def add_boundary_separatrix(m: Machine, ts: ODS) -> None:
     # strikepoint(s), gap(s)
 
 
-def add_inner_boundary_separatrix(m: Machine, ts: ODS) -> None:
+def add_inner_boundary_separatrix(m: Machine, ts: DS) -> None:
     """Add the inner boundary separatrix data to an equilibrium time slice"""
     if m.PsiGrid.PsiAxis == m.PsiGrid.PsiMagAxis:
         # no fcfs when the inner boundary is at the axis.
