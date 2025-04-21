@@ -29,23 +29,7 @@ __all__ = [
 
 
 def omas_input_params(ods: ODS) -> dict[str, Any] | None:
-    return mas_input_params(ods["equilibrium"])
-
-
-def machine_omas_data_structure(m: Machine) -> ODS:
-    """Create an OMAS data structure for a machine object.
-    Doesn't contain anything about the equilibrium itself,
-    which is reported per time slice.  So, need to do an
-    add_omas_equilibrium_timeslice for each time slice after
-    this.
-    """
-    # need this for consistency check to pass
-    # extend the data dictionary for the inner boundary
-    add_inner_boundary_to_omas()
-    # by default, consistency check is on, and cocos=11
-    ods = ODS(cocos=11)
-    add_limiters(m, ods["wall"], False)
-    return ods
+    return imas_input_params(ods["equilibrium"])
 
 
 def load_omas_data_structure(filename: str | Path) -> ODS:
@@ -56,13 +40,16 @@ def load_omas_data_structure(filename: str | Path) -> ODS:
     return ods
 
 
-def add_omas_equilibrium(m: Machine, ods: ODS) -> ODS:
-    """Add the equilibrium data to an OMAS data structure"""
-    ieq = ods["equilibrium"]
-    input_data = getattr(m, "input_data", None)
-    add_mas_code_info(ieq, input_data=input_data)
-    ieq["vacuum_toroidal_field.r0"] = m.Plasma.R0
-    return ods
+def prepare_ods(ods: ODS | None):
+    if ods is None:
+        # need this for consistency check to pass
+        # extend the data dictionary for the inner boundary
+        add_inner_boundary_to_omas()
+        # by default, consistency check is on, and cocos=11
+        ods = ODS(cocos=11)
+    eq = ods["equilibrium"]
+    wall = ods["wall"]
+    return ods, eq, wall
 
 
 def to_omas(
@@ -71,25 +58,27 @@ def to_omas(
     """Add the equilibrium data to an OMAS data structure."""
     pl = m.Plasma
     pg = m.PsiGrid
-    if ods is None:
-        ods = machine_omas_data_structure(m)
+    ods, eq, wall = prepare_ods(ods)
 
-    if not ods["equilibrium"]:
+    add_limiters(m, wall)
+
         # add the structure and the wall from the machine
-        ods = add_omas_equilibrium(m, ods)
+    input_data = getattr(m, "input_data", None)
+    add_imas_code_info(eq, input_data=input_data)
 
     if time_index is None:
-        time_index = len(ods["equilibrium.time_slice"])
-    eqt = ods["equilibrium.time_slice"][time_index]
+        time_index = len(eq["time_slice"])
+    eqt = eq["time_slice"][time_index]
 
-    # the values here are taken from the OMAS schema
+    # the values here are taken from the IMAS/OMAS schema
+    # https://imas-data-dictionary.readthedocs.io/en/latest/generated/ids/equilibrium.html
     # https://gafusion.github.io/omas/schema/schema_equilibrium.html
 
     psi = np.array(pl.Psi_pr)  # flux values, 1d
 
     # Set the time array
     eqt["time"] = time
-    ods.set_time_array("equilibrium.time", time_index, eqt["time"])
+    ods.set_time_array("equilibrium.time", time_index, time)
 
     # 0D quantities
     glob = eqt["global_quantities"]
@@ -101,7 +90,7 @@ def to_omas(
     glob["ip"] = pl.Ip
 
     # B0, R0 is weird
-    ods["equilibrium.vacuum_toroidal_field.r0"] = pl.R0
+    eq["vacuum_toroidal_field.r0"] = pl.R0
     ods.set_time_array("equilibrium.vacuum_toroidal_field.b0", time_index, pl.B0)
 
     # 1D quantities
