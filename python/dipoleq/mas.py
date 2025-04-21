@@ -10,8 +10,8 @@ import xml.etree.ElementTree as ET
 from .util import is_polygon_closed
 
 
-def add_limiters(m: Machine, wall: ODS | IDSToplevel, pre_resize: bool) -> None:
-    """Add the limiter as a OMAS wall structure
+def add_limiters(m: Machine, wall: ODS) -> None:
+    """Add the limiter as a IMAS/OMAS wall structure
     For limiters, there are different types.
     Each type can have a name, index, and description.
     index = 0 = single contour
@@ -20,27 +20,23 @@ def add_limiters(m: Machine, wall: ODS | IDSToplevel, pre_resize: bool) -> None:
     also have component types.
     """
     # add data providence to wall structure
-    add_mas_code_info(wall)
+    add_imas_code_info(wall)
 
     # IMAS units should be contiguous and clockwise
     # of course, the inner limiter will be done in reverse
     # since it limits on the outside of its surface.
-    if pre_resize:
-        wall.description_2d.resize(1)
     wall0 = wall["description_2d[0]"]
-    wall0["type"]["name"] = "Limiter(s)"
-    wall0["type"]["index"] = 1  # multiple limiter units, no vessel
-    wall0["type"]["description"] = (
+    wall0["type.name"] = "Limiter(s)"
+    wall0["type.index"] = 1  # multiple limiter units, no vessel
+    wall0["type.description"] = (
         "As a dipole, this will contain outer and inner limiters"
     )
-    wall0["limiter"]["type"]["index"] = 0  # official single contour limiter
-    wall0["limiter"]["type"]["name"] = "Limiter Contour(s)"
-    if pre_resize:
-        wall0.limiter.unit.resize(2)
+    wall0["limiter.type.index"] = 0  # official single contour limiter
+    wall0["limiter.type.name"] = "Limiter Contour(s)"
 
     # outer limiter first
     outline = m.Limiters.olim_outline()
-    unit = wall0["limiter"]["unit[0]"]
+    unit = wall0["limiter.unit[0]"]
     unit["name"] = "Outer limiter"
     unit["identifier"] = "outer_limiter"
     if is_polygon_closed(outline):  # determine closed by last
@@ -48,14 +44,14 @@ def add_limiters(m: Machine, wall: ODS | IDSToplevel, pre_resize: bool) -> None:
         outline = outline[:-1]  # remove last point for closed
     # else:
     #    unit['outline.closed'] = 0
-    unit["outline"]["r"] = outline[:, 0]
-    unit["outline"]["z"] = outline[:, 1]
-    unit["component_type"]["name"] = "outer_limiter"
-    unit["component_type"]["index"] = 5  # 5 = limiter
+    unit["outline.r"] = outline[:, 0]
+    unit["outline.z"] = outline[:, 1]
+    unit["component_type.name"] = "outer_limiter"
+    unit["component_type.index"] = 5  # 5 = limiter
 
     # inner limiter
     outline = m.Limiters.ilim_outline()
-    unit = wall0["limiter"]["unit[1]"]
+    unit = wall0["limiter.unit[1]"]
     unit["name"] = "inner_limiter"
     unit["identifier"] = "inner_limiter"
     if is_polygon_closed(outline):  # determine closed by last
@@ -63,14 +59,14 @@ def add_limiters(m: Machine, wall: ODS | IDSToplevel, pre_resize: bool) -> None:
         outline = outline[:-1]
     # else:
     #    unit['outline.closed'] = 0
-    unit["outline"]["r"] = outline[:, 0]
-    unit["outline"]["z"] = outline[:, 1]
-    unit["component_type"]["name"] = "inner_limiter"
-    unit["component_type"]["index"] = -5  # 5 = limiter, but "private/custom" type
+    unit["outline.r"] = outline[:, 0]
+    unit["outline.z"] = outline[:, 1]
+    unit["component_type.name"] = "inner_limiter"
+    unit["component_type.index"] = -5  # 5 = limiter, but "private/custom" type
     return wall
 
 
-def add_boundary(m: Machine, ts: ODS | IDSStructure) -> None:
+def add_boundary(m: Machine, ts: ODS) -> None:
     """Add the boundary data to an IMAS/OMAS equilibrium time slice"""
     # the values here are taken from the IMAS/OMAS schema
     # https://imas-data-dictionary.readthedocs.io/en/latest/generated/ids/equilibrium.html
@@ -81,13 +77,13 @@ def add_boundary(m: Machine, ts: ODS | IDSStructure) -> None:
     psi_norm = m.Plasma.PsiXmax  # set by input
     bound = ts["boundary"]
     bnd_r, bnd_z = pg.get_contour(psi_norm)
-    bound["outline"]["r"] = bnd_r
-    bound["outline"]["z"] = bnd_z
+    bound["outline.r"] = bnd_r
+    bound["outline.z"] = bnd_z
     bound["psi_norm"] = psi_norm
     bound["psi"] = (pg.PsiLim - pg.PsiAxis) * psi_norm + pg.PsiAxis
 
 
-def add_mas_code_info(ds: ODS | IDSStructure, input_data: MachineIn | None = None) -> None:
+def add_imas_code_info(ds: ODS, input_data: MachineIn | None = None) -> None:
     """Add the code info to an OMAS data structure"""
     code = ds["code"]
     code["name"] = "DipolEQ"
@@ -115,15 +111,15 @@ def add_mas_code_info(ds: ODS | IDSStructure, input_data: MachineIn | None = Non
     # negative if not to be used
 
 
-def add_boundary_separatrix(m: Machine, ts: ODS | IDSStructure, pre_resize: bool) -> None:
+def add_boundary_separatrix(m: Machine, ts: ODS) -> None:
     """Add the boundary separatrix data to an IMAS/OMAS equilibrium time slice"""
     # the values here are taken from the IMAS/OMAS schema
     # https://imas-data-dictionary.readthedocs.io/en/latest/generated/ids/equilibrium.html
     # https://gafusion.github.io/omas/schema/schema_equilibrium.html
     sep_r, sep_z = m.PsiGrid.get_contour(1.0)
     bsep = ts["boundary_separatrix"]
-    bsep["outline"]["r"] = sep_r
-    bsep["outline"]["z"] = sep_z
+    bsep["outline.r"] = sep_r
+    bsep["outline.z"] = sep_z
     bsep["psi"] = m.PsiGrid.PsiLim
     if m.is_diverted():  # type: ignore[attr-defined]
         bsep["type"] = 1
@@ -131,16 +127,14 @@ def add_boundary_separatrix(m: Machine, ts: ODS | IDSStructure, pre_resize: bool
         bsep["type"] = 0
         active_point = m.get_outer_limiter_contact_point()  # type: ignore[attr-defined]
         if active_point is not None:
-            bsep["active_limiter_point"]["r"] = active_point[0]
-            bsep["active_limiter_point"]["z"] = active_point[1]
+            bsep["active_limiter_point.r"] = active_point[0]
+            bsep["active_limiter_point.z"] = active_point[1]
     # not sure how useful this is if not diverted, but
     # decided to add them anyway.. would be more helpful
     # with the flux values there.
-    if pre_resize:
-        bsep["x_point"].resize(len(m.get_x_points()))
     for i, xp in enumerate(m.get_x_points()):  # type: ignore[attr-defined]
-        bsep[f"x_point[{i}]"]["r"] = xp.Rs
-        bsep[f"x_point[{i}]"]["z"] = xp.Zs
+        bsep[f"x_point[{i}].r"] = xp.Rs
+        bsep[f"x_point[{i}].z"] = xp.Zs
         # this doesn't exist in IMAS schema
         # bsep[f'x_point[{i}].psi'] = xp.Psi
 
@@ -154,8 +148,8 @@ def add_boundary_separatrix(m: Machine, ts: ODS | IDSStructure, pre_resize: bool
     # strikepoint(s), gap(s)
 
 
-def mas_input_params(equilibrium: ODS | IDSToplevel) -> dict[str, Any] | None:
-    """Create a DipolEQ input data from an equilibrium IDS"""
+def imas_input_params(equilibrium: ODS) -> dict[str, Any] | None:
+    """Create a DipolEQ input data from an equilibrium data structure"""
     # need to create the MachineIn object from the input data
     # which is stored in the code section of the data structure.
     # this is a bit of a pain, but it is what it is.
@@ -184,7 +178,7 @@ def mas_input_params(equilibrium: ODS | IDSToplevel) -> dict[str, Any] | None:
     return data if isinstance(data, dict) else None
 
 
-def add_inner_boundary_separatrix(m: Machine, ts: ODS | IDSStructure) -> None:
+def add_inner_boundary_separatrix(m: Machine, ts: ODS) -> None:
     """Add the inner boundary separatrix data to an equilibrium time slice"""
     if m.PsiGrid.PsiAxis == m.PsiGrid.PsiMagAxis:
         # no fcfs when the inner boundary is at the axis.
