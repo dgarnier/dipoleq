@@ -6,6 +6,7 @@ from json2xml.json2xml import Json2xml  # type: ignore[import-untyped]
 import xml.etree.ElementTree as ET
 from .util import is_polygon_closed
 from .ds import DS
+import numpy as np
 
 
 def add_imas_code_info(ds: DS, input_data: MachineIn | None = None) -> None:
@@ -191,3 +192,74 @@ def add_inner_boundary_separatrix(m: Machine, ts: DS) -> None:
     if active_point is not None:
         bsep["active_limiter_point.r"] = active_point[0]
         bsep["active_limiter_point.z"] = active_point[1]
+
+
+def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int, time: float) -> None:
+    pl = m.Plasma
+    pg = m.PsiGrid
+
+    add_limiters(m, wall)
+
+    # add the structure and the wall from the machine
+    input_data = getattr(m, "input_data", None)
+    add_imas_code_info(eq, input_data=input_data)
+
+    if time_index is None:
+        time_index = len(eq["time_slice"])
+    eqt = eq["time_slice"][time_index]
+
+    # the values here are taken from the IMAS/OMAS schema
+    # https://imas-data-dictionary.readthedocs.io/en/latest/generated/ids/equilibrium.html
+    # https://gafusion.github.io/omas/schema/schema_equilibrium.html
+
+    psi = np.array(pl.Psi_pr)  # flux values, 1d
+
+    # Set the time array
+    eqt["time"] = time
+    eq[f"time.{time_index}"] = time
+
+    # 0D quantities
+    glob = eqt["global_quantities"]
+    glob["psi_axis"] = pg.PsiMagAxis
+    glob["psi_boundary"] = pg.PsiLim
+    glob["psi_inner_boundary"] = pg.PsiAxis
+    glob["magnetic_axis.r"] = pg.RMagAxis
+    glob["magnetic_axis.z"] = pg.ZMagAxis
+    glob["ip"] = pl.Ip
+
+    # B0, R0 is weird
+    eq["vacuum_toroidal_field.r0"] = pl.R0
+    eq[f"vacuum_toroidal_field.b0.{time_index}"] = pl.B0
+
+    # 1D quantities
+    eq1d = eqt["profiles_1d"]
+    eq1d["psi"] = psi
+    eq1d["f"] = np.asarray(pl.G_pr) * pl.B0R0
+    eq1d["f_df_dpsi"] = np.asarray(pl.G2p_pr) * (pl.B0R0) ** 2
+    eq1d["pressure"] = np.array(pl.P_pr)
+    eq1d["dpressure_dpsi"] = np.array(pl.Pp_pr)
+    eq1d["q"] = np.array(pl.q_pr)
+
+    # 2D quantities
+    MU0 = 4.0e-7 * 3.14159265358979323846
+    eq2d = eqt["profiles_2d.0"]
+    eq2d["type.index"] = (
+        0  # total fields.. could also be broken down into components
+    )
+    eq2d["grid_type.index"] = 1  # regular R,Z grid
+    eq2d["grid_type.name"] = "RZ"
+    eq2d["grid.dim1"] = R = np.array(m.PsiGrid.R)
+    eq2d["grid.dim2"] = np.array(m.PsiGrid.Z)
+    eq2d["psi"] = np.array(m.PsiGrid.Psi)
+    eq2d["j_tor"] = np.asarray(m.PsiGrid.Current) / MU0
+    eq2d["b_field_r"] = np.asarray(pl.GradPsiZ) / (2 * np.pi * R)
+    eq2d["b_field_z"] = -np.asarray(pl.GradPsiR) / (2 * np.pi * R)
+    eq2d["b_field_tor"] = np.array(pl.Bt)
+    # others to add
+    # eq2d['grid.volume_element']
+    # eq2d['phi']   # the toroidal flux
+
+    # boundaries
+    add_boundary(m, eqt)
+    add_boundary_separatrix(m, eqt)
+    add_inner_boundary_separatrix(m, eqt)
