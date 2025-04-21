@@ -37,15 +37,11 @@ import imas
 imas.dd_zip._read_dd_versions = _read_dd_versions
 
 from imas import DBEntry, ids_defs
-from imas.ids_toplevel import IDSToplevel
-from imas.ids_structure import IDSStructure
-from json2xml.json2xml import Json2xml
 
 from ._version import __version__, __version_tuple__
-from .input import MachineIn
 from .post_process import Machine
-from .util import is_polygon_closed
-from .mas import add_boundary, add_mas_code_info, add_boundary_separatrix, add_limiters, get_or_append, set_or_append
+from .mas import add_boundary, add_imas_code_info, add_boundary_separatrix, add_limiters, add_inner_boundary_separatrix
+from .ds import ImasDS
 
 # export (or re-export) these functions
 __all__ = [
@@ -53,12 +49,12 @@ __all__ = [
 ]
 # TODO: Make sure we are inputting with COCOS 11
 
-def prepare_imas_things(db: DBEntry):
+def prepare_imas_ds(db: DBEntry):
     eq = db.factory.equilibrium()
     eq.ids_properties.homogeneous_time = ids_defs.IDS_TIME_MODE_HOMOGENEOUS
     wall = db.factory.wall()
     wall.ids_properties.homogeneous_time = ids_defs.IDS_TIME_MODE_HOMOGENEOUS
-    return eq, wall
+    return ImasDS(eq), ImasDS(wall)
 
 
 def to_imas(
@@ -67,20 +63,17 @@ def to_imas(
     """Add the equilibrium data to an OMAS data structure."""
     pl = m.Plasma
     pg = m.PsiGrid
-    eq, wall = prepare_imas_things(db)
+    eq, wall = prepare_imas_ds(db)
 
-    add_limiters(m, wall, True)
+    add_limiters(m, wall)
 
     # add the structure and the wall from the machine
     input_data = getattr(m, "input_data", None)
-    add_mas_code_info(eq, input_data=input_data)
-
-    eq["vacuum_toroidal_field"]["r0"] = pl.R0
+    add_imas_code_info(eq, input_data=input_data)
 
     if time_index is None:
-        # Append to the end
         time_index = len(eq["time_slice"])
-    eqt = get_or_append(eq["time_slice"], time_index)
+    eqt = eq["time_slice"][time_index]
 
     # the values here are taken from the IMAS/OMAS schema
     # https://imas-data-dictionary.readthedocs.io/en/latest/generated/ids/equilibrium.html
@@ -90,19 +83,20 @@ def to_imas(
 
     # Set the time array
     eqt["time"] = time
-    set_or_append(eq["time"], time_index, time)
+    eq[f"time.{time_index}"] = time
 
     # 0D quantities
     glob = eqt["global_quantities"]
     glob["psi_axis"] = pg.PsiMagAxis
     glob["psi_boundary"] = pg.PsiLim
     glob["psi_inner_boundary"] = pg.PsiAxis
-    glob["magnetic_axis"]["r"] = pg.RMagAxis
-    glob["magnetic_axis"]["z"] = pg.ZMagAxis
+    glob["magnetic_axis.r"] = pg.RMagAxis
+    glob["magnetic_axis.z"] = pg.ZMagAxis
     glob["ip"] = pl.Ip
 
     # B0, R0 is weird
-    # set_or_append(eq["vacuum_toroidal_field"]["b0"], time_index, pl.B0)
+    eq["vacuum_toroidal_field.r0"] = pl.R0
+    eq[f"vacuum_toroidal_field.b0.{time_index}"] = pl.B0
 
     # 1D quantities
     eq1d = eqt["profiles_1d"]
@@ -115,15 +109,14 @@ def to_imas(
 
     # 2D quantities
     MU0 = 4.0e-7 * 3.14159265358979323846
-    eqt.profiles_2d.resize(1)
-    eq2d = eqt["profiles_2d[0]"]
-    eq2d["type"]["index"] = (
+    eq2d = eqt["profiles_2d.0"]
+    eq2d["type.index"] = (
         0  # total fields.. could also be broken down into components
     )
-    eq2d["grid_type"]["index"] = 1  # regular R,Z grid
-    eq2d["grid_type"]["name"] = "RZ"
-    eq2d["grid"]["dim1"] = R = np.array(m.PsiGrid.R)
-    eq2d["grid"]["dim2"] = np.array(m.PsiGrid.Z)
+    eq2d["grid_type.index"] = 1  # regular R,Z grid
+    eq2d["grid_type.name"] = "RZ"
+    eq2d["grid.dim1"] = R = np.array(m.PsiGrid.R)
+    eq2d["grid.dim2"] = np.array(m.PsiGrid.Z)
     eq2d["psi"] = np.array(m.PsiGrid.Psi)
     eq2d["j_tor"] = np.asarray(m.PsiGrid.Current) / MU0
     eq2d["b_field_r"] = np.asarray(pl.GradPsiZ) / (2 * np.pi * R)
@@ -135,13 +128,13 @@ def to_imas(
 
     # boundaries
     add_boundary(m, eqt)
-    add_boundary_separatrix(m, eqt, True)
-    # add_inner_boundary_separatrix(m, eqt)  # TODO: Add this back in
+    add_boundary_separatrix(m, eqt)
+    add_inner_boundary_separatrix(m, eqt)
 
-    eq.validate()
-    wall.validate()
+    eq.inner.validate()
+    wall.inner.validate()
 
-    db.put(eq)
-    db.put(wall)
+    db.put(eq.inner)
+    db.put(wall.inner)
 
     return db

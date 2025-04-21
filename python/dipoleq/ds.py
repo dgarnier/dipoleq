@@ -41,6 +41,11 @@ class DS(ABC):
     @abstractmethod
     def __len__(self):
         ...
+    
+    @property
+    @abstractmethod
+    def inner(self):
+        ...
 
 
 @dataclass
@@ -48,11 +53,17 @@ class ImasDS(DS):
     _ids: IDSBase
 
     def _getitem(self, key):
-        print(key)
-        return super()._getitem(key)
+        return ImasDS(self._ids)
     
     def _setitem(self, key, value):
-        print(key, value)
+        pass
+    
+    def __len__(self) -> int:
+        return 0
+    
+    @property
+    def inner(self) -> IDSBase:
+        return self._ids
 
 
 @dataclass
@@ -87,3 +98,7 @@ class OmasDS(DS):
     
     def __len__(self) -> int:
         return len(self._ods)
+    
+    @property
+    def inner(self) -> ODS:
+        return self._ods
