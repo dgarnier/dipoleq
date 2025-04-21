@@ -96,8 +96,8 @@ def to_omas(
     glob["psi_axis"] = pg.PsiMagAxis
     glob["psi_boundary"] = pg.PsiLim
     glob["psi_inner_boundary"] = pg.PsiAxis
-    glob["magnetic_axis"]["r"] = pg.RMagAxis
-    glob["magnetic_axis"]["z"] = pg.ZMagAxis
+    glob["magnetic_axis.r"] = pg.RMagAxis
+    glob["magnetic_axis.z"] = pg.ZMagAxis
     glob["ip"] = pl.Ip
 
     # B0, R0 is weird
@@ -116,13 +116,13 @@ def to_omas(
     # 2D quantities
     MU0 = 4.0e-7 * 3.14159265358979323846
     eq2d = eqt["profiles_2d.0"]
-    eq2d["type"]["index"] = (
+    eq2d["type.index"] = (
         0  # total fields.. could also be broken down into components
     )
-    eq2d["grid_type"]["index"] = 1  # regular R,Z grid
-    eq2d["grid_type"]["name"] = "RZ"
-    eq2d["grid"]["dim1"] = R = np.array(m.PsiGrid.R)
-    eq2d["grid"]["dim2"] = np.array(m.PsiGrid.Z)
+    eq2d["grid_type.index"] = 1  # regular R,Z grid
+    eq2d["grid_type.name"] = "RZ"
+    eq2d["grid.dim1"] = R = np.array(m.PsiGrid.R)
+    eq2d["grid.dim2"] = np.array(m.PsiGrid.Z)
     eq2d["psi"] = np.array(m.PsiGrid.Psi)
     eq2d["j_tor"] = np.asarray(m.PsiGrid.Current) / MU0
     eq2d["b_field_r"] = np.asarray(pl.GradPsiZ) / (2 * np.pi * R)
@@ -134,7 +134,7 @@ def to_omas(
 
     # boundaries
     add_boundary(m, eqt)
-    add_boundary_separatrix(m, eqt, False)
+    add_boundary_separatrix(m, eqt)
     add_inner_boundary_separatrix(m, eqt)
 
     return ods
