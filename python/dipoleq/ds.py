@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from imas.ids_base import IDSBase
 from omas import ODS
-from typing import List
+from typing import Any, List
 import numpy as np
 
 
@@ -52,15 +52,37 @@ class DS(ABC):
 class ImasDS(DS):
     _ids: IDSBase
 
-    def _getitem(self, key):
-        return ImasDS(self._ids)
-    
-    def _setitem(self, key, value):
-        pass
-    
+    def _getitem(self, key: List[str | int]) -> Any:
+        if len(key) == 1:
+            if isinstance(key[0], int) and key[0] == len(self._ids):
+                self._ids.resize(len(self._ids)+1)
+            return self.__class__(self._ids[key[0]])
+        return self._getitem([key[0]])._getitem(key[1:])
+
+    def _setitem(self, key: List[str | int], value: Any) -> None:
+        if len(key) == 1:
+            if isinstance(key[0], int) and key[0] == len(self._ids):
+                self._ids.resize(len(self._ids)+1)
+            self._ids[key[0]] = value
+        else:
+            self._getitem([key[0]])._setitem(key[1:], value)
+
+    def _join_key(self, key: List[str | int]) -> str:
+        result = ''
+        for i, k in enumerate(key):
+            if isinstance(k, int):
+                result += f'[{k}]'
+            elif isinstance(k, str):
+                if i != 0:
+                    result += '/'
+                result += k
+            else:
+                raise ValueError('Invalid key type')
+        return result
+
     def __len__(self) -> int:
-        return 0
-    
+        return len(self._ids)
+
     @property
     def inner(self) -> IDSBase:
         return self._ids
@@ -90,7 +112,7 @@ class OmasDS(DS):
         elif len(key) == 1:
             self._ods[key[0]] = value
         else:
-            OmasDS(self._ods[key[0]])._setitem(key[1:], value)
+            self._getitem([key[0]])._setitem(key[1:], value)
     
     def _join_key(self, key: List[str | int]) -> str:
         assert all(isinstance(k, str) or isinstance(k, int) for k in key)
