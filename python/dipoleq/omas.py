@@ -5,7 +5,7 @@ under public license, use OMAS.
 
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any
+from typing import Any, Tuple
 
 import numpy as np
 from json2xml.json2xml import Json2xml  # type: ignore[import-untyped]
@@ -17,7 +17,8 @@ from .omas_dipole_extras import add_inner_boundary_to_omas
 from .input import MachineIn
 from .post_process import Machine
 from .util import is_polygon_closed
-from .mas import add_boundary, add_mas_code_info, add_boundary_separatrix, add_limiters, add_inner_boundary_separatrix, mas_input_params
+from .mas import add_boundary, add_imas_code_info, add_boundary_separatrix, add_limiters, add_inner_boundary_separatrix, imas_input_params
+from .ds import DS, OmasDS
 
 # export (or re-export) these functions
 __all__ = [
@@ -40,7 +41,7 @@ def load_omas_data_structure(filename: str | Path) -> ODS:
     return ods
 
 
-def prepare_ods(ods: ODS | None):
+def prepare_omas_ds(ods: ODS | None) -> Tuple[ODS, DS, DS]:
     if ods is None:
         # need this for consistency check to pass
         # extend the data dictionary for the inner boundary
@@ -49,7 +50,7 @@ def prepare_ods(ods: ODS | None):
         ods = ODS(cocos=11)
     eq = ods["equilibrium"]
     wall = ods["wall"]
-    return ods, eq, wall
+    return ods, OmasDS(eq), OmasDS(wall)
 
 
 def to_omas(
@@ -58,11 +59,11 @@ def to_omas(
     """Add the equilibrium data to an OMAS data structure."""
     pl = m.Plasma
     pg = m.PsiGrid
-    ods, eq, wall = prepare_ods(ods)
+    ods, eq, wall = prepare_omas_ds(ods)
 
     add_limiters(m, wall)
 
-        # add the structure and the wall from the machine
+    # add the structure and the wall from the machine
     input_data = getattr(m, "input_data", None)
     add_imas_code_info(eq, input_data=input_data)
 
@@ -78,7 +79,7 @@ def to_omas(
 
     # Set the time array
     eqt["time"] = time
-    ods.set_time_array("equilibrium.time", time_index, time)
+    eq[f"time.{time_index}"] = time
 
     # 0D quantities
     glob = eqt["global_quantities"]
@@ -91,7 +92,7 @@ def to_omas(
 
     # B0, R0 is weird
     eq["vacuum_toroidal_field.r0"] = pl.R0
-    ods.set_time_array("equilibrium.vacuum_toroidal_field.b0", time_index, pl.B0)
+    eq[f"vacuum_toroidal_field.b0.{time_index}"] = pl.B0
 
     # 1D quantities
     eq1d = eqt["profiles_1d"]
