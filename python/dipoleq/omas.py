@@ -34,9 +34,9 @@ class OmasDS(DS):
             raise TypeError(f"Unsupported type {type(o)} of {o} in force wrap mode")
         return o
 
-    def _getitem(self, key: list[str | int], force: bool = False) -> 'OmasDS':
+    def _getitem(self, key: list[str | int], force: bool = False) -> "OmasDS":
         return self._wrap_object(self._ods[self._join_key(key)], force)
-    
+
     def _setitem(self, key: list[str | int], value):
         assert len(key) > 0
         if len(key) == 2 and isinstance(key[1], int):
@@ -55,11 +55,11 @@ class OmasDS(DS):
             self._ods[key[0]] = value
         else:
             self._getitem([key[0]], True)._setitem(key[1:], value)
-    
+
     def _join_key(self, key: list[str | int]) -> str:
         assert all(isinstance(k, str) or isinstance(k, int) for k in key)
         return ".".join([str(k) for k in key])
-    
+
     def __len__(self) -> int:
         return len(self._ods)
 

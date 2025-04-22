@@ -1,6 +1,5 @@
 from tests.test_omas import data_dir, make_omas_nc_file
 
-
 REFERENCE_METHODS = [
     make_omas_nc_file,
 ]

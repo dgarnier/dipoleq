@@ -5,7 +5,7 @@ from pathlib import Path
 from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
-import dipmas  # pylint: disable=unused-import
+import dipmas  # noqa: F401  # pylint: disable=unused-import
 from dipoleq.imas import imas_input_params
 from imas import DBEntry
 
@@ -19,7 +19,7 @@ def test_imas_save(tmp_path_factory: pytest.TempPathFactory) -> Path:
     m.solve()
     warnings.filterwarnings("ignore")
     print(data_dir)
-    with DBEntry(str(fpath), mode='w', dd_version='3.41.0+dipole') as db:
+    with DBEntry(str(fpath), mode="w", dd_version="3.41.0+dipole") as db:
         m.to_imas(db)
     return fpath
 

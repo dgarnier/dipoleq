@@ -2,15 +2,16 @@
 Map to IMAS data structures, using the IMAS-Python library.
 """
 
-import dipmas
+from dataclasses import dataclass
+from typing import Any
+
+import dipmas  # noqa: F401  # pylint: disable=unused-import
 from imas import DBEntry, ids_defs
 from imas.ids_base import IDSBase
 from imas.ids_primitive import IDSPrimitive
-from typing import Any
-from dataclasses import dataclass
 
+from .mas import DS, fill_ds, mas_input_params
 from .post_process import Machine
-from .mas import fill_ds, mas_input_params, DS
 
 # export (or re-export) these functions
 __all__ = [
@@ -36,14 +37,14 @@ class ImasDS(DS):
     def _getitem(self, key: list[str | int], force: bool = False) -> Any:
         if len(key) == 1:
             if isinstance(key[0], int) and key[0] == len(self._ids):
-                self._ids.resize(len(self._ids)+1)
+                self._ids.resize(len(self._ids) + 1)
             return self._wrap_object(self._ids[key[0]], force)
         return self._getitem([key[0]])._getitem(key[1:])
 
     def _setitem(self, key: list[str | int], value: Any) -> None:
         if len(key) == 1:
             if isinstance(key[0], int) and key[0] == len(self._ids):
-                self._ids.resize(len(self._ids)+1)
+                self._ids.resize(len(self._ids) + 1)
             self._ids[key[0]] = value
         else:
             self._getitem([key[0]], True)._setitem(key[1:], value)

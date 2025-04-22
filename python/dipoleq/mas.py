@@ -28,7 +28,7 @@ class DS(ABC):
             super().__setattr__(name, value)
         else:
             self[name] = value
-    
+
     def _separate_key(self, key):
         if isinstance(key, int):
             return [key]
@@ -37,7 +37,7 @@ class DS(ABC):
 
     @abstractmethod
     def _wrap_object(self, o: Any, force: bool) -> Any: ...
-    
+
     @abstractmethod
     def _getitem(self, key): ...
 
@@ -46,7 +46,7 @@ class DS(ABC):
 
     @abstractmethod
     def __len__(self): ...
-    
+
     @property
     @abstractmethod
     def inner(self): ...
