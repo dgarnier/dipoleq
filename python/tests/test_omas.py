@@ -3,13 +3,13 @@
 # should add more tests
 
 import os
+import warnings
 from pathlib import Path
 
 from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
-from dipoleq.omas import omas_input_params, load_omas_data_structure, ODS
-import warnings
+from dipoleq.omas import load_omas_data_structure, omas_input_params
 
 data_dir = Path(os.path.realpath(__file__)).parent / "data"
 
@@ -59,7 +59,7 @@ def make_omas_nc_file(dir_path: Path) -> Path:
     m1 = Machine.from_yaml(data_dir / "beta1.yaml")
     m1.solve()
     ods = m1.to_omas()
-    warnings.filterwarnings('ignore')
+    warnings.filterwarnings("ignore")
     file_path = dir_path / "beta1_omas.nc"
     ods.save(str(file_path))
     return file_path

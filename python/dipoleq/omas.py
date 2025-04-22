@@ -3,18 +3,16 @@ Map to IMAS data structures. Since IMAS is not yet available
 under public license, use OMAS.
 """
 
-import xml.etree.ElementTree as ET
-from pathlib import Path
-from typing import Any, Tuple, List
-import numpy as np
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
+import numpy as np
 from omas import ODS  # type: ignore[import-untyped]
 
-from ._version import __version__, __version_tuple__
+from .mas import DS, fill_ds, mas_input_params
 from .omas_dipole_extras import add_inner_boundary_to_omas
 from .post_process import Machine
-from .mas import mas_input_params, fill_ds, DS
 
 # export (or re-export) these functions
 __all__ = [
@@ -36,10 +34,10 @@ class OmasDS(DS):
             raise TypeError(f"Unsupported type {type(o)} of {o} in force wrap mode")
         return o
 
-    def _getitem(self, key: List[str | int], force: bool = False) -> 'OmasDS':
+    def _getitem(self, key: list[str | int], force: bool = False) -> 'OmasDS':
         return self._wrap_object(self._ods[self._join_key(key)], force)
     
-    def _setitem(self, key: List[str | int], value):
+    def _setitem(self, key: list[str | int], value):
         assert len(key) > 0
         if len(key) == 2 and isinstance(key[1], int):
             # Deal with time-dependent arrays
@@ -58,13 +56,13 @@ class OmasDS(DS):
         else:
             self._getitem([key[0]], True)._setitem(key[1:], value)
     
-    def _join_key(self, key: List[str | int]) -> str:
+    def _join_key(self, key: list[str | int]) -> str:
         assert all(isinstance(k, str) or isinstance(k, int) for k in key)
-        return '.'.join([str(k) for k in key])
+        return ".".join([str(k) for k in key])
     
     def __len__(self) -> int:
         return len(self._ods)
-    
+
     @property
     def inner(self) -> ODS:
         return self._ods
@@ -82,7 +80,7 @@ def load_omas_data_structure(filename: str | Path) -> ODS:
     return ods
 
 
-def prepare_omas_ds(ods: ODS | None) -> Tuple[ODS, DS, DS]:
+def prepare_omas_ds(ods: ODS | None) -> tuple[ODS, DS, DS]:
     if ods is None:
         # need this for consistency check to pass
         # extend the data dictionary for the inner boundary

@@ -1,12 +1,14 @@
-from .post_process import Machine
+import xml.etree.ElementTree as ET
+from abc import ABC, abstractmethod
 from typing import Any
+
+import numpy as np
+from json2xml.json2xml import Json2xml  # type: ignore[import-untyped]
+
 from ._version import __version__, __version_tuple__
 from .input import MachineIn
-from json2xml.json2xml import Json2xml  # type: ignore[import-untyped]
-import xml.etree.ElementTree as ET
+from .post_process import Machine
 from .util import is_polygon_closed
-import numpy as np
-from abc import ABC, abstractmethod
 
 
 class DS(ABC):
@@ -17,12 +19,12 @@ class DS(ABC):
         self._setitem(self._separate_key(key), value)
 
     def __getattr__(self, name):
-        if name.startswith('_') and hasattr(super(), '__getattr__'):
+        if name.startswith("_") and hasattr(super(), "__getattr__"):
             return super().__getattr__(name)
         return self[name]
 
     def __setattr__(self, name, value):
-        if name.startswith('_'):
+        if name.startswith("_"):
             super().__setattr__(name, value)
         else:
             self[name] = value
@@ -30,29 +32,24 @@ class DS(ABC):
     def _separate_key(self, key):
         if isinstance(key, int):
             return [key]
-        split_key = key.replace('/', '.').replace(']', '').replace('[', '.').split('.')
+        split_key = key.replace("/", ".").replace("]", "").replace("[", ".").split(".")
         return [int(k) if k.isdecimal() else k for k in split_key]
 
     @abstractmethod
-    def _wrap_object(self, o: Any, force: bool) -> Any:
-        ...
+    def _wrap_object(self, o: Any, force: bool) -> Any: ...
     
     @abstractmethod
-    def _getitem(self, key):
-        ...
+    def _getitem(self, key): ...
 
     @abstractmethod
-    def _setitem(self, key, value):
-        ...
+    def _setitem(self, key, value): ...
 
     @abstractmethod
-    def __len__(self):
-        ...
+    def __len__(self): ...
     
     @property
     @abstractmethod
-    def inner(self):
-        ...
+    def inner(self): ...
 
 
 def add_imas_code_info(ds: DS, input_data: MachineIn | None = None) -> None:
@@ -289,9 +286,7 @@ def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int, time: float) -> None:
     # 2D quantities
     MU0 = 4.0e-7 * 3.14159265358979323846
     eq2d = eqt["profiles_2d.0"]
-    eq2d["type.index"] = (
-        0  # total fields.. could also be broken down into components
-    )
+    eq2d["type.index"] = 0  # total fields.. could also be broken down into components
     eq2d["grid_type.index"] = 1  # regular R,Z grid
     eq2d["grid_type.name"] = "RZ"
     eq2d["grid.dim1"] = R = np.array(m.PsiGrid.R)

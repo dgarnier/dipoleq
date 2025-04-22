@@ -169,9 +169,9 @@ class Machine(core.Machine):
         ) -> omas.ODS:
             """Convert the machine data to an OMAS ODS"""
             return omas.to_omas(self, ods=ods, time_index=time_index, time=time)
-    
+
     if "imas" in globals():
-        
+
         def to_imas(
             self,
             db: imas.DBEntry,
