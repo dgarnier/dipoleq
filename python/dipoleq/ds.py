@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from imas.ids_base import IDSBase
+from imas.ids_primitive import IDSPrimitive
 from omas import ODS
 from typing import Any, List
 import numpy as np
@@ -30,6 +31,17 @@ class DS(ABC):
         split_key = key.replace('/', '.').replace(']', '').replace('[', '.').split('.')
         return [int(k) if k.isdecimal() else k for k in split_key]
     
+    def _wrap_object(self, o: Any, force: bool) -> Any:
+        if isinstance(o, ODS):
+            return OmasDS(o)
+        if isinstance(o, IDSPrimitive) and not force:
+            return o.value
+        if isinstance(o, IDSBase):
+            return ImasDS(o)
+        if force:
+            raise TypeError(f"Unsupported type {type(o)} of {o} in force wrap mode")
+        return o
+    
     @abstractmethod
     def _getitem(self, key):
         ...
@@ -52,11 +64,11 @@ class DS(ABC):
 class ImasDS(DS):
     _ids: IDSBase
 
-    def _getitem(self, key: List[str | int]) -> Any:
+    def _getitem(self, key: List[str | int], force: bool = False) -> Any:
         if len(key) == 1:
             if isinstance(key[0], int) and key[0] == len(self._ids):
                 self._ids.resize(len(self._ids)+1)
-            return self.__class__(self._ids[key[0]])
+            return self._wrap_object(self._ids[key[0]], force)
         return self._getitem([key[0]])._getitem(key[1:])
 
     def _setitem(self, key: List[str | int], value: Any) -> None:
@@ -65,7 +77,7 @@ class ImasDS(DS):
                 self._ids.resize(len(self._ids)+1)
             self._ids[key[0]] = value
         else:
-            self._getitem([key[0]])._setitem(key[1:], value)
+            self._getitem([key[0]], True)._setitem(key[1:], value)
 
     def _join_key(self, key: List[str | int]) -> str:
         result = ''
@@ -92,8 +104,8 @@ class ImasDS(DS):
 class OmasDS(DS):
     _ods: ODS
 
-    def _getitem(self, key: List[str | int]) -> 'OmasDS':
-        return self.__class__(self._ods[self._join_key(key)])
+    def _getitem(self, key: List[str | int], force: bool = False) -> 'OmasDS':
+        return self._wrap_object(self._ods[self._join_key(key)], force)
     
     def _setitem(self, key: List[str | int], value):
         assert len(key) > 0
@@ -112,7 +124,7 @@ class OmasDS(DS):
         elif len(key) == 1:
             self._ods[key[0]] = value
         else:
-            self._getitem([key[0]])._setitem(key[1:], value)
+            self._getitem([key[0]], True)._setitem(key[1:], value)
     
     def _join_key(self, key: List[str | int]) -> str:
         assert all(isinstance(k, str) or isinstance(k, int) for k in key)

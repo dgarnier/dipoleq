@@ -3,9 +3,10 @@
 
 import dipmas
 from imas import DBEntry, ids_defs
+from imas.ids_base import IDSBase
 
 from .post_process import Machine
-from .mas import fill_ds
+from .mas import fill_ds, mas_input_params
 from .ds import ImasDS
 
 # export (or re-export) these functions
@@ -20,6 +21,10 @@ def prepare_imas_ds(db: DBEntry):
     wall = db.factory.wall()
     wall.ids_properties.homogeneous_time = ids_defs.IDS_TIME_MODE_HOMOGENEOUS
     return ImasDS(eq), ImasDS(wall)
+
+
+def imas_input_params(equilibrium: IDSBase):
+    return mas_input_params(ImasDS(equilibrium))
 
 
 def to_imas(

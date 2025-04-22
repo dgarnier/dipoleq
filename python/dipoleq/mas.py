@@ -37,7 +37,7 @@ def add_imas_code_info(ds: DS, input_data: MachineIn | None = None) -> None:
     # negative if not to be used
 
 
-def imas_input_params(equilibrium: DS) -> dict[str, Any] | None:
+def mas_input_params(equilibrium: DS) -> dict[str, Any] | None:
     """Create a DipolEQ input data from an equilibrium data structure"""
     # need to create the MachineIn object from the input data
     # which is stored in the code section of the data structure.

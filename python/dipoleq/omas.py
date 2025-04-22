@@ -12,7 +12,7 @@ from omas import ODS  # type: ignore[import-untyped]
 from ._version import __version__, __version_tuple__
 from .omas_dipole_extras import add_inner_boundary_to_omas
 from .post_process import Machine
-from .mas import imas_input_params, fill_ds
+from .mas import mas_input_params, fill_ds
 from .ds import DS, OmasDS
 
 # export (or re-export) these functions
@@ -25,7 +25,7 @@ __all__ = [
 
 
 def omas_input_params(ods: ODS) -> dict[str, Any] | None:
-    return imas_input_params(ods["equilibrium"])
+    return mas_input_params(OmasDS(ods["equilibrium"]))
 
 
 def load_omas_data_structure(filename: str | Path) -> ODS:
