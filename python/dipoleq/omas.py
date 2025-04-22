@@ -5,15 +5,16 @@ under public license, use OMAS.
 
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any, Tuple
+from typing import Any, Tuple, List
+import numpy as np
+from dataclasses import dataclass
 
 from omas import ODS  # type: ignore[import-untyped]
 
 from ._version import __version__, __version_tuple__
 from .omas_dipole_extras import add_inner_boundary_to_omas
 from .post_process import Machine
-from .mas import mas_input_params, fill_ds
-from .ds import DS, OmasDS
+from .mas import mas_input_params, fill_ds, DS
 
 # export (or re-export) these functions
 __all__ = [
@@ -22,6 +23,51 @@ __all__ = [
     "load_omas_data_structure",
     "omas_input_params",
 ]
+
+
+@dataclass
+class OmasDS(DS):
+    _ods: ODS
+
+    def _wrap_object(self, o: Any, force: bool) -> Any:
+        if isinstance(o, ODS):
+            return OmasDS(o)
+        if force:
+            raise TypeError(f"Unsupported type {type(o)} of {o} in force wrap mode")
+        return o
+
+    def _getitem(self, key: List[str | int], force: bool = False) -> 'OmasDS':
+        return self._wrap_object(self._ods[self._join_key(key)], force)
+    
+    def _setitem(self, key: List[str | int], value):
+        assert len(key) > 0
+        if len(key) == 2 and isinstance(key[1], int):
+            # Deal with time-dependent arrays
+            orig_value = []
+            if key[0] in self._ods:
+                orig_value = np.atleast_1d(self._ods[key[0]]).toList()
+            if key[1] < len(orig_value):
+                orig_value[key[1]] = value
+            elif key[1] == len(orig_value):
+                orig_value += [value]
+            else:
+                raise IndexError
+            self._ods[key[0]] = np.atleast_1d(orig_value)
+        elif len(key) == 1:
+            self._ods[key[0]] = value
+        else:
+            self._getitem([key[0]], True)._setitem(key[1:], value)
+    
+    def _join_key(self, key: List[str | int]) -> str:
+        assert all(isinstance(k, str) or isinstance(k, int) for k in key)
+        return '.'.join([str(k) for k in key])
+    
+    def __len__(self) -> int:
+        return len(self._ods)
+    
+    @property
+    def inner(self) -> ODS:
+        return self._ods
 
 
 def omas_input_params(ods: ODS) -> dict[str, Any] | None:

@@ -5,8 +5,54 @@ from .input import MachineIn
 from json2xml.json2xml import Json2xml  # type: ignore[import-untyped]
 import xml.etree.ElementTree as ET
 from .util import is_polygon_closed
-from .ds import DS
 import numpy as np
+from abc import ABC, abstractmethod
+
+
+class DS(ABC):
+    def __getitem__(self, key):
+        return self._getitem(self._separate_key(key))
+
+    def __setitem__(self, key, value):
+        self._setitem(self._separate_key(key), value)
+
+    def __getattr__(self, name):
+        if name.startswith('_') and hasattr(super(), '__getattr__'):
+            return super().__getattr__(name)
+        return self[name]
+
+    def __setattr__(self, name, value):
+        if name.startswith('_'):
+            super().__setattr__(name, value)
+        else:
+            self[name] = value
+    
+    def _separate_key(self, key):
+        if isinstance(key, int):
+            return [key]
+        split_key = key.replace('/', '.').replace(']', '').replace('[', '.').split('.')
+        return [int(k) if k.isdecimal() else k for k in split_key]
+
+    @abstractmethod
+    def _wrap_object(self, o: Any, force: bool) -> Any:
+        ...
+    
+    @abstractmethod
+    def _getitem(self, key):
+        ...
+
+    @abstractmethod
+    def _setitem(self, key, value):
+        ...
+
+    @abstractmethod
+    def __len__(self):
+        ...
+    
+    @property
+    @abstractmethod
+    def inner(self):
+        ...
 
 
 def add_imas_code_info(ds: DS, input_data: MachineIn | None = None) -> None:
