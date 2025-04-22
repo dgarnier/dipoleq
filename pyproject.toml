@@ -53,7 +53,7 @@ dev = ["scikit-build-core", "cibuildwheel", "wheel", "build", "json2xml",
 docs = ["sphinx<8", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
         "autodoc_pydantic", "numpy"]
 omas = ["omas", "json2xml"]
-imas = ["imas-python", "dipmas", "json2xml"]
+imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
