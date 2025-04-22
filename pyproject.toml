@@ -44,7 +44,7 @@ h5togeqdsk = "dipoleq.h5togeqdsk:main"
 dipoleq = "dipoleq.main_cli:main"
 
 [project.optional-dependencies]
-test = ["pytest", "matplotlib", "h5py_stubs", "omas", "json2xml", "typeguard"]
+test = ["pytest", "matplotlib", "h5py_stubs", "omas", "json2xml", "typeguard", "imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core", "cibuildwheel", "wheel", "build", "json2xml",
        "numpy", "omas", "pybind11", "pyyaml", "pybind11-stubgen",
