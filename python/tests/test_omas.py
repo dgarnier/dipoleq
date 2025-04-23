@@ -6,10 +6,11 @@ import os
 import warnings
 from pathlib import Path
 
-from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.omas import load_omas_data_structure, omas_input_params
+
+from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 
 data_dir = Path(os.path.realpath(__file__)).parent / "data"
 
@@ -69,5 +70,7 @@ def test_omas_nc(omas_nc_file: Path) -> None:
     ods = load_omas_data_structure(omas_nc_file)
     reference_ods = load_omas_data_structure(data_dir / "reference/beta1_omas.nc")
 
-    diff = ods.diff(reference_ods, ignore_keys=["equilibrium.code.version", "wall.code.version"])
+    diff = ods.diff(
+        reference_ods, ignore_keys=["equilibrium.code.version", "wall.code.version"]
+    )
     assert not diff, diff
