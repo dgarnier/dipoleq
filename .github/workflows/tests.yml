@@ -58,11 +58,6 @@ jobs:
           with open(os.environ["GITHUB_ENV"], mode="a") as io:
               print(f"VIRTUALENV_PIP={pip.__version__}", file=io)
 
-      - name: Tmate
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
-
       - name: Install Nox
         run: |
           pipx install --pip-args=--constraint=${{ github.workspace }}/.github/workflows/constraints.txt nox
