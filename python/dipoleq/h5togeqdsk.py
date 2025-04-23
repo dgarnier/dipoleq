@@ -168,11 +168,11 @@ def write_fcfs_csv(
     parent = h5path.parent
     with (parent / f"{stem}_fcfs.csv").open("w", encoding="utf-8") as fh:
         fcfs = np.column_stack((gdata["ribdry"], gdata["zibdry"]))
-        np.savetxt(fh, fcfs, delimiter=",", header="r,z")  # type: ignore[arg-type]
+        np.savetxt(fh, fcfs, delimiter=",", header="r,z")
 
     with (parent / f"{stem}_flim.csv").open("w", encoding="utf-8") as fh:
         flim = np.column_stack((gdata["rlimi"], gdata["zlimi"]))
-        np.savetxt(fh, flim, delimiter=",", header="r,z")  # type: ignore[arg-type]
+        np.savetxt(fh, flim, delimiter=",", header="r,z")
 
 
 def h5togeqdsk(

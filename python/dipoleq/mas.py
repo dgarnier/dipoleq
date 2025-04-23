@@ -12,18 +12,18 @@ from .util import is_polygon_closed
 
 
 class DS(ABC):
-    def __getitem__(self, key: str | int):
+    def __getitem__(self, key: str | int) -> Any:
         return self._getitem(self._separate_key(key))
 
-    def __setitem__(self, key: str | int, value: Any):
+    def __setitem__(self, key: str | int, value: Any) -> None:
         self._setitem(self._separate_key(key), value)
 
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> Any:
         if name.startswith("_") and hasattr(super(), "__getattr__"):
             return super().__getattr__(name)
         return self[name]
 
-    def __setattr__(self, name: str, value: Any):
+    def __setattr__(self, name: str, value: Any) -> None:
         if name.startswith("_"):
             super().__setattr__(name, value)
         else:
@@ -42,7 +42,7 @@ class DS(ABC):
     def _getitem(self, key: list[str | int]) -> Any: ...
 
     @abstractmethod
-    def _setitem(self, key: list[str | int], value: Any): ...
+    def _setitem(self, key: list[str | int], value: Any) -> None: ...
 
     @abstractmethod
     def __len__(self) -> int: ...
@@ -163,7 +163,6 @@ def add_limiters(m: Machine, wall: DS) -> None:
     unit["outline.z"] = outline[:, 1]
     unit["component_type.name"] = "inner_limiter"
     unit["component_type.index"] = -5  # 5 = limiter, but "private/custom" type
-    return wall
 
 
 def add_boundary(m: Machine, ts: DS) -> None:

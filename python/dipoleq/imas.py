@@ -27,7 +27,7 @@ __all__ = [
 class ImasDS(DS):
     _ids: IDSBase
 
-    def _wrap_object(self, o, force):
+    def _wrap_object(self, o: Any, force: bool) -> Any:
         if isinstance(o, IDSPrimitive) and not force:
             return o.value
         if isinstance(o, IDSBase):
@@ -72,7 +72,7 @@ class ImasDS(DS):
         return self._ids
 
 
-def prepare_imas_ds(db: DBEntry):
+def prepare_imas_ds(db: DBEntry) -> tuple[ImasDS, ImasDS]:
     eq = db.factory.equilibrium()
     eq.ids_properties.homogeneous_time = ids_defs.IDS_TIME_MODE_HOMOGENEOUS
     wall = db.factory.wall()
@@ -80,7 +80,7 @@ def prepare_imas_ds(db: DBEntry):
     return ImasDS(eq), ImasDS(wall)
 
 
-def imas_input_params(equilibrium: IDSBase):
+def imas_input_params(equilibrium: IDSBase) -> dict[str, Any] | None:
     return mas_input_params(ImasDS(equilibrium))
 
 
