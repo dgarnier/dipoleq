@@ -174,7 +174,7 @@ exclude = ['^noxfile\.py$',
 module = "freeqdsk"
 ignore_missing_imports = true
 
-[[tool.mypt.overrides]]
+[[tool.mypy.overrides]]
 module = ["imas.*"]
 ignore_missing_imports = true
 
