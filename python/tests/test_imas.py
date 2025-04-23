@@ -3,12 +3,11 @@ import warnings
 from pathlib import Path
 
 import dipmas  # noqa: F401  # pylint: disable=unused-import
+from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.imas import imas_input_params
 from imas import DBEntry
-
-from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 
 data_dir = Path(os.path.realpath(__file__)).parent / "data"
 
