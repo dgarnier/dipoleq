@@ -69,5 +69,5 @@ def test_omas_nc(omas_nc_file: Path) -> None:
     ods = load_omas_data_structure(omas_nc_file)
     reference_ods = load_omas_data_structure(data_dir / "reference/beta1_omas.nc")
 
-    diff = ods.diff(reference_ods)
+    diff = ods.diff(reference_ods, ignore_keys=["equilibrium.code.version", "wall.code.version"])
     assert not diff, diff
