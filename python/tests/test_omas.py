@@ -6,7 +6,7 @@ import os
 import warnings
 from pathlib import Path
 
-from .fixtures import typeguard_fix  # noqa: F401, I001  # pylint: disable=unused-import
+from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import  # isort: skip
 import pytest
 from dipoleq import Machine
 from dipoleq.omas import load_omas_data_structure, omas_input_params

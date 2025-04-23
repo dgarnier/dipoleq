@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from .fixtures import typeguard_fix  # noqa: F401, I001  # pylint: disable=unused-import
+from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import  # isort: skip
 from dipoleq import Machine
 from dipoleq.file_input import input_from_dotin
 from dipoleq.input import CDipoleIntStableIn, CDipoleStablePsiNIn
