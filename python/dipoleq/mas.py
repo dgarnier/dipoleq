@@ -237,6 +237,9 @@ def add_inner_boundary_separatrix(m: Machine, ts: DS) -> None:
 
 
 def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int | None, time: float) -> None:
+    """Add all the equilibrim and wall information from a DipolEQ Machine
+    into the equilibrium and wall data structures.
+    """
     pl = m.Plasma
     pg = m.PsiGrid
 

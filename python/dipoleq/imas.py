@@ -73,6 +73,7 @@ class ImasDS(DS):
 
 
 def prepare_imas_ds(db: DBEntry) -> tuple[ImasDS, ImasDS]:
+    """Create the equilibrium and wall IDSs"""
     eq = db.factory.equilibrium()
     eq.ids_properties.homogeneous_time = ids_defs.IDS_TIME_MODE_HOMOGENEOUS
     wall = db.factory.wall()
@@ -81,13 +82,14 @@ def prepare_imas_ds(db: DBEntry) -> tuple[ImasDS, ImasDS]:
 
 
 def imas_input_params(equilibrium: IDSBase) -> dict[str, Any] | None:
+    """Create a DipolEQ input data from an IMAS equilibrium IDS"""
     return mas_input_params(ImasDS(equilibrium))
 
 
 def to_imas(
     m: Machine, db: DBEntry, time_index: int | None = None, time: float = 0.0
 ) -> DBEntry:
-    """Add the equilibrium data to an OMAS data structure."""
+    """Add the equilibrium data to an IMAS database"""
     eq, wall = prepare_imas_ds(db)
 
     fill_ds(m, eq, wall, time_index, time)

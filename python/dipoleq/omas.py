@@ -1,6 +1,6 @@
 """
-Map to IMAS data structures. Since IMAS is not yet available
-under public license, use OMAS.
+Map to OMAS data structures, a open-source implementation
+of the IMAS data structures.
 """
 
 from dataclasses import dataclass
@@ -69,6 +69,7 @@ class OmasDS(DS):
 
 
 def omas_input_params(ods: ODS) -> dict[str, Any] | None:
+    """Create a DipolEQ input data from an OMAS equilibrium data structure"""
     return mas_input_params(OmasDS(ods["equilibrium"]))
 
 
