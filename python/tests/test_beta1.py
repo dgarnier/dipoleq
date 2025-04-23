@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
+from .fixtures import typeguard_fix  # noqa: F401, I001  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.core import Machine as coreMachine
