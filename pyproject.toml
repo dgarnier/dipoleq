@@ -175,7 +175,7 @@ module = "freeqdsk"
 ignore_missing_imports = true
 
 [[tool.mypt.overrides]]
-module = "imas"
+module = ["imas.*"]
 ignore_missing_imports = true
 
 #[[tool.mypy.overrides]]
