@@ -178,6 +178,7 @@ class Machine(core.Machine):
             time_index: int | None = None,
             time: float = 0.0,
         ) -> None:
+            """Insert the machine data (equilibrium and wall) into an IMAS database"""
             imas.to_imas(self, db, time_index=time_index, time=time)
 
 
