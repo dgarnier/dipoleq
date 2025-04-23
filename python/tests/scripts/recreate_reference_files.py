@@ -3,6 +3,7 @@ For tests that compare exactly against reference files, it may be necessary to u
 the reference files if the output is changed. This script will regenerate the
 reference files used in the tests.
 """
+
 from tests.test_omas import data_dir, make_omas_nc_file
 
 REFERENCE_METHODS = [
