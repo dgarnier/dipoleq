@@ -17,6 +17,8 @@ from .post_process import Machine
 __all__ = [
     "to_imas",
     "imas_input_params",
+    "DBEntry",
+    "ImasDS",
 ]
 # TODO: Make sure we are inputting with COCOS 11
 

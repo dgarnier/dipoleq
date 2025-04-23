@@ -34,10 +34,10 @@ class OmasDS(DS):
             raise TypeError(f"Unsupported type {type(o)} of {o} in force wrap mode")
         return o
 
-    def _getitem(self, key: list[str | int], force: bool = False) -> "OmasDS":
+    def _getitem(self, key: list[str | int], force: bool = False) -> Any:
         return self._wrap_object(self._ods[self._join_key(key)], force)
 
-    def _setitem(self, key: list[str | int], value):
+    def _setitem(self, key: list[str | int], value: Any) -> None:
         assert len(key) > 0
         if len(key) == 2 and isinstance(key[1], int):
             # Deal with time-dependent arrays

@@ -12,24 +12,24 @@ from .util import is_polygon_closed
 
 
 class DS(ABC):
-    def __getitem__(self, key):
+    def __getitem__(self, key: str | int):
         return self._getitem(self._separate_key(key))
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str | int, value: Any):
         self._setitem(self._separate_key(key), value)
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
         if name.startswith("_") and hasattr(super(), "__getattr__"):
             return super().__getattr__(name)
         return self[name]
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any):
         if name.startswith("_"):
             super().__setattr__(name, value)
         else:
             self[name] = value
 
-    def _separate_key(self, key):
+    def _separate_key(self, key: str | int) -> list[str | int]:
         if isinstance(key, int):
             return [key]
         split_key = key.replace("/", ".").replace("]", "").replace("[", ".").split(".")
@@ -39,17 +39,17 @@ class DS(ABC):
     def _wrap_object(self, o: Any, force: bool) -> Any: ...
 
     @abstractmethod
-    def _getitem(self, key): ...
+    def _getitem(self, key: list[str | int]) -> Any: ...
 
     @abstractmethod
-    def _setitem(self, key, value): ...
+    def _setitem(self, key: list[str | int], value: Any): ...
 
     @abstractmethod
-    def __len__(self): ...
+    def __len__(self) -> int: ...
 
     @property
     @abstractmethod
-    def inner(self): ...
+    def inner(self) -> Any: ...
 
 
 def add_imas_code_info(ds: DS, input_data: MachineIn | None = None) -> None:
@@ -237,7 +237,7 @@ def add_inner_boundary_separatrix(m: Machine, ts: DS) -> None:
         bsep["active_limiter_point.z"] = active_point[1]
 
 
-def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int, time: float) -> None:
+def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int | None, time: float) -> None:
     pl = m.Plasma
     pg = m.PsiGrid
 
