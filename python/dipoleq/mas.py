@@ -20,7 +20,7 @@ class DS(ABC):
 
     def __getattr__(self, name: str) -> Any:
         if name.startswith("_") and hasattr(super(), "__getattr__"):
-            return super().__getattr__(name)
+            return super().__getattr__(name)  # type: ignore
         return self[name]
 
     def __setattr__(self, name: str, value: Any) -> None:

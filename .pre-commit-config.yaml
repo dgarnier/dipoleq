@@ -21,7 +21,7 @@ repos:
         types: [python, yaml, toml, markdown, json, c, c++]
       - id: name-tests-test
         args: ["--pytest-test-first"]
-        exclude: '^python/tests/fixtures/'
+        exclude: '^python/tests/(fixtures|scripts)/'
       - id: requirements-txt-fixer
       - id: trailing-whitespace
         exclude: '''(/(^ext_libs\/clibpdf\/.*|.+\.y|.+\.r)$)'''
