@@ -7,7 +7,6 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import  # isort: skip
 from dipoleq import Machine
 
 data_dir = Path(os.path.realpath(__file__)).parent / "data"
