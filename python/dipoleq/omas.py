@@ -57,7 +57,7 @@ class OmasDS(DS):
             self._getitem([key[0]], True)._setitem(key[1:], value)
 
     def _join_key(self, key: list[str | int]) -> str:
-        assert all(isinstance(k, str) or isinstance(k, int) for k in key)
+        assert all(isinstance(k, str | int) for k in key)
         return ".".join([str(k) for k in key])
 
     def __len__(self) -> int:

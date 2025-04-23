@@ -5,12 +5,13 @@ import os
 from pathlib import Path
 from typing import Any
 
-from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.core import Machine as coreMachine
 from dipoleq.file_input import input_from_dotin
 from dipoleq.solver import solve
+
+from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import
 
 data_dir = Path(os.path.realpath(__file__)).parent / "data"
 
