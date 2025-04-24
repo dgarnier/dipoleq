@@ -42,7 +42,7 @@ class OmasDS(DS):
             # Deal with time-dependent arrays
             orig_value = []
             if key[0] in self._ods:
-                orig_value = np.atleast_1d(self._ods[key[0]]).toList()
+                orig_value = np.atleast_1d(self._ods[key[0]]).tolist()
             if key[1] < len(orig_value):
                 orig_value[key[1]] = value
             elif key[1] == len(orig_value):

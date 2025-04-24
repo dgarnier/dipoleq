@@ -5,7 +5,7 @@ Map to IMAS data structures, using the IMAS-Python library.
 from dataclasses import dataclass
 from typing import Any
 
-import dipmas  # noqa: F401  # pylint: disable=unused-import
+import dipmas  # noqa: F401  # pylint: disable=unused-import  # type: ignore[import-not-found]
 from imas import DBEntry, IDSFactory, convert_ids, ids_defs
 from imas.ids_base import IDSBase
 from imas.ids_primitive import IDSPrimitive
