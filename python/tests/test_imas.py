@@ -61,8 +61,8 @@ def test_imas_params(test_imas_save: Path) -> None:
 def test_imas_v4(test_imas_save: Path, test_imas_save_v4: Path) -> None:
     with DBEntry(test_imas_save, "r", dd_version="3.41.0+dipole") as db:
         psi_v3 = np.array(db.get("equilibrium")["time_slice[0]/profiles_1d/psi"])
-    
+
     with DBEntry(test_imas_save_v4, "r", dd_version="4.0.0+dipole") as db:
         psi_v4 = np.array(db.get("equilibrium")["time_slice[0]/profiles_1d/psi"])
-    
+
     np.testing.assert_allclose(psi_v3, -psi_v4)
