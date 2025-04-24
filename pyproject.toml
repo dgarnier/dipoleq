@@ -55,7 +55,8 @@ dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml"
        "typeguard"]
 docs = ["sphinx<8", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
         "autodoc_pydantic", "numpy"]
-imas = ["omas", "json2xml"]
+omas = ["omas", "json2xml"]
+imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
@@ -66,9 +67,9 @@ install.components = ["python"]
 #wheel.packages = ["python/dipoleq"] # not required
 sdist.include = ["python/dipoleq/_version.py"]
 sdist.exclude = ["idl", "GEM", "fortran", "wheelhouse", "*.ipynb",
-                "Testing/*.hdf", "Testing/*.pdf", 
+                "Testing/*.hdf", "Testing/*.pdf",
                 ".vscode", ".github", ".devcontainer"]
-# wheel.py-api = "py310"  # build for stable API.. doesn't work.. 
+# wheel.py-api = "py310"  # build for stable API.. doesn't work..
 logging.level = "INFO"
 build-dir = "build/{wheel_tag}"
 
@@ -86,7 +87,7 @@ version_file = "python/dipoleq/_version.py"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-# pythonpath = ["python"] # this confuses pytest between 
+# pythonpath = ["python"] # this confuses pytest between
 # the local copy and the installed one.. need to use
 # the installed one for ciwheelbuild
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
@@ -172,6 +173,10 @@ exclude = ['^noxfile\.py$',
 
 [[tool.mypy.overrides]]
 module = "freeqdsk"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "imas.*"
 ignore_missing_imports = true
 
 #[[tool.mypy.overrides]]
