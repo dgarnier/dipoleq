@@ -6,6 +6,7 @@ import shlex
 import sys
 from pathlib import Path
 from textwrap import dedent
+from typing import Any
 
 import nox
 from nox import Session, session
@@ -221,6 +222,6 @@ def docs(session: nox.Session) -> None:
         session.run("sphinx-build", "--keep-going", *shared_args)
 
 
-def _should_install_imas(python_version: str):
+def _should_install_imas(python_version: Any) -> bool:
     # IMAS-Python doesn't yet support Python 3.13
     return python_version != "3.13" and os.getenv("INSTALL_IMAS", "1") == "1"
