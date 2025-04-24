@@ -130,7 +130,8 @@ def mypy(session: Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(".")
     session.install(*nox.project.dependency_groups(pyproject, "test"))
-    session.install(*nox.project.dependency_groups(pyproject, "imas"))
+    if session.python != "3.13":  # IMAS-Python doesn't yet support Python 3.13
+        session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("mypy", "pytest")
     session.run("mypy", *args)
     if not session.posargs:
@@ -143,7 +144,8 @@ def tests(session: Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(".")
     session.install(*nox.project.dependency_groups(pyproject, "test"))
-    session.install(*nox.project.dependency_groups(pyproject, "imas"))
+    if session.python != "3.13":  # IMAS-Python doesn't yet support Python 3.13
+        session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("coverage[toml]", "pytest", "pygments")
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
@@ -171,7 +173,8 @@ def typeguard(session: Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(".")
     session.install(*nox.project.dependency_groups(pyproject, "test"))
-    session.install(*nox.project.dependency_groups(pyproject, "imas"))
+    if session.python != "3.13":  # IMAS-Python doesn't yet support Python 3.13
+        session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("pytest", "typeguard", "pygments")
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 
