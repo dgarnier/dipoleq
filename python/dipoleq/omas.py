@@ -1,6 +1,5 @@
 """
-Map to OMAS data structures, a open-source implementation
-of the IMAS data structures.
+Map to OMAS data structures, a open-source implementation of IMAS.
 """
 
 from dataclasses import dataclass
