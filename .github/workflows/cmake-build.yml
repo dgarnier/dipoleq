@@ -18,15 +18,15 @@ jobs:
               with:
                 fetch-depth: 0 # fetch all history for git describe to work
             - name : Set up Python
-              uses: actions/setup-python@v5.1.0
+              uses: actions/setup-python@v5
               with:
-                python-version: '3.11'
+                python-version: '3.13'
                 cache: 'pip'
                 cache-dependency-path: 'pyproject.toml'
             - name: Install dependencies
               run:
                 python -m pip install --upgrade pip numpy pybind11
             - name: Build on Ubuntu
-              uses: threeal/cmake-action@v2.0.0
+              uses: threeal/cmake-action@v2
               with:
                 run-build: true

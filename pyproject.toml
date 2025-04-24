@@ -1,6 +1,5 @@
 [build-system]
 requires = [
-    "cmake",
     "scikit-build-core",
     "pybind11",
     "pybind11-stubgen",
@@ -26,11 +25,12 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 
 dependencies = [
-  "numpy >=1.21, <2",
-  "pydantic >=2.7",
+  "numpy >=1.26, <2.3",
+  "pydantic >=2.10, <3.0",
   "pyyaml",
   "types-pyyaml",
   "typing-extensions",
@@ -43,29 +43,33 @@ dependencies = [
 h5togeqdsk = "dipoleq.h5togeqdsk:main"
 dipoleq = "dipoleq.main_cli:main"
 
-[project.optional-dependencies]
-test = ["pytest", "matplotlib", "h5py_stubs", "omas", "json2xml", "typeguard"]
+#[project.optional-dependencies]
+[dependency-groups]
+test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@python-3.10-allowed", 
+        "omas", "json2xml", "typeguard"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
-dev = ["scikit-build-core", "cibuildwheel", "wheel", "build", "json2xml",
+dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml",
+       "nox >= 2025.02.09",
        "numpy", "omas", "pybind11", "pyyaml", "pybind11-stubgen",
        "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade",
        "typeguard"]
 docs = ["sphinx<8", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
         "autodoc_pydantic", "numpy"]
-imas = ["omas", "json2xml"]
+omas = ["omas", "json2xml"]
+imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
-cmake.targets = ["pydipoleq", "dipoleq"]
-cmake.verbose = true
+build.targets = ["pydipoleq", "dipoleq"]
+build.verbose = true
 #install.components = ["python", "cli"]
 install.components = ["python"]
 #wheel.packages = ["python/dipoleq"] # not required
 sdist.include = ["python/dipoleq/_version.py"]
 sdist.exclude = ["idl", "GEM", "fortran", "wheelhouse", "*.ipynb",
-                "Testing/*.hdf", "Testing/*.pdf", 
+                "Testing/*.hdf", "Testing/*.pdf",
                 ".vscode", ".github", ".devcontainer"]
-# wheel.py-api = "py310"  # build for stable API.. doesn't work.. 
+# wheel.py-api = "py310"  # build for stable API.. doesn't work..
 logging.level = "INFO"
 build-dir = "build/{wheel_tag}"
 
@@ -83,7 +87,7 @@ version_file = "python/dipoleq/_version.py"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-# pythonpath = ["python"] # this confuses pytest between 
+# pythonpath = ["python"] # this confuses pytest between
 # the local copy and the installed one.. need to use
 # the installed one for ciwheelbuild
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
@@ -96,9 +100,9 @@ testpaths = ["python/tests"]
 
 
 [tool.cibuildwheel]
-build = "cp31{0,1,2}-*"
+build = "cp31{0,1,2,3}-*"
 test-command = "pytest {project}"
-test-extras = ["test"]
+test-groups = ["test"]
 test-skip = ["*universal2:arm64", "*win*"] # skip windows
 skip = ["*musllinux*", "*pypy*", "*390x*", "*ppc64le*", "*win32*"]
 build-verbosity = 1
@@ -110,7 +114,7 @@ archs = ["auto64"]
 archs = ["auto64"]
 
 [tool.cibuildwheel.macos.environment]
-MACOSX_DEPLOYMENT_TARGET = "10.15"
+MACOSX_DEPLOYMENT_TARGET = "11.0"
 
 [tool.ruff]
 force-exclude = true  # make sure we exclude below when running pre-commit
@@ -169,6 +173,10 @@ exclude = ['^noxfile\.py$',
 
 [[tool.mypy.overrides]]
 module = "freeqdsk"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "imas.*"
 ignore_missing_imports = true
 
 #[[tool.mypy.overrides]]

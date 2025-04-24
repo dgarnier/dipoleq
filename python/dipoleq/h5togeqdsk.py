@@ -184,7 +184,7 @@ def h5togeqdsk(
     """Save a dipoleq h5 file to a g-eqdsk file"""
 
     h5path = Path(h5file)
-    with h5py.File(h5file) as h5f:  # type: ignore[arg-type]
+    with h5py.File(h5file, mode="r") as h5f:
         if plot:
             plot_h5eq(h5f)
         gdata, oname = dipoleq_h5f_to_freeqdsk(h5f, NormalizeAtAxis=NormalizeAtAxis)

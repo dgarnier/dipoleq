@@ -24,7 +24,7 @@ from omas.omas_utils import (  # type: ignore[import-untyped]
 logger = logging.getLogger(__name__)
 # we won't be adding new limiter or wall structures, but will be adding new
 # custom types of limiters of walls with negative type indices to indicate.
-# since dipole limiter and walls are not in the IMAS schema, the type index
+# since dipole limiter and walls are not in the OMAS schema, the type index
 # for these will be negative.
 
 # that said, there is no such type index for the equilibrium boundary
@@ -44,7 +44,7 @@ def get_imas_latest_version() -> str:
     return "3.41.0"  # latest in OMAS as of 2024-09-24
 
 
-def _get_default_equilibrium_imas_struct_defs() -> dict[str, dict[str, Any]]:
+def _get_default_equilibrium_omas_struct_defs() -> dict[str, dict[str, Any]]:
     fn = structures_filenames(get_imas_latest_version())["equilibrium"]
     with Path(fn).open(mode="r", encoding="utf-8") as f:
         return json.load(f)  # type: ignore[no-any-return]
@@ -52,7 +52,7 @@ def _get_default_equilibrium_imas_struct_defs() -> dict[str, dict[str, Any]]:
 
 def _create_inner_boundary_structure() -> dict[str, dict[str, Any]]:
     # get the default boundary definitions
-    equil_defs = _get_default_equilibrium_imas_struct_defs()
+    equil_defs = _get_default_equilibrium_omas_struct_defs()
     # get only the ones we need
     # boundary is for the 99.x% of the outer boundary (from fixed boundary codes?)
     #   - do we want to use this for the inner boundary?
@@ -79,13 +79,13 @@ def _create_inner_boundary_structure() -> dict[str, dict[str, Any]]:
         v = value.copy()
         v["documentation"] = v["documentation"].replace("boundary", "inner boundary")
         v["full_path"] = v["full_path"].replace("boundary", "inner_boundary")
-        logger.debug("Adding to IMAS: %s", k)
+        logger.debug("Adding to OMAS: %s", k)
         inner_boundary_extras[k] = v
     return inner_boundary_extras
 
 
-def add_inner_boundary_to_imas() -> None:
-    """Add the inner boundary to the IMAS equilibrium schema"""
+def add_inner_boundary_to_omas() -> None:
+    """Add the inner boundary to the OMAS equilibrium schema"""
     extra_equilibrium_structures = _extra_structures.get("equilibrium", {})
     extra_equilibrium_structures.update(_create_inner_boundary_structure())
     _extra_structures["equilibrium"] = extra_equilibrium_structures

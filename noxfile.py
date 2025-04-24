@@ -6,12 +6,13 @@ import shlex
 import sys
 from pathlib import Path
 from textwrap import dedent
+from typing import Any
 
 import nox
 from nox import Session, session
 
 package = "dipoleq"
-python_versions = ["3.12", "3.11", "3.10"]
+python_versions = ["3.13", "3.12", "3.11", "3.10"]
 nox.options.sessions = (
     "pre-commit",
     "mypy",
@@ -95,7 +96,7 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
                 break
 
 
-@session(name="pre-commit", python=python_versions[0])
+@session(name="pre-commit", python=python_versions)
 def precommit(session: Session) -> None:
     """Lint using pre-commit."""
     args = session.posargs or [
@@ -123,11 +124,15 @@ def precommit(session: Session) -> None:
         activate_virtualenv_in_precommit_hooks(session)
 
 
-@session(python=python_versions[0])
+@session(python=python_versions)
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or ["python/dipoleq"]
-    session.install(".[test]")
+    pyproject = nox.project.load_toml("pyproject.toml")
+    session.install(".")
+    session.install(*nox.project.dependency_groups(pyproject, "test"))
+    if _should_install_imas(session.python):
+        session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("mypy", "pytest")
     session.run("mypy", *args)
     if not session.posargs:
@@ -137,7 +142,11 @@ def mypy(session: Session) -> None:
 @session(python=python_versions)
 def tests(session: Session) -> None:
     """Run the test suite."""
-    session.install(".[test]")
+    pyproject = nox.project.load_toml("pyproject.toml")
+    session.install(".")
+    session.install(*nox.project.dependency_groups(pyproject, "test"))
+    if _should_install_imas(session.python):
+        session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("coverage[toml]", "pytest", "pygments")
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
@@ -146,7 +155,7 @@ def tests(session: Session) -> None:
             session.notify("coverage", posargs=[])
 
 
-@session(python=python_versions[0])
+@session(python="3.12")
 def coverage(session: Session) -> None:
     """Produce the coverage report."""
     args = session.posargs or ["report"]
@@ -159,10 +168,14 @@ def coverage(session: Session) -> None:
     session.run("coverage", *args)
 
 
-@session(python=python_versions[0])
+@session(python=python_versions)
 def typeguard(session: Session) -> None:
     """Runtime type checking using Typeguard."""
-    session.install(".[test]")
+    pyproject = nox.project.load_toml("pyproject.toml")
+    session.install(".")
+    session.install(*nox.project.dependency_groups(pyproject, "test"))
+    if _should_install_imas(session.python):
+        session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("pytest", "typeguard", "pygments")
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 
@@ -207,3 +220,8 @@ def docs(session: nox.Session) -> None:
         session.run("sphinx-autobuild", *shared_args)
     else:
         session.run("sphinx-build", "--keep-going", *shared_args)
+
+
+def _should_install_imas(python_version: Any) -> bool:
+    # IMAS-Python doesn't yet support Python 3.13
+    return python_version != "3.13" and os.getenv("INSTALL_IMAS", "1") == "1"

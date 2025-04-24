@@ -1060,9 +1060,9 @@ void GS2Output(TOKAMAK * td)
 		/* this seems weird to me.. but its what is in the deq.f90 code */
 		/* it also matches what is typical from EFIT and eqdsk files */
 		Psi = PsiFCFS + i*DelPsi/(np-1);
-		P = PlasmaP(pl, Psi);
+		P = PlasmaP(pl, Psi)/MU0;
 		/* Calculate p of psi at normalized rho point */
-		fprintf(fi, " %16.8e", P);
+		fprintf(fi, "%16.8e", P);
 		if (!(++k % 5)) fprintf(fi,"\n");
 	}
 	if (k % 5) fprintf(fi,"\n");
@@ -1072,7 +1072,7 @@ void GS2Output(TOKAMAK * td)
 	/* read(funit, 2020) ((sdfit_psi(i,j) , i = 1, nw_in) , j = 1, nh_in) */
 	for (j=0, k=0; j<=Nsize; j++)
 		for(i=0; i<=Nsize; i++) {
-		fprintf(fi, " %16.8e", pg->Psi[i][j]);
+		fprintf(fi, "%16.8e", pg->Psi[i][j]);
 		if (!(++k % 5)) fprintf(fi,"\n");
 	}
 	if (k % 5) fprintf(fi,"\n");
@@ -1081,16 +1081,19 @@ void GS2Output(TOKAMAK * td)
 	/* read (funit, 2020) (self%rho_mid(i), i = 1, nrho) */
 	/* rho mid defined from kobyashi's thesis */
 	/* one might argue this should be divided by XMagAxis */
+	/* CH - this needs to be normalised for GS2 */
 	for (i=0, k=0; i<npts; i++) {
-		rho_mid = pl->XXMax_pr[i] - pl->XMagAxis;
-		fprintf(fi, " %16.8e", rho_mid);
+		rho_mid = (pl->XXMax_pr[i] - pl->XMagAxis)/(pg->Xmax - pl->XMagAxis);
+		fprintf(fi, "%16.8e", rho_mid);
 		if (!(++k % 5)) fprintf(fi,"\n");
 	}
 	if (k % 5) fprintf(fi,"\n");
 
 	/* read (funit, 2020) (self%psi_mid(i), i = 1, nrho) */
+	/* CH - this needs to be normalised for GS2, but PSI above is not normalised*/
+	/* This is the same definition as pbar in GS2*/
 	for (i=0, k=0; i<npts; i++) {
-		fprintf(fi, " %16.8e", pl->Psi_pr[i]);
+		fprintf(fi, "%16.8e", (pl->Psi_pr[i]-PsiFCFS)/(PsiLCFS - PsiFCFS));
 		if (!(++k % 5)) fprintf(fi,"\n");
 	}
 	if (k % 5) fprintf(fi,"\n");
