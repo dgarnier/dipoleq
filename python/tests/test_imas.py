@@ -3,7 +3,6 @@ import warnings
 from pathlib import Path
 
 from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import  # isort: skip
-import dipmas  # noqa: F401  # pylint: disable=unused-import
 import pytest
 from dipoleq import Machine
 from dipoleq.imas import imas_input_params
