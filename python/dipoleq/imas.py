@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import dipmas  # noqa: F401  # pylint: disable=unused-import
-from imas import DBEntry, ids_defs, IDSFactory, convert_ids
+from imas import DBEntry, IDSFactory, convert_ids, ids_defs
 from imas.ids_base import IDSBase
 from imas.ids_primitive import IDSPrimitive
 

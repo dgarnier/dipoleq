@@ -6,6 +6,7 @@ from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-impo
 import numpy as np
 import pytest
 from dipoleq import Machine
+
 try:
     from dipoleq.imas import imas_input_params
     from imas import DBEntry
@@ -39,7 +40,9 @@ def test_imas_save_v4(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return fpath
 
 
-@pytest.mark.skipif("DBEntry" not in globals(), reason="IMAS tests require IMAS-Python and dipmas")
+@pytest.mark.skipif(
+    "DBEntry" not in globals(), reason="IMAS tests require IMAS-Python and dipmas"
+)
 def test_imas_params(test_imas_save: Path) -> None:
     with DBEntry(test_imas_save, "r", dd_version="3.41.0+dipole") as db:
         assert db.get("equilibrium")["code/name"] == "DipolEQ"
@@ -52,7 +55,9 @@ def test_imas_params(test_imas_save: Path) -> None:
         assert m0 == m1
 
 
-@pytest.mark.skipif("DBEntry" not in globals(), reason="IMAS tests require IMAS-Python and dipmas")
+@pytest.mark.skipif(
+    "DBEntry" not in globals(), reason="IMAS tests require IMAS-Python and dipmas"
+)
 def test_imas_v4(test_imas_save: Path, test_imas_save_v4: Path) -> None:
     with DBEntry(test_imas_save, "r", dd_version="3.41.0+dipole") as db:
         psi_v3 = np.array(db.get("equilibrium")["time_slice[0]/profiles_1d/psi"])
