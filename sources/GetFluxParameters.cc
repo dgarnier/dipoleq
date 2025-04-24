@@ -102,7 +102,6 @@ double  Int_Theta(double theta);
 double  Int_Theta1(double theta);
 double  compute_Int(PSIGRID * pg, double PsiX);
 double  compute_Int1(PSIGRID * pg, double PsiX);
-void   	Fill_q_integrand(PSIGRID * pg, PLASMA * pl);
 void	quick_Int_Step(double x, double z, double psi, int flag);
 double  quick_Int(PSIGRID * pg, double PsiX, int average);
 
@@ -492,45 +491,6 @@ MULTI;
 	return q;
 }
 
-/*
-**	F I L L _ Q _ I N T E G R A N D
-**
-**
-*/
-void          Fill_q_integrand(PSIGRID * pg, PLASMA * pl)
-{
-	int           ix, iz, nmax;
-	double        r, theta;
-	double        xa, za;
-	double        dx, dz;
-	double       *X, *Z, **dPsiX, **dPsiZ;
-
-	xa = pg->XMagAxis;
-	za = pg->ZMagAxis;
-
-	nmax = pg->Nsize;
-	dPsiX = pl->GradPsiX;
-	dPsiZ = pl->GradPsiZ;
-	X = pg->X;
-	Z = pg->Z;
-
-	for (ix = 1; ix < nmax; ix++)
-		for (iz = 1; iz < nmax; iz++)
-			if (NearPlasma(pg->IsPlasma, ix, iz)) {
-				dx = X[ix] - xa;
-				dz = Z[iz] - za;
-				r = sqrt(dx * dx + dz * dz);
-				if (r == 0.0)	/* then we're at the magnetic axis & atan2 is not defined */
-					gIntegrand[ix][iz] = 0.5 * (gIntegrand[ix - 1][iz] + gIntegrand[ix][iz - 1]);
-				else {
-					theta = atan2(dz, dx);
-					gIntegrand[ix][iz] =
-						pl->Bt[ix][iz] * r / (dPsiX[ix][iz] * cos(theta) + dPsiZ[ix][iz] * sin(theta));
-				}
-			} else
-				gIntegrand[ix][iz] = 0.0;
-}
-
 
 /*
 **  ComputeFluxFunctions
@@ -636,8 +596,8 @@ void          GetFluxParameters(TOKAMAK * td)
 	int           i;
 	double      **Psi;
 	double       *X, *Z, dx, dz, hx, hz;
-	double        Bt[4], dPsiX2[4], dPsiZ2[4];
-	double        t1, t2, t3;
+	double        Bt[4], dPsiX2[4], dPsiZ2[4], dPsiXZ[4];
+	double        t1, t2, t3, t4;
 	double        PsiX;			/* normalized Psi */
 	double        DelPsi;
 	double       *Pp;			/* �<P>/�Psi */
@@ -692,7 +652,7 @@ void          GetFluxParameters(TOKAMAK * td)
 	Bt[2] = pl->Bt[ixa + 1][iza + 1];
 	Bt[3] = pl->Bt[ixa][iza + 1];
 	t1 = BILIN(Bt[0], Bt[1], Bt[2], Bt[3]);
-	/* d2 Psi/ dx2 and d2 Psi/ dz2 */
+	/* d2 Psi/ dx2,  d2 Psi/ dz2 and d2 Psi / dxdz */
 	dPsiX2[0] = (Psi[ixa + 1][iza] - 2.0 * Psi[ixa][iza] + Psi[ixa - 1][iza]);
 	dPsiX2[1] = (Psi[ixa + 2][iza] - 2.0 * Psi[ixa + 1][iza] + Psi[ixa][iza]);
 	dPsiX2[2] = (Psi[ixa + 2][iza + 1] - 2.0 * Psi[ixa + 1][iza + 1] + Psi[ixa][iza + 1]);
@@ -703,8 +663,13 @@ void          GetFluxParameters(TOKAMAK * td)
 	dPsiZ2[2] = (Psi[ixa + 1][iza + 2] - 2.0 * Psi[ixa + 1][iza + 1] + Psi[ixa + 1][iza]);
 	dPsiZ2[3] = (Psi[ixa][iza + 2] - 2.0 * Psi[ixa][iza + 1] + Psi[ixa][iza]);
 	t3 = BILIN(dPsiZ2[0], dPsiZ2[1], dPsiZ2[2], dPsiZ2[3]) / dz / dz;
-	if (t2 && t3)
-		pl->q0 = TWOPI * t1 / sqrt(t2 * t3);
+	dPsiXZ[0] = (Psi[ixa + 1][iza + 1] + Psi[ixa - 1][iza - 1] - Psi[ixa + 1][iza - 1] - Psi[ixa - 1][iza + 1]);
+	dPsiXZ[1] = (Psi[ixa + 2][iza + 1] + Psi[ixa][iza - 1] - Psi[ixa + 2][iza - 1] - Psi[ixa][iza + 1]);
+	dPsiXZ[2] = (Psi[ixa + 2][iza + 2] + Psi[ixa][iza] - Psi[ixa + 2][iza] - Psi[ixa][iza + 2]);
+	dPsiXZ[3] = (Psi[ixa + 1][iza + 2] + Psi[ixa - 1][iza] - Psi[ixa + 1][iza] - Psi[ixa - 1][iza + 2]);
+	t4 = BILIN(dPsiXZ[0], dPsiXZ[1], dPsiXZ[2], dPsiXZ[3]) / 4 / dx / dz;
+	if (t2 && t3 && t4)
+		pl->q0 = TWOPI * t1 / sqrt(t2 * t3 - t4 * t4);
 	else
 		pl->q0 = 1.0e3;			/* a big number */
 	pl->qCircular = 5.0e6 * DSQR(pl->HalfWidth) *
@@ -715,28 +680,35 @@ void          GetFluxParameters(TOKAMAK * td)
 	/* S A F E T Y   F A C T O R   P R O F I L E */
 
 	/*
-	**	From Grimm, et al, in "Methods of Computational Physics"
-	**	(Killeen, ed.) Vol 16., p. 253, Academic Press, New York, 1976.
+	**	From Sauter et al, in "Computer Physics Communications"
+	**	Vol 184., p. 293, 2013.
 	**
-	**	Eq. 9 used with the definition of q, gives the forumla
+	**	Eq. 8 used with the definition of q (Eq. 7) and the COCOS 11 conventions, gives the formula
 	**
-	**		q = Int( Bt r dtheta / ( dPsi/dx cos(theta) + dPsi/dz sin(theta)) )
+	**		q = Int( Bt / |grad Psi| dl_p )
 	**
-	**	where the integral is around the flux surface from 0 to 2pi.
-	**
-	**	We use the magnetic axis as the reference point for the evaluation of
-	**	(r, theta).  Note, we use a right-handed definition of theta.
-	**
+	**	where the integral is around the flux surface.
 	*/
 
+	for (ix = 1; ix < nmax; ix++) {
+		for (iz = 1; iz < nmax; iz++) {
+			if (NearPlasma(pg->IsPlasma, ix, iz)) {
+				gIntegrand[ix][iz] = pl->Bt[ix][iz] / sqrt(pl->GradPsi2[ix][iz]);
+			}
+		}
+	}
+
 	pl->q_pr = dvector(0, npts - 1);
+#ifndef DIPOLE
 	pl->q_pr[0] = pl->q0;
+	i = 1;
+#else
+	i = 0;
+#endif
 
-	Fill_q_integrand(pg, pl);
-
-	for (i = 1; i < npts; i++) {
+	for (; i < npts; i++) {
 		PsiX = i * pl->PsiXmax / (npts - 1.0);
-		pl->q_pr[i] = COMPUTE_INT1(pg, PsiX);
+		pl->q_pr[i] = COMPUTE_INT(pg, PsiX);
 	}
 
 	/* d V O L U M E  / d P S I */
