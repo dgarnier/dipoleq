@@ -46,7 +46,7 @@ dipoleq = "dipoleq.main_cli:main"
 #[project.optional-dependencies]
 [dependency-groups]
 test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@python-3.10-allowed", 
-        "omas", "json2xml", "typeguard", "imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas"]
+        "omas", "json2xml", "typeguard"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml",
        "nox >= 2025.02.09",
