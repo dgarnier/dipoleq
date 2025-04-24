@@ -5,8 +5,11 @@ from pathlib import Path
 from .fixtures import typeguard_fix  # noqa: F401  # pylint: disable=unused-import  # isort: skip
 import pytest
 from dipoleq import Machine
-from dipoleq.imas import imas_input_params
-from imas import DBEntry
+try:
+    from dipoleq.imas import imas_input_params
+    from imas import DBEntry
+except ImportError:
+    pass
 
 data_dir = Path(os.path.realpath(__file__)).parent / "data"
 
@@ -23,6 +26,7 @@ def test_imas_save(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return fpath
 
 
+@pytest.mark.skipif("imas" not in globals(), reason="IMAS tests require IMAS-Python and dipmas")
 def test_imas_params(test_imas_save: Path) -> None:
     with DBEntry(test_imas_save, "r", dd_version="3.41.0+dipole") as db:
         assert db.get("equilibrium")["code/name"] == "DipolEQ"
