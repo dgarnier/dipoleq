@@ -20,7 +20,6 @@ __all__ = [
     "DBEntry",
     "ImasDS",
 ]
-# TODO: Make sure we are inputting with COCOS 11
 
 
 @dataclass
