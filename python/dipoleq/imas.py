@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import dipmas  # noqa: F401  # pylint: disable=unused-import
-from imas import DBEntry, ids_defs
+from imas import DBEntry, ids_defs, IDSFactory, convert_ids
 from imas.ids_base import IDSBase
 from imas.ids_primitive import IDSPrimitive
 
@@ -72,11 +72,13 @@ class ImasDS(DS):
         return self._ids
 
 
-def prepare_imas_ds(db: DBEntry) -> tuple[ImasDS, ImasDS]:
+def prepare_imas_ds() -> tuple[ImasDS, ImasDS]:
     """Create the equilibrium and wall IDSs"""
-    eq = db.factory.equilibrium()
+    # OMAS uses 3.41.0 (COCOS 11), so the DipolEQ-IMAS interface must also use COCOS 11
+    factory = IDSFactory("3.41.0+dipole")
+    eq = factory.equilibrium()
     eq.ids_properties.homogeneous_time = ids_defs.IDS_TIME_MODE_HOMOGENEOUS
-    wall = db.factory.wall()
+    wall = factory.wall()
     wall.ids_properties.homogeneous_time = ids_defs.IDS_TIME_MODE_HOMOGENEOUS
     return ImasDS(eq), ImasDS(wall)
 
@@ -90,14 +92,17 @@ def to_imas(
     m: Machine, db: DBEntry, time_index: int | None = None, time: float = 0.0
 ) -> DBEntry:
     """Add the equilibrium data to an IMAS database"""
-    eq, wall = prepare_imas_ds(db)
+    eq, wall = prepare_imas_ds()
 
     fill_ds(m, eq, wall, time_index, time)
 
-    eq.inner.validate()
-    wall.inner.validate()
+    eq = convert_ids(eq.inner, None, factory=db.factory)
+    wall = convert_ids(wall.inner, None, factory=db.factory)
 
-    db.put(eq.inner)
-    db.put(wall.inner)
+    eq.validate()
+    wall.validate()
+
+    db.put(eq)
+    db.put(wall)
 
     return db
