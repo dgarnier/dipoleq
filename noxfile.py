@@ -130,7 +130,7 @@ def mypy(session: Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(".")
     session.install(*nox.project.dependency_groups(pyproject, "test"))
-    if session.python != "3.13":  # IMAS-Python doesn't yet support Python 3.13
+    if _should_install_imas(session.python):
         session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("mypy", "pytest")
     session.run("mypy", *args)
@@ -144,7 +144,7 @@ def tests(session: Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(".")
     session.install(*nox.project.dependency_groups(pyproject, "test"))
-    if session.python != "3.13":  # IMAS-Python doesn't yet support Python 3.13
+    if _should_install_imas(session.python):
         session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("coverage[toml]", "pytest", "pygments")
     try:
@@ -173,7 +173,7 @@ def typeguard(session: Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(".")
     session.install(*nox.project.dependency_groups(pyproject, "test"))
-    if session.python != "3.13":  # IMAS-Python doesn't yet support Python 3.13
+    if _should_install_imas(session.python):
         session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("pytest", "typeguard", "pygments")
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
@@ -219,3 +219,8 @@ def docs(session: nox.Session) -> None:
         session.run("sphinx-autobuild", *shared_args)
     else:
         session.run("sphinx-build", "--keep-going", *shared_args)
+
+
+def _should_install_imas(python_version: str):
+    # IMAS-Python doesn't yet support Python 3.13
+    return python_version != "3.13" and os.getenv("INSTALL_IMAS", "1") == "1"
