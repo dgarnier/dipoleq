@@ -14,7 +14,7 @@ jobs:
               with:
                 packages: zlib1g-dev libjpeg-dev libhdf5-dev
             - name: Checkout on Ubuntu
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                 fetch-depth: 0 # fetch all history for git describe to work
             - name : Set up Python
