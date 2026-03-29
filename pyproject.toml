@@ -68,7 +68,8 @@ build.verbose = true
 #install.components = ["python", "cli"]
 install.components = ["python"]
 #wheel.packages = ["python/dipoleq"] # not required
-sdist.include = ["python/dipoleq/_version.py"]
+# add generated files to sdist, seems to be required
+sdist.include = ["python/dipoleq/_version.py", "python/dipoleq/core.pyi"]
 sdist.exclude = ["idl", "GEM", "fortran", "wheelhouse", "*.ipynb",
                 "Testing/*.hdf", "Testing/*.pdf",
                 ".vscode", ".github", ".devcontainer"]
