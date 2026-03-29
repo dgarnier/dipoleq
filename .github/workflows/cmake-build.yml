@@ -1,32 +1,31 @@
 name: Build with CMake
 on: [pull_request]
 
-concurrency:                                                                                                                                                                                                                                  
-    group: ${{ github.workflow }}-${{ github.ref }}                                                                                                                                                                                             
-    cancel-in-progress: true    
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    cmake_build_on_ubuntu:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Dependencies
-              uses: daaku/gh-action-apt-install@v4
-              with:
-                packages: zlib1g-dev libjpeg-dev libhdf5-dev
-            - name: Checkout on Ubuntu
-              uses: actions/checkout@v6
-              with:
-                fetch-depth: 0 # fetch all history for git describe to work
-            - name : Set up Python
-              uses: actions/setup-python@v6
-              with:
-                python-version: '3.13'
-                cache: 'pip'
-                cache-dependency-path: 'pyproject.toml'
-            - name: Install dependencies
-              run:
-                python -m pip install --upgrade pip numpy pybind11
-            - name: Build on Ubuntu
-              uses: threeal/cmake-action@v2
-              with:
-                run-build: true
+  cmake_build_on_ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependencies
+        uses: daaku/gh-action-apt-install@v4
+        with:
+          packages: zlib1g-dev libjpeg-dev libhdf5-dev
+      - name: Checkout on Ubuntu
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # fetch all history for git describe to work
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip numpy nanobind
+      - name: Build on Ubuntu
+        uses: threeal/cmake-action@v2
+        with:
+          run-build: true
