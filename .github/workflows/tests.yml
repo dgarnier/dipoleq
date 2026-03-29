@@ -43,7 +43,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install uv dependencies (and nox)
-        run: uv sync --group test --groupdev --python ${{ matrix.python }}
+        run: uv sync --group test --group dev --python ${{ matrix.python }}
 
       - name: Upgrade pip in virtual environments
         shell: python
@@ -119,7 +119,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install uv dependencies (and nox)
-        run: uv sync --group test --groupdev --python ${{ matrix.python }}
+        run: uv sync --group test --group dev --python ${{ matrix.python }}
 
       - name: Download coverage data
         uses: actions/download-artifact@v8
