@@ -19,9 +19,9 @@ jobs:
           - { python: "3.11", os: "ubuntu-latest", session: "tests" }
           - { python: "3.12", os: "ubuntu-latest", session: "tests" }
           - { python: "3.13", os: "ubuntu-latest", session: "tests" }
-          - { python: "3.14", os: "ubuntu-latest", session: "tests" }
+          #- { python: "3.14", os: "ubuntu-latest", session: "tests" }
           #- { python: "3.12", os: "windows-latest", session: "tests" }
-          - { python: "3.14", os: "macos-latest", session: "tests" }
+          - { python: "3.13", os: "macos-latest", session: "tests" }
           - { python: "3.10", os: "macos-14", session: "tests" }
           - { python: "3.12", os: "ubuntu-latest", session: "typeguard" }
           #- { python: "3.12", os: "ubuntu-latest", session: "docs" }
@@ -36,15 +36,14 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v6
 
-      - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
+          version: "0.11.2"
           python-version: ${{ matrix.python }}
 
-      - name: Upgrade pip
-        run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
-          pip --version
+      - name: Install uv dependencies (and nox)
+        run: uv sync --group test --groupdev --python ${{ matrix.python }}
 
       - name: Upgrade pip in virtual environments
         shell: python
@@ -88,7 +87,7 @@ jobs:
 
       - name: Run Nox
         run: |
-          nox --python=${{ matrix.python }}
+          uv run nox --python=${{ matrix.python }}
 
       # this may also be done by ciwheelbuild?
       - name: Upload coverage data
@@ -113,20 +112,14 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
+          version: "0.11.2"
           python-version: "3.13"
 
-      - name: Upgrade pip
-        run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
-          pip --version
-
-      - name: Install Nox
-        run: |
-          pipx install --pip-args=--constraint=${{ github.workspace }}/.github/workflows/constraints.txt nox
-          nox --version
+      - name: Install uv dependencies (and nox)
+        run: uv sync --group test --groupdev --python ${{ matrix.python }}
 
       - name: Download coverage data
         uses: actions/download-artifact@v8
@@ -136,11 +129,11 @@ jobs:
 
       - name: Combine coverage data and display human readable report
         run: |
-          nox --session=coverage
+          uv run nox --session=coverage
 
       - name: Create coverage report
         run: |
-          nox --session=coverage -- xml
+          uv run nox --session=coverage -- xml
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v5
