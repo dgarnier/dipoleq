@@ -1,5 +1,7 @@
 """Utility functions for the dipoleq package"""
 
+# from desc.examples.reactor_QA import a
+
 try:
     from enum import StrEnum
 except ImportError:  # python < 3.11
@@ -131,7 +133,7 @@ def machine_diff(obj1: Any, obj2: Any, root: str = "", verbose: bool = False) ->
                 areDiff |= machine_diff(value, getattr(obj2, key), root=f"{root}.{key}")
             case "CPlasmaModel":  # not sure how to handle this yet
                 pass
-            case "VectorView" | "MatrixView" | "IMatrixView":
+            case "VectorView" | "MatrixView" | "IMatrixView" | "ndarray":
                 s1, s2 = (np.array(value).shape, np.array(getattr(obj2, key)).shape)
                 if s1 != s2:
                     print(f"{root}.{key}: Array shapes differ {s1}!={s2}")
@@ -148,7 +150,6 @@ def machine_diff(obj1: Any, obj2: Any, root: str = "", verbose: bool = False) ->
                         getattr(obj2, key).model_dump(mode="json"),
                         root=f"{root}.{key}",
                     )
-
             case _:
                 if value != getattr(obj2, key):
                     areDiff = True

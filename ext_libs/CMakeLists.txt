@@ -165,23 +165,41 @@ if (BUILD_PYTHON_BINDINGS)
     # Find the module development requirements (requires FindPython from 3.17 or
     # scikit-build-core's built-in backport)
 
-    # just look to install certain components.. python itself is 
+    # just look to install certain components.. python itself is
     # previously found.
 
-    include(FindPyBind11)
-    find_package(pybind11 GLOBAL CONFIG QUIET)
-    if(NOT pybind11_FOUND)
-        include(get_cpm)
-        CPMAddPackage(
-            NAME pybind11
-            VERSION 2.12.0
-            GITHUB_REPOSITORY pybind/pybind11
-            OPTIONS
-                "PYBIND11_INSTALL ON"
-                "PYBIND11_TEST OFF"
-                "PYBIND11_FINDPYTHON OFF"
+    if (BUILD_USE_NANOBIND)
+        # ── nanobind binding ─────────────────────────────────────────────────────
+        # Locate nanobind via the Python installation (pip install nanobind).
+        execute_process(
+            COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            OUTPUT_VARIABLE NB_DIR
+            RESULT_VARIABLE NB_RESULT
         )
-        find_package(pybind11 GLOBAL REQUIRED)
+        if(NOT NB_RESULT EQUAL 0)
+            message(FATAL_ERROR
+                "nanobind not found — install with: pip install nanobind\n"
+                "Or set DIPOLEQ_USE_NANOBIND=OFF to fall back to pybind11.")
+        endif()
+        #list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
+        #find_package(nanobind GLOBAL CONFIG REQUIRED)
+    else()
+        include(FindPyBind11)
+        find_package(pybind11 GLOBAL CONFIG QUIET)
+        if(NOT pybind11_FOUND)
+            include(get_cpm)
+            CPMAddPackage(
+                NAME pybind11
+                VERSION 2.12.0
+                GITHUB_REPOSITORY pybind/pybind11
+                OPTIONS
+                    "PYBIND11_INSTALL ON"
+                    "PYBIND11_TEST OFF"
+                    "PYBIND11_FINDPYTHON OFF"
+            )
+            find_package(pybind11 GLOBAL REQUIRED)
+        endif()
     endif()
 endif()
 

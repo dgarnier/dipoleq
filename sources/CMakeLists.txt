@@ -6,9 +6,9 @@ add_library(version_lib INTERFACE version.hpp version.h)
 target_include_directories(version_lib INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
 add_dependencies(version_lib DipolEq_Version)
 set_property(SOURCE version.hpp.in APPEND PROPERTY
-		OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.version)
+  OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.version)
 set_property(SOURCE version.hpp.in APPEND PROPERTY
-		OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.version)
+  OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.version)
 
 
 set(dipoleq_SOURCES)
@@ -140,10 +140,14 @@ target_include_directories(DipolEqLib
 target_compile_definitions(DipolEqLib PRIVATE ${dipoleq_DEFS})
 
 # Python bindings library for pydipoleq target
-if (BUILD_PYTHON_BINDINGS)
+if(BUILD_PYTHON_BINDINGS)
     add_library(pydipoleqlib EXCLUDE_FROM_ALL STATIC ${pydipoleqlib_SOURCES})
     target_include_directories(pydipoleqlib PUBLIC ${CMAKE_SOURCE_DIR}/includes)
-    target_compile_definitions(pydipoleqlib PRIVATE PYBIND11=1)
+    if(BUILD_USE_NANOBIND)
+        target_compile_definitions(pydipoleqlib PRIVATE NANOBIND=1)
+    else()
+        target_compile_definitions(pydipoleqlib PRIVATE PYBIND11=1)
+    endif()
     target_link_libraries(pydipoleqlib PUBLIC version_lib)
     set_target_properties(pydipoleqlib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
