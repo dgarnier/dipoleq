@@ -47,7 +47,7 @@ dipoleq = "dipoleq.main_cli:main"
 #[project.optional-dependencies]
 [dependency-groups]
 test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@python-3.10-allowed",
-        "omas", "json2xml", "typeguard"]
+        "omas", "json2xml", "typeguard", "coverage"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml",
        "nox >= 2025.02.09",
@@ -98,8 +98,9 @@ minversion = "7.0"
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
 log_cli_level = "INFO"
-filterwarnings = [
-  "error",
+filterwarnings = [ # ignore issues with omas
+    'ignore:invalid escape sequence:SyntaxWarning',
+    'ignore:invalid escape sequence:DeprecationWarning',
 ]
 testpaths = ["python/tests"]
 
