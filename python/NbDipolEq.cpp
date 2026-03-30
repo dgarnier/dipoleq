@@ -8,12 +8,16 @@
 
 #include <cstring>
 #include <stdexcept>
+#include <string>
+#include <map>
 #include <utility>
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
+#include <nanobind/make_iterator.h> // Required for make_iterator
 #include <nanobind/stl/pair.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/map.h>
 
 #include "nrutil.h"
 #include "tokamak.h"
@@ -94,7 +98,7 @@ public:
     }
 
     ~NbMachine() {
-        if (tok) { free_Tokamak(tok, 0 /*not full*/); tok = nullptr; }
+        if (tok) { free_Tokamak(tok, 1 /* free tok too */); tok = nullptr; }
     }
 
     NbMachine(const NbMachine &) = delete;
@@ -110,6 +114,10 @@ static void free_COIL(COIL *c, TOKAMAK *m) {
 
 static void free_SHELL(SHELL *c, TOKAMAK *m) {
     free_Shell(c, m->PsiGrid->Nsize, m->NumCoils);
+}
+
+static void free_LIMITER(LIMITER *c, TOKAMAK *m) {
+    free_Limiter(c);
 }
 
 static void free_MEAS(MEAS *c, TOKAMAK *m) {
@@ -140,7 +148,7 @@ static void nb_set_NumShells(NbMachine &self, int n) {
     }
     tok.NumShells = n;
     tok.Shells = (SHELL **)malloc(n * sizeof(SHELL *));
-    for (int i = 0; i < n; i++) tok.Shells[i] = new_Shell(0);
+    for (int i = 0; i < n; i++) tok.Shells[i] = new_Shell(0, self.tok);
 }
 
 static void nb_set_NumSeps(NbMachine &self, int n) {
@@ -183,6 +191,11 @@ static void nb_set_NumLimiters(NbMachine &self, int n) {
     for (int i = 0; i < n; i++) tok.Limiters[i] = new_Limiter();
 }
 
+// don't need this one.. subcoil is just a malloc'd struct
+//static void free_SUBCOIL(SUBCOIL *s, TOKAMAK *) {
+//    free(s);
+//}
+
 static void nb_set_NumSubCoils(COIL &self, int n) {
     if (self.SubCoils) {
         for (int i = 0; i < self.NumSubCoils; i++)
@@ -192,6 +205,10 @@ static void nb_set_NumSubCoils(COIL &self, int n) {
     self.NumSubCoils = n;
     self.SubCoils = (SUBCOIL **)malloc(n * sizeof(SUBCOIL *));
     for (int i = 0; i < n; i++) self.SubCoils[i] = new_SubCoil();
+}
+
+static void free_SUBSHELL(SUBSHELL *ss, TOKAMAK *m) {
+    free_SubShell(ss, m->PsiGrid->Nsize, m->NumCoils);
 }
 
 static void nb_set_SHELL_NumSubShells(SHELL &self, int n, TOKAMAK *tok) {
@@ -246,7 +263,7 @@ nb_get_flux_contour(PSIGRID *pg, double psi) {
 
 NB_MODULE(core, m) {
     static Logger logger;
-    m.doc() = "Python bindings for DipolEq (nanobind version)";
+    m.doc() = "Python bindings for DipolEq core C++ library";
     m.attr("__version__")      = VERSION_FULL;
     auto version_info = nb::dict();
     version_info["version"]        = VERSION;
@@ -339,8 +356,9 @@ NB_MODULE(core, m) {
         .def_prop_ro("Model",
             [](PLASMA &self) -> nb::object {
                 if (!self.Model) return nb::none();
-                return nb::cast(self.Model, nb::rv_policy::reference);
-            }, "The plasma model object")
+                return nb::cast(self.Model, nb::rv_policy::reference);},
+            nb::sig("@property\ndef Model(self) -> CPlasmaModel | None"),
+            "The plasma model object")
 
         .def_rw("R0",           &PLASMA::R0,           "Reference major radius")
         .def_rw("Z0",           &PLASMA::Z0,           "Reference vertical position")
@@ -362,6 +380,8 @@ NB_MODULE(core, m) {
         .def_rw("SperTerms", &PLASMA::SperTerms,"Number of Sper terms in anisotropic polynomial plasma models")
 
         .def_prop_ro("G2p",  [](PLASMA &s){ return make_dvector(s.G2pTerms,  s.G2p);  }, "G^2' polynomial terms")
+//           nb::sig("@property\ndef G2p(self) -> Optional[NDArray[float]]")
+//            )
         .def_prop_ro("H",    [](PLASMA &s){ return make_dvector(s.HTerms,    s.H);    }, "H polynomial terms")
         .def_prop_ro("Pp",   [](PLASMA &s){ return make_dvector(s.PpTerms,   s.Pp);   }, "p' polynomial terms")
         .def_prop_ro("Rot",  [](PLASMA &s){ return make_dvector(s.RotTerms,  s.Rot);  }, "Rotational flow terms")
@@ -518,10 +538,10 @@ NB_MODULE(core, m) {
 
     // ── LIMITER ───────────────────────────────────────────────────────────────
     nb::class_<LIMITER>(m, "Limiter", "Limiter line-segment definition")
-        .def_rw("R1",      &LIMITER::X1)
-        .def_rw("Z1",      &LIMITER::Z1)
-        .def_rw("R2",      &LIMITER::X2)
-        .def_rw("Z2",      &LIMITER::Z2)
+        .def_rw("R1",      &LIMITER::X1, "First point R coordinate")
+        .def_rw("Z1",      &LIMITER::Z1, "First point Z coordinate")
+        .def_rw("R2",      &LIMITER::X2, "Second point R coordinate")
+        .def_rw("Z2",      &LIMITER::Z2, "Second point Z coordinate")
         .def_rw("Enabled", &LIMITER::Enabled,
                 "1=outer limiter, 0=disabled, -1=inner limiter")
         .def_prop_ro("PsiLim", [](LIMITER &l){ return l.PsiMin; },
@@ -561,6 +581,10 @@ NB_MODULE(core, m) {
         .def("new_subcoil",
             [](ObjVecView<SUBCOIL> &) -> SUBCOIL * { return new_SubCoil(); },
             nb::rv_policy::reference, "Create a new SubCoil (must be inserted into Coil)")
+        .def("__iter__", [](const ObjVecView<SUBCOIL> &v) {
+                    return nb::make_iterator(nb::type<ObjVecView<SUBCOIL>>(),
+                        "iterator", v.begin(), v.end());
+                }, nb::keep_alive<0, 1>())
     ;
 
     // ── COIL ─────────────────────────────────────────────────────────────────
@@ -578,10 +602,9 @@ NB_MODULE(core, m) {
                 s.Name[sizeof(COIL::Name) - 1] = '\0';
             }, "Name of the coil")
         .def_prop_ro("SubCoils",
-            [](COIL &s) -> nb::object {
-                if (!s.SubCoils) return nb::none();
-                return nb::cast(new ObjVecView<SUBCOIL>(s.NumSubCoils, s.SubCoils),
-                                nb::rv_policy::take_ownership);
+            [](COIL &s) -> ObjVecView<SUBCOIL> {
+                if (!s.SubCoils) return ObjVecView<SUBCOIL>();
+                return ObjVecView<SUBCOIL>(s.NumSubCoils, s.SubCoils); // no special deleter needed
             }, nb::keep_alive<0, 1>(), "Return vector of SubCoils")
         .def_prop_rw("NumSubCoils",
             [](COIL &s){ return s.NumSubCoils; },
@@ -611,6 +634,11 @@ NB_MODULE(core, m) {
         .def("__getitem__",
             [](ObjVecView<SUBSHELL> &s, size_t i) -> SUBSHELL * { return s[i]; },
             nb::rv_policy::reference)
+        .def("__iter__", [](const ObjVecView<SUBSHELL> &v) {
+                    return nb::make_iterator(nb::type<ObjVecView<SUBSHELL>>(),
+                        "iterator", v.begin(), v.end());
+                }, nb::keep_alive<0, 1>())
+
     ;
 
     // ── SHELL ─────────────────────────────────────────────────────────────────
@@ -624,11 +652,10 @@ NB_MODULE(core, m) {
                 s.Name[sizeof(SHELL::Name) - 1] = '\0';
             })
         .def_prop_ro("SubShells",
-            [](SHELL &s) -> nb::object {
-                if (!s.SubShells) return nb::none();
-                return nb::cast(new ObjVecView<SUBSHELL>(s.NumSubShells, s.SubShells),
-                                nb::rv_policy::take_ownership);
-            }, nb::keep_alive<0, 1>(), "Return vector of SubShells")
+            [](SHELL &s) -> ObjVecView<SUBSHELL> {
+                if (!s.SubShells) return ObjVecView<SUBSHELL>();
+                return ObjVecView<SUBSHELL>(s.NumSubShells, s.SubShells, s.tok, free_SUBSHELL);
+            }, nb::keep_alive<0, 1>(), "Return view of SubShells")
         .def("set_NumSubShells",
             [](SHELL &s, int n, NbMachine &mach){
                 nb_set_SHELL_NumSubShells(s, n, mach.tok);
@@ -724,6 +751,10 @@ NB_MODULE(core, m) {
         .def("new_Coil",
             [](ObjVecView<COIL> &, int n) -> COIL * { return new_Coil(n); },
             nb::rv_policy::reference, "Create a new Coil (must be inserted via __setitem__)")
+        .def("__iter__", [](const ObjVecView<COIL> &v) {
+                    return nb::make_iterator(nb::type<ObjVecView<COIL>>(),
+                        "iterator", v.begin(), v.end());
+                }, nb::keep_alive<0, 1>())
     ;
 
     nb::class_<ObjVecView<LIMITER>>(m, "Limiters", "Sequence view of Limiter objects")
@@ -736,6 +767,10 @@ NB_MODULE(core, m) {
         .def("new_limiter",
             [](ObjVecView<LIMITER> &) -> LIMITER * { return new_Limiter(); },
             nb::rv_policy::reference, "Add a new limiter")
+        .def("__iter__", [](const ObjVecView<LIMITER> &v) {
+                     return nb::make_iterator(nb::type<ObjVecView<LIMITER>>(),
+                         "iterator", v.begin(), v.end());
+                 }, nb::keep_alive<0, 1>())
     ;
 
     nb::class_<ObjVecView<SEPARATRIX>>(m, "Separatrices", "Sequence view of Separatrix objects")
@@ -748,6 +783,10 @@ NB_MODULE(core, m) {
         .def("new_separatrix",
             [](ObjVecView<SEPARATRIX> &) -> SEPARATRIX * { return new_Separatrix(); },
             nb::rv_policy::reference, "Add a new separatrix")
+        .def("__iter__", [](const ObjVecView<SEPARATRIX> &v) {
+                    return nb::make_iterator(nb::type<ObjVecView<SEPARATRIX>>(),
+                        "iterator", v.begin(), v.end());
+                }, nb::keep_alive<0, 1>())
     ;
 
     nb::class_<ObjVecView<MEAS>>(m, "Measures", "Sequence view of Measure objects")
@@ -762,6 +801,10 @@ NB_MODULE(core, m) {
                 return new_Measure((int)t);
             }, nb::rv_policy::reference,
             "Create a new Measure of the given MeasType")
+        // .def("__iter__", [](const ObjVecView<MEAS> &v) {
+        //             return nb::make_iterator(nb::type<ObjVecView<MEAS>>(),
+        //                 "iterator", v.begin(), v.end());
+        //         }, nb::keep_alive<0, 1>())
     ;
 
     nb::class_<ObjVecView<SHELL>>(m, "Shells", "Sequence view of Shell objects")
@@ -771,8 +814,12 @@ NB_MODULE(core, m) {
             nb::rv_policy::reference)
         .def("__setitem__", &ObjVecView<SHELL>::insert)
         .def("new_shell",
-            [](ObjVecView<SHELL> &) -> SHELL * { return new_Shell(0); },
+            [](ObjVecView<SHELL> &s) -> SHELL * { return new_Shell(0, s.m_machine); },
             nb::rv_policy::reference, "Add a new shell")
+        // .def("__iter__", [](const ObjVecView<SHELL> &v) {
+        //             return nb::make_iterator(nb::type<ObjVecView<SHELL>>(),
+        //                 "iterator", v.begin(), v.end());
+        //         }, nb::keep_alive<0, 1>())
     ;
 
     // ── Machine (NbMachine) ───────────────────────────────────────────────────
@@ -882,10 +929,14 @@ NB_MODULE(core, m) {
         // sub-objects (non-owning references; lifetime tied to Machine)
         .def_prop_ro("PsiGrid",
             [](NbMachine &s) -> PSIGRID * { return s.tok->PsiGrid; },
-            nb::rv_policy::reference_internal, "The PsiGrid object")
+            nb::rv_policy::reference_internal,
+            nb::sig("def PsiGrid(self) -> PsiGrid"),
+            "The PsiGrid object")
         .def_prop_ro("Plasma",
             [](NbMachine &s) -> PLASMA * { return s.tok->Plasma; },
-            nb::rv_policy::reference_internal, "The Plasma object")
+            nb::rv_policy::reference_internal,
+            nb::sig("def Plasma(self) -> Plasma"),
+            "The Plasma object")
 
         // string fields (fixed char arrays in TOKAMAK)
         .def_prop_rw("Name",
@@ -936,11 +987,8 @@ NB_MODULE(core, m) {
 
         // collection accessors
         .def_prop_ro("Coils",
-            [](NbMachine &s) -> nb::object {
-                if (!s.tok->Coils) return nb::none();
-                return nb::cast(
-                    new ObjVecView<COIL>(s.tok->NumCoils, s.tok->Coils, s.tok, free_COIL),
-                    nb::rv_policy::take_ownership);
+            [](NbMachine &s) -> ObjVecView<COIL> {
+                return ObjVecView<COIL>(s.tok->NumCoils, s.tok->Coils, s.tok, free_COIL);
             }, nb::keep_alive<0, 1>(), "Array of COILS")
         .def_prop_rw("NumCoils",
             [](NbMachine &s){ return s.tok->NumCoils; },
@@ -948,35 +996,31 @@ NB_MODULE(core, m) {
             "Number of coils, setting will erase old coils")
 
         .def_prop_ro("Limiters",
-            [](NbMachine &s) -> nb::object {
-                if (!s.tok->Limiters) return nb::none();
-                return nb::cast(
-                    new ObjVecView<LIMITER>(s.tok->NumLimiters, s.tok->Limiters),
-                    nb::rv_policy::take_ownership);
-            }, nb::keep_alive<0, 1>(), "Get the limiters")
+            [](NbMachine &s) -> ObjVecView<LIMITER> {
+                return ObjVecView<LIMITER>(s.tok->NumLimiters,
+                        s.tok->Limiters, s.tok, free_LIMITER);
+            },
+//            nb::sig("def Limiters(self) -> tuple[Limiter, ...] | None"),
+            nb::keep_alive<0, 1>(), "Get the limiters")
         .def_prop_rw("NumLimiters",
             [](NbMachine &s){ return s.tok->NumLimiters; },
             &nb_set_NumLimiters,
             "Number of limiters, setting will erase old limiters")
 
         .def_prop_ro("Shells",
-            [](NbMachine &s) -> nb::object {
-                if (!s.tok->Shells) return nb::none();
-                return nb::cast(
-                    new ObjVecView<SHELL>(s.tok->NumShells, s.tok->Shells, s.tok, free_SHELL),
-                    nb::rv_policy::take_ownership);
-            }, nb::keep_alive<0, 1>(), "Get the shells")
+            [](NbMachine &s) -> ObjVecView<SHELL> {
+                return ObjVecView<SHELL>(s.tok->NumShells, s.tok->Shells, s.tok, free_SHELL);
+            },
+            //nb::sig("def Shells(self) -> tuple[Shell, ...]"),
+            nb::keep_alive<0, 1>(), "Get the shells")
         .def_prop_rw("NumShells",
             [](NbMachine &s){ return s.tok->NumShells; },
             &nb_set_NumShells,
             "Number of shells, setting will erase old shells")
 
         .def_prop_ro("Measures",
-            [](NbMachine &s) -> nb::object {
-                if (!s.tok->Measures) return nb::none();
-                return nb::cast(
-                    new ObjVecView<MEAS>(s.tok->NumMeasures, s.tok->Measures, s.tok, free_MEAS),
-                    nb::rv_policy::take_ownership);
+            [](NbMachine &s) -> ObjVecView<MEAS> {
+                return ObjVecView<MEAS>(s.tok->NumMeasures, s.tok->Measures, s.tok, free_MEAS);
             }, nb::keep_alive<0, 1>(), "Get the measurements")
         .def_prop_rw("NumMeasures",
             [](NbMachine &s){ return s.tok->NumMeasures; },
@@ -984,11 +1028,8 @@ NB_MODULE(core, m) {
             "Number of measurements, setting will erase old measurements")
 
         .def_prop_ro("Seps",
-            [](NbMachine &s) -> nb::object {
-                if (!s.tok->Seps) return nb::none();
-                return nb::cast(
-                    new ObjVecView<SEPARATRIX>(s.tok->NumSeps, s.tok->Seps),
-                    nb::rv_policy::take_ownership);
+            [](NbMachine &s) -> ObjVecView<SEPARATRIX> {
+                return ObjVecView<SEPARATRIX>(s.tok->NumSeps, s.tok->Seps); // no special deleter needed
             }, nb::keep_alive<0, 1>(), "Get the separatrixes")
         .def_prop_rw("NumSeps",
             [](NbMachine &s){ return s.tok->NumSeps; },

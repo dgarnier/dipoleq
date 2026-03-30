@@ -4,6 +4,8 @@
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
+// #include <nanobind/stl/optional.h>
+// #include <optional>
 #include <stdexcept>
 
 #include "plasma.h"
@@ -101,6 +103,8 @@ inline nb::object make_imatrix(size_t nsize, int **data) {
 template <typename T>
 class ObjVecView {
 public:
+    ObjVecView() = default;
+
     ObjVecView(size_t n, T **data)
         : m_size(n), m_data(data) {}
 
@@ -123,10 +127,13 @@ public:
         }
         m_data[i] = obj;
     }
+    // give the start and end of array for the iterator
+    auto begin() const { return &m_data[0]; }
+    auto end() const { return &m_data[m_size]; }
 
-private:
     TOKAMAK *m_machine = nullptr;
+private:
     void (*m_free)(T *, TOKAMAK *) = nullptr;
-    size_t  m_size;
-    T     **m_data;
+    size_t  m_size = 0;
+    T     **m_data = nullptr;
 };

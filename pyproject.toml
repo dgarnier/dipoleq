@@ -60,10 +60,14 @@ docs = ["sphinx<8", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-t
         "autodoc_pydantic", "numpy"]
 omas = ["omas", "json2xml"]
 imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]
+memray = [
+    "memray>=1.19.2",
+    "pytest-memray>=1.8.0",
+]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
-build.targets = ["pydipoleq", "dipoleq"]
+build.targets = ["core", "core_stub", "dipoleq"]
 build.verbose = true
 #install.components = ["python", "cli"]
 install.components = ["python"]
