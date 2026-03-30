@@ -5,19 +5,21 @@ this should be identical to what's in the c code
 from pathlib import Path
 
 import numpy as np
-import numpy.typing as npt
 from h5py import Dataset, File, Group
+
+# import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from .core import Machine
 from .core import ModelType as MT
 from .ds_names import DS_NAME, GROUP
 
-try:
-    from .core import IMatrixView, MatrixView, VectorView
+# try:
+#     from .core import IMatrixView, MatrixView, VectorView
 
-    ArrayLike = npt.ArrayLike | MatrixView | VectorView | IMatrixView
-except ImportError:
-    ArrayLike = npt.ArrayLike
+#     ArrayLike = npt.ArrayLike | MatrixView | VectorView | IMatrixView
+# except ImportError:
+#     ArrayLike = npt.ArrayLike
 
 
 MU0 = 4.0e-7 * 3.14159265358979323846

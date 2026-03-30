@@ -1,0 +1,22 @@
+core.__prefix__:
+    import numpy as np
+
+# fix broke the stub generation for __version_info__ dict
+.__version_info__:
+    __version_info__: dict[str, str] = ...
+
+.Plasma.(?P<prop>G2p$|H$|Pp$|Rot$|Siso$|Spar$|Sper$|.*_pr$):
+    @property
+    def \prop(self) -> NDArray[np.float64] | None:
+    \doc
+
+# can't actually type it as 2d.. just an array of type
+.Plasma.(?P<p2d>B2$|GradPsi.$|Bt$|G$|Rho$|Piso$|Ppar$|Pper$|Alpha):
+    @property
+    def \p2d(self) -> NDArray[np.float64] | None:
+    \doc
+
+.PsiGrid.(?P<p>R$|Z$|IsPlasma$|Psi$|Current|Residual$):
+    @property
+    def \p(self) -> NDArray[np.float64] | None:
+    \doc

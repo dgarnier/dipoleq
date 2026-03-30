@@ -184,30 +184,37 @@ class PlasmaModelOld(PlasmaModelBaseModel):
         """Initialize the plasma model with the input data."""
         pm.G2pTerms = len(self.G2p) if self.G2p else 0
         if self.G2p:
+            assert pm.G2p is not None
             for i, v in enumerate(self.G2p):
                 pm.G2p[i] = v
         pm.HTerms = len(self.H) if self.H else 0
         if self.H:
+            assert pm.H is not None
             for i, v in enumerate(self.H):
                 pm.H[i] = v
         pm.PpTerms = len(self.Pp) if self.Pp else 0
         if self.Pp:
+            assert pm.Pp is not None
             for i, v in enumerate(self.Pp):
                 pm.Pp[i] = v
         pm.RotTerms = len(self.Rot) if self.Rot else 0
         if self.Rot:
+            assert pm.Rot is not None
             for i, v in enumerate(self.Rot):
                 pm.Rot[i] = v
         pm.SisoTerms = len(self.Siso) if self.Siso else 0
         if self.Siso:
+            assert pm.Siso is not None
             for i, v in enumerate(self.Siso):
                 pm.Siso[i] = v
         pm.SparTerms = len(self.Spar) if self.Spar else 0
         if self.Spar:
+            assert pm.Spar is not None
             for i, v in enumerate(self.Spar):
                 pm.Spar[i] = v
         pm.SperTerms = len(self.Sper) if self.Sper else 0
         if self.Sper:
+            assert pm.Sper is not None
             for i, v in enumerate(self.Sper):
                 pm.Sper[i] = v
 
@@ -230,6 +237,7 @@ class CDipoleStdIn(PlasmaModelBaseModel):
     def do_init(self, pl: Plasma) -> None:
         pm = pl.Model
         keys = ["RPeak", "ZPeak", "PsiPeak", "PsiEdge", "PsiDipole", "PPeak", "PrExp"]
+        assert pm is not None
         for key in keys:
             pm.model_input(key, str(getattr(self, key)), "")
 
@@ -250,6 +258,7 @@ class CDipoleIntStableIn(PlasmaModelBaseModel):
         """Initialize the plasma model with the input data."""
         keys = ["RPeak", "ZPeak", "PEdge", "PsiFlat", "NSurf", "fCrit"]
         pm = pl.Model
+        assert pm is not None
         for key in keys:
             pm.model_input(key, str(getattr(self, key)), "")
 
@@ -269,6 +278,7 @@ class CDipoleStablePsiNIn(PlasmaModelBaseModel):
         """Initialize the plasma model with the input data."""
         keys = ["PsiNPeak", "PEdge", "PsiFlat", "NSurf", "fCrit"]
         pm = pl.Model
+        assert pm is not None  # make the type checker happy
         for key in keys:
             pm.model_input(key, str(getattr(self, key)), "")
 

@@ -85,5 +85,5 @@ endif()
 # for some reason.. TARGETS must install from top level
 if (SKBUILD)
     message(STATUS "SKBUILD STATUS = ${SKBUILD_STATE}")
-    install(TARGETS pydipoleq LIBRARY DESTINATION dipoleq COMPONENT python)
+    install(TARGETS core LIBRARY DESTINATION dipoleq COMPONENT python)
 endif()

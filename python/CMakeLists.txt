@@ -5,35 +5,43 @@
 if(BUILD_USE_NANOBIND)
 
     find_package(nanobind CONFIG REQUIRED)
-    nanobind_add_module(pydipoleq NB_STATIC STABLE_ABI
+    nanobind_add_module(core
+        NB_STATIC
+        STABLE_ABI
+        LTO
+        NOMINSIZE
+        NB_DOMAIN
+        dipoleq
         NbDipolEq.cpp
     )
-    target_compile_definitions(pydipoleq PRIVATE NANOBIND=1)
-    target_link_libraries(pydipoleq PRIVATE pydipoleqlib)
-    set_target_properties(pydipoleq PROPERTIES
+    target_compile_definitions(core PRIVATE NANOBIND=1)
+    target_link_libraries(core PRIVATE pydipoleqlib)
+    set_target_properties(core PROPERTIES
         OUTPUT_NAME "core"
         POSITION_INDEPENDENT_CODE ON
     )
     # nanobind has cmake stub generation command
     nanobind_add_stub(
-        pydipoleq_stubs
+        core_stub
         MODULE core
         OUTPUT core.pyi
-        PYTHON_PATH $<TARGET_FILE_DIR:pydipoleq>
-        DEPENDS pydipoleq
+        PATTERN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/nb_stub_fixes.txt"
+        PYTHON_PATH $<TARGET_FILE_DIR:core>
+        DEPENDS core
+        COMPONENT core_stub
     )
 
     if(NOT WIN32)
-        add_custom_command(TARGET pydipoleq_stubs POST_BUILD
+        add_custom_command(TARGET core_stub POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy
-                $<TARGET_FILE:pydipoleq> $<TARGET_FILE_DIR:pydipoleq>/core.pyi
+                $<TARGET_FILE:core> $<TARGET_FILE_DIR:core>/core.pyi
                 ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
             COMMENT "Copying nanobind module to dipoleq\n"
         )
     endif()
 
-    install(TARGETS pydipoleq
-        LIBRARY DESTINATION DipolEq)
+    install(TARGETS core LIBRARY DESTINATION DipolEq)
+
 
 else()
     # ── pybind11 binding ─────────────────────────────────────────────────────
