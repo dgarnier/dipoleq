@@ -122,10 +122,10 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           version: "0.11.2"
-          python-version: "3.13"
+          python-version: "3.12"
 
       - name: Install uv dependencies (and nox)
-        run: uv sync --group test --group dev --python ${{ matrix.python }}
+        run: uv sync --group test --group dev --python 3.12
 
       - name: Download coverage data
         uses: actions/download-artifact@v8
