@@ -69,8 +69,8 @@ memray = [
 wheel.expand-macos-universal-tags = true
 build.targets = ["core", "core_stub", "dipoleq"]
 build.verbose = true
-#install.components = ["python", "cli"]
-install.components = ["python"]
+# install.components = ["python", "cli"]
+# install.components = ["python", "stub"]
 #wheel.packages = ["python/dipoleq"] # not required
 # add generated files to sdist, seems to be required
 sdist.include = ["python/dipoleq/_version.py", "python/dipoleq/core.pyi"]

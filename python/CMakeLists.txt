@@ -20,27 +20,21 @@ if(BUILD_USE_NANOBIND)
         OUTPUT_NAME "core"
         POSITION_INDEPENDENT_CODE ON
     )
+
     # nanobind has cmake stub generation command
     nanobind_add_stub(
         core_stub
         MODULE core
         OUTPUT core.pyi
+        MARKER_FILE py.typed
         PATTERN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/nb_stub_fixes.txt"
         PYTHON_PATH $<TARGET_FILE_DIR:core>
         DEPENDS core
-        COMPONENT core_stub
+        COMPONENT stub
     )
 
-    if(NOT WIN32)
-        add_custom_command(TARGET core_stub POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-                $<TARGET_FILE:core> $<TARGET_FILE_DIR:core>/core.pyi
-                ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
-            COMMENT "Copying nanobind module to dipoleq\n"
-        )
-    endif()
-
-    install(TARGETS core LIBRARY DESTINATION DipolEq)
+    install(TARGETS core LIBRARY DESTINATION dipoleq)
+    install(FILES $<TARGET_FILE_DIR:core>/core.pyi $<TARGET_FILE_DIR:core>/py.typed DESTINATION dipoleq)
 
 
 else()
