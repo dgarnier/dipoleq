@@ -15,18 +15,22 @@ from typeguard import TypeguardFinder
 def protect_from_typeguard(modules: list[str]) -> None:
     """Protect from typeguard"""
 
-    import_hooks = [hook for hook in sys.meta_path if isinstance(hook, TypeguardFinder)]
-    for hook in import_hooks:
-        print(f"Removing {hook}")
-        sys.meta_path.remove(hook)
+    running_typeguard = any(isinstance(hook, TypeguardFinder) for hook in sys.meta_path)
+    if running_typeguard:
+        import_hooks = [
+            hook for hook in sys.meta_path if isinstance(hook, TypeguardFinder)
+        ]
+        for hook in import_hooks:
+            print(f"Removing {hook}")
+            sys.meta_path.remove(hook)
 
-    # import so its cached and can't be analyzed
-    for module in modules:
-        importlib.import_module(module)
+        # import so its cached and can't be analyzed
+        for module in modules:
+            importlib.import_module(module)
 
-    # add them back
-    for hook in reversed(import_hooks):
-        sys.meta_path.insert(0, hook)
+        # add them back
+        for hook in reversed(import_hooks):
+            sys.meta_path.insert(0, hook)
 
 
 protect_from_typeguard(["omas"])
