@@ -15,10 +15,10 @@ from .post_process import Machine
 
 # export (or re-export) these functions
 __all__ = [
-    "to_imas",
-    "imas_input_params",
     "DBEntry",
     "ImasDS",
+    "imas_input_params",
+    "to_imas",
 ]
 
 

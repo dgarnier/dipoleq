@@ -40,7 +40,7 @@ def add_method(cls: type[CT]) -> Callable[[Callable[P, T]], Callable[P, T]]:
 # I think a package like "jaxtyping" would be better
 # https://docs.kidger.site/jaxtyping/
 ArrayN2 = Annotated[NDArray[np.generic], Literal["N", 2]]
-ArrayN22 = Annotated[NDArray[np.generic], Literal["N", 2, 2]]
+ArrayN22 = Annotated[NDArray[np.generic], Literal["N", 2]]
 
 
 def segments_to_polygon(segments: ArrayN22) -> ArrayN2:

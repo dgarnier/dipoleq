@@ -3,7 +3,6 @@
 import argparse
 import os
 import shlex
-import sys
 from pathlib import Path
 from textwrap import dedent
 from typing import Any
@@ -82,7 +81,8 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
         text = hook.read_text()
 
         if not any(
-            Path("A") == Path("a") and bindir.lower() in text.lower() or bindir in text
+            (Path("A") == Path("a") and bindir.lower() in text.lower())
+            or bindir in text
             for bindir in bindirs
         ):
             continue

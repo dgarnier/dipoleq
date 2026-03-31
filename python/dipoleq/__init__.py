@@ -39,6 +39,10 @@ class Machine(core.Machine):
         super().__init__()
         self.input_data: MachineIn | None = None
 
+    # fix missing hash
+    def __hash__(self) -> int:
+        return super().__hash__()
+
     @classmethod
     def from_fileinput(cls, filename: str | Path) -> Self:
         """Generate a Machine object from a .in file
@@ -185,6 +189,8 @@ class Machine(core.Machine):
 __all__ = [
     "Machine",
     "MachineIn",
+    "__version__",
+    "__version_tuple__",
     "core",
     "file_input",
     "input",
@@ -192,6 +198,4 @@ __all__ = [
     "post_process",
     "solver",
     "util",
-    "__version_tuple__",
-    "__version__",
 ]

@@ -15,10 +15,10 @@ from .post_process import Machine
 
 # export (or re-export) these functions
 __all__ = [
-    "to_omas",
     "ODS",
     "load_omas_data_structure",
     "omas_input_params",
+    "to_omas",
 ]
 
 
