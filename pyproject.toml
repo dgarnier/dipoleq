@@ -1,8 +1,9 @@
 [build-system]
 requires = [
     "scikit-build-core",
-    "pybind11",
-    "pybind11-stubgen",
+#    "pybind11",
+#    "pybind11-stubgen",
+    "nanobind",
     "numpy",
     "setuptools_scm",
     "build",
@@ -29,7 +30,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "numpy >=1.26, <2.3",
+  "numpy >=1.26",
   "pydantic >=2.10, <3.0",
   "pyyaml",
   "types-pyyaml",
@@ -45,27 +46,34 @@ dipoleq = "dipoleq.main_cli:main"
 
 #[project.optional-dependencies]
 [dependency-groups]
-test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@python-3.10-allowed", 
-        "omas", "json2xml", "typeguard"]
+test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@python-3.10-allowed",
+        "omas", "json2xml", "typeguard", "coverage"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml",
        "nox >= 2025.02.09",
-       "numpy", "omas", "pybind11", "pyyaml", "pybind11-stubgen",
+       "numpy", "omas", "pyyaml", "nanobind",
        "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade",
        "typeguard"]
+test_imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]
+dev_pybind11 = ["pybind11", "pybind11-stubgen"]
 docs = ["sphinx<8", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
         "autodoc_pydantic", "numpy"]
 omas = ["omas", "json2xml"]
 imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]
+memray = [
+    "memray>=1.19.2",
+    "pytest-memray>=1.8.0",
+]
 
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
-build.targets = ["pydipoleq", "dipoleq"]
+build.targets = ["core", "core_stub", "dipoleq"]
 build.verbose = true
 #install.components = ["python", "cli"]
 install.components = ["python"]
 #wheel.packages = ["python/dipoleq"] # not required
-sdist.include = ["python/dipoleq/_version.py"]
+# add generated files to sdist, seems to be required
+sdist.include = ["python/dipoleq/_version.py", "python/dipoleq/core.pyi"]
 sdist.exclude = ["idl", "GEM", "fortran", "wheelhouse", "*.ipynb",
                 "Testing/*.hdf", "Testing/*.pdf",
                 ".vscode", ".github", ".devcontainer"]
@@ -76,7 +84,8 @@ build-dir = "build/{wheel_tag}"
 [tool.scikit-build.cmake.define]
 BUILD_PYTHON_BINDINGS = "ON"
 BUILD_CLI = "OFF"
-CMAKE_OSX_DEPLOYMENT_TARGET = "10.15"  # macOS 10.15 Catalina
+BUILD_USE_NANOBIND = "ON"
+CMAKE_OSX_DEPLOYMENT_TARGET = "11"  # macOS 11 Monterey
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.setuptools_scm"
@@ -93,8 +102,9 @@ minversion = "7.0"
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
 log_cli_level = "INFO"
-filterwarnings = [
-  "error",
+filterwarnings = [ # ignore issues with omas
+    'ignore:invalid escape sequence:SyntaxWarning',
+    'ignore:invalid escape sequence:DeprecationWarning',
 ]
 testpaths = ["python/tests"]
 
@@ -151,6 +161,7 @@ ignore = [
   "PLR09",    # Too many <...>
   "PLR2004",  # Magic comparison
   "ISC001",   # Conflicts with formatter
+  "PLC0415"   # imports not at top
 ]
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["T20"]
@@ -167,9 +178,7 @@ files = ["python/dipoleq/*.py"]
 strict = true
 warn_unreachable = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
-plugins = ["numpy.typing.mypy_plugin"]
-exclude = ['^noxfile\.py$',
-           'python/dev/*.py$']
+exclude = ["noxfile.py", "python/dev/*.py"]
 
 [[tool.mypy.overrides]]
 module = "freeqdsk"

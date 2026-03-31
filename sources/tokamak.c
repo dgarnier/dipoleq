@@ -130,7 +130,7 @@ void          init_Tokamak(TOKAMAK * td)
 	if ((td->NumShells > 0) && !td->Shells)
 		nrerror("ERROR: Allocation error in init_Tokamak.");
 	for (i = 0; i < td->NumShells; i++)
-		td->Shells[i] = new_Shell(0);
+		td->Shells[i] = new_Shell(0, td);
 
 	td->Limiters = (LIMITER **) malloc((unsigned) td->NumLimiters * sizeof(LIMITER *));
 	if (!td->Limiters)
@@ -164,31 +164,42 @@ void          free_Tokamak(TOKAMAK * td, int full)
 	if (td->Plasma)
 		free_Plasma(td->Plasma);
 
-	if (td->Coils)
+	if (td->Coils) {
 		for (i = 0; i < ncoils; i++)
 			if (td->Coils[i])
 				free_Coil(td->Coils[i], nmax);
+	    free(td->Coils);
+	}
 
-	if (td->Shells)
+	if (td->Shells) {
 		for (i = 0; i < nshells; i++)
 			if (td->Shells[i]) {
 				num_subshells += td->Shells[i]->NumSubShells;
 				free_Shell(td->Shells[i], nmax, ncoils);
 			}
-	if (td->Limiters)
+	    free(td->Shells);
+	}
+
+	if (td->Limiters) {
 		for (i = 0; i < td->NumLimiters; i++)
 			if (td->Limiters[i])
 				free_Limiter(td->Limiters[i]);
+		free(td->Limiters);
+	}
 
-	if (td->Seps)
+	if (td->Seps) {
 		for (i = 0; i < td->NumSeps; i++)
 			if (td->Seps[i])
 				free_Separatrix(td->Seps[i]);
+		free(td->Seps);
+	}
 
-	if (td->Measures)
+	if (td->Measures) {
 		for (i = 0; i < td->NumMeasures; i++)
 			if (td->Measures[i])
 				free_Measure(td->Measures[i], nmax, ncoils, num_subshells);
+		free(td->Measures);
+	}
 
 	if (td->LHPlasmaGreen)
 		free_LHary(td->LHPlasmaGreen, nmax);

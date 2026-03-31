@@ -145,7 +145,7 @@ void          add_SubShell(SHELL * c, SUBSHELL * sc)
 **
 */
 
-SHELL        *new_Shell(int NumSubShells)
+SHELL        *new_Shell(int NumSubShells, struct tokamak *tok)
 {
 	SHELL        *c;
 	int           isc;
@@ -164,6 +164,7 @@ SHELL        *new_Shell(int NumSubShells)
 	for (isc = 0; isc < NumSubShells; isc++)
 		c->SubShells[isc] = new_SubShell();
 
+	c->tok = tok;
 	return c;
 }
 

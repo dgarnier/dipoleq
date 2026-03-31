@@ -73,6 +73,7 @@ typedef struct shell {
     char			Name[32];		/* the name of this shell set */
 	int				NumSubShells;	/* the number of subshells */
 	SUBSHELL		**SubShells;	/* an array of SUBSHELL pointers */
+	struct tokamak  *tok;		    /* the tokamak this shell is associated with, only needed for subshell free */
 } SHELL;
 
 
@@ -93,7 +94,7 @@ SUBSHELL *new_SubShell(void);
 void free_SubShell(SUBSHELL *,int , int);
 double	Self_Inductance(SUBSHELL *);
 
-SHELL *new_Shell(int );
+SHELL *new_Shell(int, struct tokamak *);
 void free_Shell(SHELL *,int , int);
 void add_SubShell(SHELL *,SUBSHELL *);
 

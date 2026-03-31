@@ -5,20 +5,24 @@ this should be identical to what's in the c code
 from pathlib import Path
 
 import numpy as np
-import numpy.typing as npt
 from h5py import Dataset, File, Group
 
-from .core import IMatrixView, Machine, MatrixView, VectorView
+# import numpy.typing as npt
+from numpy.typing import ArrayLike
+
+from .core import Machine
 from .core import ModelType as MT
 from .ds_names import DS_NAME, GROUP
 
-# github copilot translation from C++ to Python
+# try:
+#     from .core import IMatrixView, MatrixView, VectorView
+
+#     ArrayLike = npt.ArrayLike | MatrixView | VectorView | IMatrixView
+# except ImportError:
+#     ArrayLike = npt.ArrayLike
 
 
 MU0 = 4.0e-7 * 3.14159265358979323846
-
-
-ArrayLike = npt.ArrayLike | MatrixView | VectorView | IMatrixView
 
 
 def _save_0D(loc: Group, name: str, units: str, data: float) -> Dataset:
@@ -28,7 +32,7 @@ def _save_0D(loc: Group, name: str, units: str, data: float) -> Dataset:
 
 
 def _save_1D(
-    loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike
+    loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike | None
 ) -> Dataset:
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
@@ -38,7 +42,12 @@ def _save_1D(
 
 
 def _save_2D(
-    loc: Group, name: str, units: str, scl_r: Dataset, scl_z: Dataset, data: ArrayLike
+    loc: Group,
+    name: str,
+    units: str,
+    scl_r: Dataset,
+    scl_z: Dataset,
+    data: ArrayLike | None,
 ) -> Dataset:
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
@@ -51,7 +60,7 @@ def _save_2D(
 def save_flux_functions(flux: Group, m: Machine) -> None:
     # create flux dimensions
     pl = m.Plasma
-    if pl.PsiX_pr:  # if this exists the rest should too
+    if pl.PsiX_pr is not None:  # if this exists the rest should too
         dimp = flux.create_dataset(DS_NAME.DIMX_NAME, data=pl.PsiX_pr)
         dimp.attrs["UNITS"] = "1"
         dimp.make_scale("Normalized Magnetic Flux")

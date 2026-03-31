@@ -7,7 +7,7 @@ include(get_cpm)
 CPMAddPackage("gh:LecrisUT/CMakeExtraUtils@0.4.1")
 list(APPEND CMAKE_MODULE_PATH "${CMakeExtraUtils_BINARY_DIR}")
 include(DynamicVersion)
-dynamic_version(PROJECT_PREFIX DipolEq_ 
+dynamic_version(PROJECT_PREFIX DipolEq_
                 FALLBACK_VERSION 0.9.999
                 ALLOW_FAILS
                 )
@@ -21,6 +21,8 @@ option(BUILD_WITH_HDF4 "Build with HDF4" OFF)
 option(BUILD_HDF4_WITH_FETCHCONTENT "Build HDF4 with FetchContent" OFF)
 option(BUILD_WITH_CLIBPDF "Build with C libPDF" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
+option(BUILD_USE_NANOBIND
+    "Use nanobind (default) instead of pybind11 for Python bindings" ON)
 
 if (NOT BUILD_CLI)
     set(BUILD_WITH_HDF5 OFF)
@@ -37,9 +39,9 @@ if (BUILD_PYTHON_BINDINGS)
     # cmake 3.26 for changes to FindPython
     set(Python_FIND_VIRTUALENV "FIRST")
     set(Python_FIND_FRAMEWORK "LAST")
-    find_package(Python GLOBAL REQUIRED 
-        COMPONENTS 
-            Interpreter Development.Module NumPy 
+    find_package(Python GLOBAL REQUIRED
+        COMPONENTS
+            Interpreter Development.Module NumPy
             ${SKBUILD_SABI_COMPONENT}
     )
 endif()
@@ -83,6 +85,5 @@ endif()
 # for some reason.. TARGETS must install from top level
 if (SKBUILD)
     message(STATUS "SKBUILD STATUS = ${SKBUILD_STATE}")
-    install(TARGETS pydipoleq LIBRARY DESTINATION dipoleq COMPONENT python)
+    install(TARGETS core LIBRARY DESTINATION dipoleq COMPONENT python)
 endif()
-

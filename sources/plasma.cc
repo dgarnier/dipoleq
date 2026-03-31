@@ -160,6 +160,8 @@ void          free_Plasma(PLASMA * p)
 	int           nmax = p->Nsize;
 
 	if (p) {
+
+	    if (p->Model) delete p->Model;
 		IF_free_dvector(p->Pp);
 		IF_free_dvector(p->G2p);
 

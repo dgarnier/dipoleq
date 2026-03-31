@@ -3,7 +3,6 @@
 import argparse
 import os
 import shlex
-import sys
 from pathlib import Path
 from textwrap import dedent
 from typing import Any
@@ -82,7 +81,8 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
         text = hook.read_text()
 
         if not any(
-            Path("A") == Path("a") and bindir.lower() in text.lower() or bindir in text
+            (Path("A") == Path("a") and bindir.lower() in text.lower())
+            or bindir in text
             for bindir in bindirs
         ):
             continue
@@ -135,19 +135,50 @@ def mypy(session: Session) -> None:
         session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("mypy", "pytest")
     session.run("mypy", *args)
-    if not session.posargs:
-        session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
+    # run mypy on noxfile.py ?  why?
+    # if not session.posargs:
+    #    session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
 @session(python=python_versions)
 def tests(session: Session) -> None:
     """Run the test suite."""
-    pyproject = nox.project.load_toml("pyproject.toml")
-    session.install(".")
-    session.install(*nox.project.dependency_groups(pyproject, "test"))
+    # pyproject = nox.project.load_toml("pyproject.toml")
+    # session.install(".")
+    # session.install(*nox.project.dependency_groups(pyproject, "test"))
+    # if _should_install_imas(session.python):
+    #    session.install(*nox.project.dependency_groups(pyproject, "imas"))
+    # session.install("coverage[toml]", "pytest", "pygments")
+    # try:
+    #    session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
+    # finally:
+    #    if session.interactive:
+    #        session.notify("coverage", posargs=[])
     if _should_install_imas(session.python):
-        session.install(*nox.project.dependency_groups(pyproject, "imas"))
-    session.install("coverage[toml]", "pytest", "pygments")
+        session.run(
+            "uv",
+            "sync",
+            "--group",
+            "test",
+            "--group",
+            "test_imas",
+            "--python",
+            session.python,
+            env={"UV_PROJECT_ENVIRONMENT": session.virtualenv.location},
+            external=True,
+        )
+    else:
+        session.run(
+            "uv",
+            "sync",
+            "--group",
+            "test",
+            "--python",
+            session.python,
+            env={"UV_PROJECT_ENVIRONMENT": session.virtualenv.location},
+            external=True,
+        )
+
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
     finally:
@@ -223,5 +254,5 @@ def docs(session: nox.Session) -> None:
 
 
 def _should_install_imas(python_version: Any) -> bool:
-    # IMAS-Python doesn't yet support Python 3.13
-    return python_version != "3.13" and os.getenv("INSTALL_IMAS", "1") == "1"
+    # IMAS-Python doesn't yet support Python 3.14
+    return python_version < "3.14" and os.getenv("INSTALL_IMAS", "1") == "1"

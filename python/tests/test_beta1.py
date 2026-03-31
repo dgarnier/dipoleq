@@ -75,6 +75,7 @@ def test_yaml_new() -> None:
     m1 = Machine.from_yaml(data_dir / "beta1.yaml")
     m2 = Machine.from_fileinput(data_dir / "beta1.in")
     m1.Iname = m2.Iname = "test"
+    m1.Name = m2.Name = "test"
     assert m1 == m2
 
 

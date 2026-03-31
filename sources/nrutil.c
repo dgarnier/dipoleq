@@ -55,7 +55,7 @@ void          nrinfo(char error_text[])
 	IDL_Message(IDL_M_GENERIC, IDL_MSG_INFO, error_text);
 }
 #else
-#ifdef PYBIND11
+#if defined(PYBIND11) || defined(NANOBIND)
 /* don't define nrerror here.. */
 //#include <stdexcept>
 //void          nrerror(const char error_text[])

@@ -12,7 +12,7 @@ from .util import ArrayN2, add_method, is_polygon_clockwise, segments_to_polygon
 # will re-export extensions to these core classes
 # this is only necessary if including from this file
 # but its not necessary to do that since __init__.py will
-__all__ = ["Machine", "Limiters", "Separatrix"]
+__all__ = ["Limiters", "Machine", "Separatrix"]
 
 
 @add_method(Machine)
@@ -65,9 +65,7 @@ def __repr__(sep: Separatrix) -> str:
             f"<X-point: {sep.Name} Psi: {sep.Psi:.3f}, "
             f"Rs: {sep.Rs:.3f}, Zs: {sep.Zs:.3f}>"
         )
-    return (
-        f"<X-point: {sep.Name} Enabled: {sep.Enabled}, " f"Found: {sep.IsSeparatrix}>"
-    )
+    return f"<X-point: {sep.Name} Enabled: {sep.Enabled}, Found: {sep.IsSeparatrix}>"
 
 
 @add_method(Limiters)
@@ -77,7 +75,7 @@ def olim_outline(lims: Limiters) -> ArrayN2:
     and arranged in a clockwise fashion.
     """
     olim = np.array(
-        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in lims if lim.Enabled > 0]  # type: ignore[attr-defined]
+        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in lims if lim.Enabled > 0]
     )
     outline = segments_to_polygon(olim)
     return outline if is_polygon_clockwise(outline) else np.flipud(outline)
@@ -90,7 +88,7 @@ def ilim_outline(lims: Limiters) -> ArrayN2:
     and arranged in a counter-clockwise fashion.
     """
     ilim = np.array(
-        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in lims if lim.Enabled < 0]  # type: ignore[attr-defined]
+        [[[lim.R1, lim.Z1], [lim.R2, lim.Z2]] for lim in lims if lim.Enabled < 0]
     )
     outline = segments_to_polygon(ilim)
     return outline if not is_polygon_clockwise(outline) else np.flipud(outline)
