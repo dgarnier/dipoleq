@@ -22,29 +22,30 @@ if(BUILD_USE_NANOBIND)
     )
 
     # nanobind has cmake stub generation command
-    nanobind_add_stub(
-        core_stub
-        MODULE core
-        OUTPUT core.pyi
-        MARKER_FILE py.typed
-        PATTERN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/nb_stub_fixes.txt"
-        PYTHON_PATH $<TARGET_FILE_DIR:core>
-        DEPENDS core
-        COMPONENT stub
-    )
-    add_dependencies(core_stub core)
-
-    install(TARGETS core LIBRARY DESTINATION dipoleq)
-    install(FILES $<TARGET_FILE_DIR:core>/core.pyi $<TARGET_FILE_DIR:core>/py.typed DESTINATION dipoleq)
-
-    # enable typeguard and other debugging by putting in local area
     if(NOT WIN32)
+        nanobind_add_stub(
+            core_stub
+            MODULE core
+            OUTPUT core.pyi
+            MARKER_FILE py.typed
+            PATTERN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/nb_stub_fixes.txt"
+            PYTHON_PATH $<TARGET_FILE_DIR:core>
+            DEPENDS core
+            COMPONENT stub
+        )
+        add_dependencies(core_stub core)
+
+        install(FILES $<TARGET_FILE_DIR:core>/py.typed $<TARGET_FILE_DIR:core>/core.pyi DESTINATION dipoleq)
+
+        # enable typeguard and other debugging by putting in local area
         add_custom_command(TARGET core_stub POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy
                 $<TARGET_FILE:core> $<TARGET_FILE_DIR:core>/core.pyi $<TARGET_FILE_DIR:core>/py.typed
                 ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
             COMMENT "Copying core build to source.\n"
         )
+    else() # win32 builder has ordering issues, so don't generate typing
+        add_custom_target(core_stub COMMAND ${CMAKE_COMMAND} -E echo "Skipping stub generation...")
     endif()
 
 
