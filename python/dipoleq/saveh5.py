@@ -61,7 +61,7 @@ def save_flux_functions(flux: Group, m: Machine) -> None:
     # create flux dimensions
     pl = m.Plasma
     if pl.PsiX_pr is not None:  # if this exists the rest should too
-        dimp = flux.create_dataset(DS_NAME.DIMX_NAME, data=pl.PsiX_pr)
+        dimp = flux.create_dataset(DS_NAME.PSIX_NAME, data=pl.PsiX_pr)
         dimp.attrs["UNITS"] = "1"
         dimp.make_scale("Normalized Magnetic Flux")
 
