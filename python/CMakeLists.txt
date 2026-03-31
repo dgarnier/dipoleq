@@ -32,6 +32,7 @@ if(BUILD_USE_NANOBIND)
         DEPENDS core
         COMPONENT stub
     )
+    add_dependencies(core_stub core)
 
     install(TARGETS core LIBRARY DESTINATION dipoleq)
     install(FILES $<TARGET_FILE_DIR:core>/core.pyi $<TARGET_FILE_DIR:core>/py.typed DESTINATION dipoleq)
