@@ -2,11 +2,17 @@
 Map to OMAS data structures, a open-source implementation of IMAS.
 """
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+
+# work around omas bug on windows
+if os.environ.get("HOME") is None:
+    os.environ["HOME"] = str(Path("~").expanduser())  # os.path.expanduser("~")
+
 from omas import ODS  # type: ignore[import-untyped]
 
 from .mas import DS, fill_ds, mas_input_params
