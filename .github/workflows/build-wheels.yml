@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
-      - 'test-*'
+      - "v*"
+      - "test-*"
 
 jobs:
   build_wheels:
@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
+        # macos-15-intel is an intel runner, macos-14 is apple silicon
+        os: [ubuntu-latest, windows-latest, macos-14, macos-15-intel]
 
     steps:
       - uses: actions/checkout@v6
