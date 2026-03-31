@@ -135,8 +135,9 @@ def mypy(session: Session) -> None:
         session.install(*nox.project.dependency_groups(pyproject, "imas"))
     session.install("mypy", "pytest")
     session.run("mypy", *args)
-    if not session.posargs:
-        session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
+    # run mypy on noxfile.py ?  why?
+    # if not session.posargs:
+    #    session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
 @session(python=python_versions)

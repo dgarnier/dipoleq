@@ -761,11 +761,12 @@ NB_MODULE(core, m) {
         .def("__len__",    [](ObjVecView<LIMITER> &s){ return s.size(); })
         .def("__getitem__",
             [](ObjVecView<LIMITER> &s, size_t i) -> LIMITER * { return s[i]; },
+            nb::sig("def __getitem__(self, arg: int) -> Limiter | None"),
             nb::rv_policy::reference)
         .def("__setitem__",
             [](ObjVecView<LIMITER> &s, size_t i, LIMITER *l){ s[i] = l; })
         .def("new_limiter",
-            [](ObjVecView<LIMITER> &) -> LIMITER * { return new_Limiter(); },
+            [](ObjVecView<LIMITER> &s) -> LIMITER * { return new_Limiter(); },
             nb::rv_policy::reference, "Add a new limiter")
         .def("__iter__", [](const ObjVecView<LIMITER> &v) {
                      return nb::make_iterator(nb::type<ObjVecView<LIMITER>>(),
@@ -777,6 +778,7 @@ NB_MODULE(core, m) {
         .def("__len__",    [](ObjVecView<SEPARATRIX> &s){ return s.size(); })
         .def("__getitem__",
             [](ObjVecView<SEPARATRIX> &s, size_t i) -> SEPARATRIX * { return s[i]; },
+            nb::sig("def __getitem__(self, arg: int) -> Separatrix | None"),
             nb::rv_policy::reference)
         .def("__setitem__",
             [](ObjVecView<SEPARATRIX> &s, size_t i, SEPARATRIX *p){ s[i] = p; })
@@ -793,6 +795,7 @@ NB_MODULE(core, m) {
         .def("__len__",    [](ObjVecView<MEAS> &s){ return s.size(); })
         .def("__getitem__",
             [](ObjVecView<MEAS> &s, size_t i) -> MEAS * { return s[i]; },
+            nb::sig("def __getitem__(self, arg: int) -> Measure | None"),
             nb::rv_policy::reference)
         .def("__setitem__",
             [](ObjVecView<MEAS> &s, size_t i, MEAS *p){ s[i] = p; })
@@ -816,10 +819,10 @@ NB_MODULE(core, m) {
         .def("new_shell",
             [](ObjVecView<SHELL> &s) -> SHELL * { return new_Shell(0, s.m_machine); },
             nb::rv_policy::reference, "Add a new shell")
-        // .def("__iter__", [](const ObjVecView<SHELL> &v) {
-        //             return nb::make_iterator(nb::type<ObjVecView<SHELL>>(),
-        //                 "iterator", v.begin(), v.end());
-        //         }, nb::keep_alive<0, 1>())
+        .def("__iter__", [](const ObjVecView<SHELL> &v) {
+                    return nb::make_iterator(nb::type<ObjVecView<SHELL>>(),
+                        "iterator", v.begin(), v.end());
+                }, nb::keep_alive<0, 1>())
     ;
 
     // ── Machine (NbMachine) ───────────────────────────────────────────────────

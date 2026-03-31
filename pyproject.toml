@@ -177,9 +177,7 @@ files = ["python/dipoleq/*.py"]
 strict = true
 warn_unreachable = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
-plugins = ["numpy.typing.mypy_plugin"]
-exclude = ['^noxfile\.py$',
-           'python/dev/*.py$']
+exclude = ["noxfile.py", "python/dev/*.py"]
 
 [[tool.mypy.overrides]]
 module = "freeqdsk"

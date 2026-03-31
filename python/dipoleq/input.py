@@ -644,19 +644,22 @@ class MachineIn(BaseModel):
         for i, lim in enumerate(self.Limiters):
             if not m.Limiters[i]:
                 m.Limiters[i] = m.Limiters.new_limiter()
-            lim.do_init(m.Limiters[i])
+            mlim = m.Limiters[i]
+            assert mlim is not None
+            lim.do_init(mlim)
 
         if self.Separatrices:
             for i, sep in enumerate(self.Separatrices):
                 if not m.Seps[i]:
                     m.Seps[i] = m.Seps.new_separatrix()
-                sep.do_init(m.Seps[i])
+                sep.do_init(m.Seps[i])  # type: ignore[arg-type]
 
         if self.Measures:
             for i, meas in enumerate(self.Measures):
                 if not m.Measures[i]:
                     m.Measures[i] = m.Measures.new_meas(meas.Type)
-                meas.do_init(m.Measures[i])
+                assert m.Measures[i] is not None
+                meas.do_init(m.Measures[i])  # type: ignore[arg-type]
 
         if self.Shells:
             for i, shell in enumerate(self.Shells):

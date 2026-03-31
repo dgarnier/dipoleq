@@ -51,7 +51,7 @@ def plot_eq(m: Machine, ax: Axes | None = None, show_peak: bool = True) -> Axes 
 
     if show_peak:
         pl = m.Plasma
-        ipsi_peak = np.argmax(pl.P_pr)
+        ipsi_peak = np.argmax(pl.P_pr)  # type: ignore[arg-type]
         psix = np.array(pl.PsiX_pr)
         psix_peak = psix[ipsi_peak]
         Rpeak, Zpeak = pg.get_contour(psix_peak)

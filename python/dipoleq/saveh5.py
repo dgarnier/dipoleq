@@ -32,7 +32,7 @@ def _save_0D(loc: Group, name: str, units: str, data: float) -> Dataset:
 
 
 def _save_1D(
-    loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike
+    loc: Group, name: str, units: str, dim: Dataset, data: ArrayLike | None
 ) -> Dataset:
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
@@ -42,7 +42,12 @@ def _save_1D(
 
 
 def _save_2D(
-    loc: Group, name: str, units: str, scl_r: Dataset, scl_z: Dataset, data: ArrayLike
+    loc: Group,
+    name: str,
+    units: str,
+    scl_r: Dataset,
+    scl_z: Dataset,
+    data: ArrayLike | None,
 ) -> Dataset:
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)

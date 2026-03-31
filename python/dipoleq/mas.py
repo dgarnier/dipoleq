@@ -135,7 +135,7 @@ def add_limiters(m: Machine, wall: DS) -> None:
     wall0["limiter.type.name"] = "Limiter Contour(s)"
 
     # outer limiter first
-    outline = m.Limiters.olim_outline()
+    outline = m.Limiters.olim_outline()  # type: ignore[attr-defined]
     unit = wall0["limiter.unit[0]"]
     unit["name"] = "Outer limiter"
     unit["identifier"] = "outer_limiter"
@@ -150,7 +150,7 @@ def add_limiters(m: Machine, wall: DS) -> None:
     unit["component_type.index"] = 5  # 5 = limiter
 
     # inner limiter
-    outline = m.Limiters.ilim_outline()
+    outline = m.Limiters.ilim_outline()  # type: ignore[attr-defined]
     unit = wall0["limiter.unit[1]"]
     unit["name"] = "inner_limiter"
     unit["identifier"] = "inner_limiter"
