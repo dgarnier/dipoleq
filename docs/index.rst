@@ -14,6 +14,7 @@
 
    dipoleq
    core
+   input
 
 
 Indices and tables

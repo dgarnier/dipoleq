@@ -1,8 +1,6 @@
 [build-system]
 requires = [
     "scikit-build-core",
-#    "pybind11",
-#    "pybind11-stubgen",
     "nanobind",
     "numpy",
     "setuptools_scm",
@@ -46,15 +44,14 @@ dipoleq = "dipoleq.main_cli:main"
 
 #[project.optional-dependencies]
 [dependency-groups]
-test = ["pytest", "matplotlib", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@python-3.10-allowed",
-        "omas", "json2xml", "typeguard", "coverage"]
+test = ["pytest", "matplotlib", "omas", "json2xml", "typeguard", "coverage[toml]"]
+mypy = ["mypy", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@v0.2.0-py310.1"]
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
+typeguard = ["typeguard", "pygments"]
 dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml",
-       "nox >= 2025.02.09",
        "numpy", "omas", "pyyaml", "nanobind",
-       "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade",
-       "typeguard"]
-test_imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]
+       "nox >= 2025.02.09", "nox-uv",
+       "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade"]
 dev_pybind11 = ["pybind11", "pybind11-stubgen"]
 docs = ["sphinx<8", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
         "autodoc_pydantic", "numpy"]
