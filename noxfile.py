@@ -128,13 +128,12 @@ def precommit(session: Session) -> None:
 
 @session(
     python=python_versions,
-    uv_groups=["test", "mypy"],
 )
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or ["python/dipoleq"]
 
-    groups = ["test, mypy"]
+    groups = ["test", "mypy"]
     if _should_install_imas(session.python):
         groups.append("imas")
 
