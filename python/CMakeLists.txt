@@ -36,6 +36,16 @@ if(BUILD_USE_NANOBIND)
     install(TARGETS core LIBRARY DESTINATION dipoleq)
     install(FILES $<TARGET_FILE_DIR:core>/core.pyi $<TARGET_FILE_DIR:core>/py.typed DESTINATION dipoleq)
 
+    # enable typeguard and other debugging by putting in local area
+    if(NOT WIN32)
+        add_custom_command(TARGET core_stub POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                $<TARGET_FILE:core> $<TARGET_FILE_DIR:core>/core.pyi $<TARGET_FILE_DIR:core>/py.typed
+                ${CMAKE_CURRENT_SOURCE_DIR}/dipoleq
+            COMMENT "Copying core build to source.\n"
+        )
+    endif()
+
 
 else()
     # ── pybind11 binding ─────────────────────────────────────────────────────
