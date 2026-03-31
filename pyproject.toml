@@ -161,6 +161,7 @@ ignore = [
   "PLR09",    # Too many <...>
   "PLR2004",  # Magic comparison
   "ISC001",   # Conflicts with formatter
+  "PLC0415"   # imports not at top
 ]
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["T20"]
