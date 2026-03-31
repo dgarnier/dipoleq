@@ -85,7 +85,7 @@ build-dir = "build/{wheel_tag}"
 BUILD_PYTHON_BINDINGS = "ON"
 BUILD_CLI = "OFF"
 BUILD_USE_NANOBIND = "ON"
-CMAKE_OSX_DEPLOYMENT_TARGET = "11"  # macOS 11 Monterey
+CMAKE_OSX_DEPLOYMENT_TARGET = "10.15"  # macOS 10.15 Catalina
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.setuptools_scm"
