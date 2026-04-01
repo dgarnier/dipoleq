@@ -12,8 +12,6 @@ import importlib.metadata
 import os
 from pathlib import Path
 
-import sphinx_rtd_theme
-
 # Define the canonical URL if you are using a custom domain on Read the Docs
 html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
 
@@ -24,7 +22,7 @@ if os.environ.get("READTHEDOCS", "") == "True":
     html_context["READTHEDOCS"] = True
 
 project = "DipolEq"
-copyright = "2024, Darren Garnier"
+copyright = "2026, Darren Garnier"
 author = "Darren Garnier"
 version = release = importlib.metadata.version("dipoleq")
 
@@ -63,7 +61,7 @@ autodoc_pydantic_settings_show_json = False
 
 # html_theme = "pydata_sphinx_theme"
 html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # html_theme = ""
 # html_static_path = ["_static"]
 

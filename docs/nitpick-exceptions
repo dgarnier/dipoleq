@@ -9,11 +9,13 @@ py:class numpy.float64
 # pydantic inherited docstrings
 py:obj dipoleq.input.MachineIn.check_numbers
 py:obj dipoleq.input.MachineIn.all fields
-py:obj dipoleq.input.MachineIn.*
+# py:obj dipoleq.input.MachineIn.*
 py:class pydantic.main.BaseModel
+py:obj dipoleq.input.PlasmaModelOld.all fields
+py:obj dipoleq.input.CoilIn.all fields
 
 # typing
-py:class Self
+py:class typing.Self
 
 # pybind11 missing reference
 # py:class tokamak
