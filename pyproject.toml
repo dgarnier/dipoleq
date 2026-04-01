@@ -44,7 +44,6 @@ dipoleq = "dipoleq.main_cli:main"
 
 [project.optional-dependencies]
 omas = ["omas", "json2xml"]
-#imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]
 
 [dependency-groups]
 test = ["pytest", "matplotlib", "omas", "json2xml", "typeguard", "coverage[toml]"]
