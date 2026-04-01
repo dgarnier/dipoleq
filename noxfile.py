@@ -7,12 +7,14 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Any
 
-import nox
-from nox import Session, session
+from nox import Session, options
+from nox_uv import session
+
+options.default_venv_backend = "uv"
 
 package = "dipoleq"
 python_versions = ["3.13", "3.12", "3.11", "3.10"]
-nox.options.sessions = (
+options.sessions = (
     "pre-commit",
     "mypy",
     "tests",
@@ -124,16 +126,22 @@ def precommit(session: Session) -> None:
         activate_virtualenv_in_precommit_hooks(session)
 
 
-@session(python=python_versions)
+@session(
+    python=python_versions,
+)
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or ["python/dipoleq"]
-    pyproject = nox.project.load_toml("pyproject.toml")
-    session.install(".")
-    session.install(*nox.project.dependency_groups(pyproject, "test"))
+
+    groups = ["test", "mypy"]
     if _should_install_imas(session.python):
-        session.install(*nox.project.dependency_groups(pyproject, "imas"))
-    session.install("mypy", "pytest")
+        groups.append("imas")
+
+    install_cmd = ["uv", "sync", "--python", session.python]
+    for group in groups:
+        install_cmd.extend(["--group", group])
+    session.run(*install_cmd)
+
     session.run("mypy", *args)
     # run mypy on noxfile.py ?  why?
     # if not session.posargs:
@@ -143,41 +151,17 @@ def mypy(session: Session) -> None:
 @session(python=python_versions)
 def tests(session: Session) -> None:
     """Run the test suite."""
-    # pyproject = nox.project.load_toml("pyproject.toml")
-    # session.install(".")
-    # session.install(*nox.project.dependency_groups(pyproject, "test"))
-    # if _should_install_imas(session.python):
-    #    session.install(*nox.project.dependency_groups(pyproject, "imas"))
-    # session.install("coverage[toml]", "pytest", "pygments")
-    # try:
-    #    session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
-    # finally:
-    #    if session.interactive:
-    #        session.notify("coverage", posargs=[])
+
+    groups = ["test"]
     if _should_install_imas(session.python):
-        session.run(
-            "uv",
-            "sync",
-            "--group",
-            "test",
-            "--group",
-            "test_imas",
-            "--python",
-            session.python,
-            env={"UV_PROJECT_ENVIRONMENT": session.virtualenv.location},
-            external=True,
-        )
-    else:
-        session.run(
-            "uv",
-            "sync",
-            "--group",
-            "test",
-            "--python",
-            session.python,
-            env={"UV_PROJECT_ENVIRONMENT": session.virtualenv.location},
-            external=True,
-        )
+        groups.append("imas")
+
+    install_cmd = ["uv", "sync", "--python", session.python]
+    for group in groups:
+        install_cmd.extend(["--group", group])
+
+    session.run(*install_cmd)
+    # , env={"UV_PROJECT_ENVIRONMENT": session.virtualenv.location}, external=True
 
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
@@ -186,12 +170,10 @@ def tests(session: Session) -> None:
             session.notify("coverage", posargs=[])
 
 
-@session(python="3.12")
+@session(python="3.12", uv_groups=["test"], uv_no_install_project=True)
 def coverage(session: Session) -> None:
     """Produce the coverage report."""
     args = session.posargs or ["report"]
-
-    session.install("coverage[toml]")
 
     if not session.posargs and any(Path().glob(".coverage.*")):
         session.run("coverage", "combine")
@@ -202,17 +184,21 @@ def coverage(session: Session) -> None:
 @session(python=python_versions)
 def typeguard(session: Session) -> None:
     """Runtime type checking using Typeguard."""
-    pyproject = nox.project.load_toml("pyproject.toml")
-    session.install(".")
-    session.install(*nox.project.dependency_groups(pyproject, "test"))
+    groups = ["test", "typeguard"]
     if _should_install_imas(session.python):
-        session.install(*nox.project.dependency_groups(pyproject, "imas"))
-    session.install("pytest", "typeguard", "pygments")
+        groups.append("imas")
+
+    install_cmd = ["uv", "sync", "--python", session.python]
+    for group in groups:
+        install_cmd.extend(["--group", group])
+
+    session.run(*install_cmd)
+
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 
 
-@nox.session(reuse_venv=True)
-def docs(session: nox.Session) -> None:
+@session(uv_groups=["docs"], reuse_venv=True)
+def docs(session: Session) -> None:
     """
     Build the docs. Pass "--serve" to serve. Pass "-b linkcheck" to check links.
     """
@@ -227,9 +213,7 @@ def docs(session: nox.Session) -> None:
     if args.builder != "html" and args.serve:
         session.error("Must not specify non-HTML builder with --serve")
 
-    extra_installs = ["sphinx-autobuild"] if args.serve else []
-
-    session.install("-e.[docs]", *extra_installs)
+    # session.install("-e.[docs]", *extra_installs)
     session.chdir("docs")
 
     if args.builder == "linkcheck":
