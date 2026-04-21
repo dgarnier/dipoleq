@@ -13,7 +13,7 @@ import numpy as np
 if os.environ.get("HOME") is None:
     os.environ["HOME"] = str(Path("~").expanduser())  # os.path.expanduser("~")
 
-from omas import ODS  # type: ignore[import-untyped]
+from omas import ODS, omas_environment  # type: ignore[import-untyped]
 
 from .mas import DS, fill_ds, mas_input_params
 from .omas_dipole_extras import add_inner_boundary_to_omas
