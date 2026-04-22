@@ -236,7 +236,7 @@ def add_inner_boundary_separatrix(m: Machine, ts: DS) -> None:
         bsep["active_limiter_point.z"] = active_point[1]
 
 
-def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int | None, time: float) -> None:
+def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int | None, time: float,enforce_boundary_import=True) -> None:
     """Add all the equilibrim and wall information from a DipolEQ Machine
     into the equilibrium and wall data structures.
     """
@@ -303,6 +303,17 @@ def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int | None, time: float) -
     # eq2d['phi']   # the toroidal flux
 
     # boundaries
-    add_boundary(m, eqt)
-    add_boundary_separatrix(m, eqt)
-    add_inner_boundary_separatrix(m, eqt)
+    if enforce_boundary_import: 
+        add_boundary(m, eqt)
+        add_boundary_separatrix(m, eqt)
+        add_inner_boundary_separatrix(m, eqt)
+    else:
+        try:
+            add_boundary(m, eqt)
+            add_boundary_separatrix(m, eqt)
+            add_inner_boundary_separatrix(m, eqt)
+        except:
+            print("Cannot load boundaries from eq in omas")
+        
+            
+        

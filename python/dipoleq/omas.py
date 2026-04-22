@@ -99,11 +99,11 @@ def prepare_omas_ds(ods: ODS | None) -> tuple[ODS, DS, DS]:
 
 
 def to_omas(
-    m: Machine, ods: ODS | None = None, time_index: int | None = None, time: float = 0.0
+    m: Machine, ods: ODS | None = None, time_index: int | None = None, time: float = 0.0, **kwargs
 ) -> ODS:
     """Add the equilibrium data to an OMAS data structure."""
     ods, eq, wall = prepare_omas_ds(ods)
 
-    fill_ds(m, eq, wall, time_index, time)
+    fill_ds(m, eq, wall, time_index, time, **kwargs)
 
     return ods
