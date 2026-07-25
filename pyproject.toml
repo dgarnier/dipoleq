@@ -84,7 +84,10 @@ build-dir = "build/{wheel_tag}"
 BUILD_PYTHON_BINDINGS = "ON"
 BUILD_CLI = "OFF"
 BUILD_USE_NANOBIND = "ON"
-CMAKE_OSX_DEPLOYMENT_TARGET = "10.15"  # macOS 10.15 Catalina
+# macOS deployment target comes from the MACOSX_DEPLOYMENT_TARGET environment
+# variable (set per-arch in [tool.cibuildwheel] below); hardcoding
+# CMAKE_OSX_DEPLOYMENT_TARGET=10.15 here mis-tagged local arm64 wheels as
+# macosx_10_15_arm64, which is invalid (arm64 requires macOS >= 11).
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.setuptools_scm"
@@ -124,7 +127,11 @@ archs = ["auto64"]
 archs = ["auto64"]
 
 [tool.cibuildwheel.macos.environment]
-MACOSX_DEPLOYMENT_TARGET = "10.15"
+MACOSX_DEPLOYMENT_TARGET = "10.15"  # macOS 10.15 Catalina (x86_64)
+
+[[tool.cibuildwheel.overrides]]
+select = "*-macosx_arm64"
+environment = { MACOSX_DEPLOYMENT_TARGET = "11.0" }  # arm64 minimum
 
 [tool.ruff]
 force-exclude = true  # make sure we exclude below when running pre-commit
