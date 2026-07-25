@@ -169,10 +169,10 @@ class Machine(core.Machine):
             self,
             ods: omas.ODS | None = None,
             time_index: int | None = None,
-            time: float = 0.0,
+            time: float = 0.0, **kwargs
         ) -> omas.ODS:
             """Convert the machine data to an OMAS ODS"""
-            return omas.to_omas(self, ods=ods, time_index=time_index, time=time)
+            return omas.to_omas(self, ods=ods, time_index=time_index, time=time, **kwargs)
 
     if "imas" in globals():
 
