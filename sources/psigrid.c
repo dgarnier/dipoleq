@@ -147,12 +147,19 @@ void          free_PsiGrid(PSIGRID * pg)
 
 	n = pg->Nsize;
 
-	free_dvector(pg->X, 0, n);
-	free_dvector(pg->Z, 0, n);
-	free_imatrix(pg->IsPlasma, 0, n, 0, n);
-	free_dmatrix(pg->Psi, 0, n, 0, n);
-	free_dmatrix(pg->Current, 0, n, 0, n);
-	free_dmatrix(pg->Residual, 0, n, 0, n);
+	/* arrays are NULL until init_PsiGrid is called */
+	if (pg->X)
+		free_dvector(pg->X, 0, n);
+	if (pg->Z)
+		free_dvector(pg->Z, 0, n);
+	if (pg->IsPlasma)
+		free_imatrix(pg->IsPlasma, 0, n, 0, n);
+	if (pg->Psi)
+		free_dmatrix(pg->Psi, 0, n, 0, n);
+	if (pg->Current)
+		free_dmatrix(pg->Current, 0, n, 0, n);
+	if (pg->Residual)
+		free_dmatrix(pg->Residual, 0, n, 0, n);
 
 	free(pg);
 }
