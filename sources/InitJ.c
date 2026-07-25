@@ -47,9 +47,9 @@ extern FILE  *LogFile;
 ** it exactly as in Eq. 7 of Johnson, et al.
 **
 ** In other words,
-**  Æ*Psi = 2piX J(x,z)
+**  âˆ†*Psi = 2piX J(x,z)
 ** and
-**  J(x,z) = -2pi*(X ¶p/¶Psi + ((R0*B0)^2/2X)*¶g^2/¶Psi)
+**  J(x,z) = -2pi*(X âˆ‚p/âˆ‚Psi + ((R0*B0)^2/2X)*âˆ‚g^2/âˆ‚Psi)
 **
 **
 */
