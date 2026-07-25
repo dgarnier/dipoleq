@@ -51,10 +51,11 @@ mypy = ["mypy", "h5py-stubs @ git+https://github.com/dgarnier/h5py-stubs@v0.2.0-
 wheels = ["cmake", "ninja; sys_platform!='win32'"]
 typeguard = ["typeguard", "pygments"]
 dev = ["scikit-build-core >= 0.11", "cibuildwheel", "wheel", "build", "json2xml",
-       "numpy", "omas", "pyyaml", "nanobind",
-       "nox >= 2025.02.09", "nox-uv",
-       "toml-to-requirements", "pre-commit", "matplotlib >=3.8.0", "pyupgrade"]
-docs = ["sphinx<8", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
+       "numpy", "matplotlib", "omas",
+       "pyyaml", "nanobind",
+       "nox >= 2026", "nox-uv",
+       "pre-commit", "pyupgrade"]
+docs = ["sphinx", "sphinx-rtd-theme", "omas", "myst-parser", "sphinx-autodoc-typehints", "sphinx-copybutton",
         "autodoc_pydantic", "numpy"]
 omas = ["omas", "json2xml"]
 imas = ["imas-python", "dipmas @ git+ssh://git@github.com/openstarnz/dipmas", "json2xml"]

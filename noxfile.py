@@ -197,7 +197,7 @@ def typeguard(session: Session) -> None:
     session.run("pytest", f"--typeguard-packages={package}", *session.posargs)
 
 
-@session(uv_groups=["docs"], reuse_venv=True)
+@session(uv_groups=["docs"], python="3.12")
 def docs(session: Session) -> None:
     """
     Build the docs. Pass "--serve" to serve. Pass "-b linkcheck" to check links.
