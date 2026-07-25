@@ -39,7 +39,7 @@ jobs:
       #    ssh-private-key: ${{ secrets.DIPMAS_DEPLOY_KEY }}
 
       - name: Check out the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -82,7 +82,7 @@ jobs:
               print(f"result={result}", file=io)
 
       - name: Restore pre-commit cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         if: matrix.session == 'pre-commit'
         with:
           path: ~/.cache/pre-commit
@@ -115,7 +115,7 @@ jobs:
     needs: tests
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -141,6 +141,6 @@ jobs:
           uv run nox --session=coverage -- xml
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
