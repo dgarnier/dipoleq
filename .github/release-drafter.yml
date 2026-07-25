@@ -1,28 +1,51 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
 categories:
   - title: ":boom: Breaking Changes"
-    label: "breaking"
+    semver-increment: major
+    when:
+      label: "breaking"
   - title: ":rocket: Features"
-    label: "enhancement"
+    semver-increment: minor
+    when:
+      label: "enhancement"
   - title: ":fire: Removals and Deprecations"
-    label: "removal"
+    semver-increment: minor
+    when:
+      label: "removal"
   - title: ":beetle: Fixes"
-    label: "bug"
+    when:
+      label: "bug"
   - title: ":racehorse: Performance"
-    label: "performance"
+    when:
+      label: "performance"
   - title: ":rotating_light: Testing"
-    label: "testing"
+    when:
+      label: "testing"
   - title: ":construction_worker: Continuous Integration"
-    label: "ci"
+    when:
+      labels:
+        - "ci"
+        - "github_actions"
   - title: ":books: Documentation"
-    label: "documentation"
+    when:
+      label: "documentation"
   - title: ":hammer: Refactoring"
-    label: "refactoring"
+    when:
+      label: "refactoring"
   - title: ":lipstick: Style"
-    label: "style"
+    when:
+      label: "style"
   - title: ":package: Dependencies"
-    labels:
-      - "dependencies"
-      - "build"
+    when:
+      labels:
+        - "dependencies"
+        - "build"
+  # everything else still bumps the patch version
+  - type: "version-resolver"
+    semver-increment: "patch"
+change-template: "- $TITLE (#$NUMBER) $AUTHORS"
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 template: |
   ## Changes
 
