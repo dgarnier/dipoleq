@@ -197,9 +197,9 @@ double        GetIsPlasma(PSIGRID * pg, double x, double z)
 |#
 |# The residual is the difference between
 |#
-|# Æ*^2(Psi) = + 2pi x ( J(x,z) + Res(x,z) ).
+|# âˆ†*^2(Psi) = + 2pi x ( J(x,z) + Res(x,z) ).
 |# or
-|# Æ*^2(Psi)/2piX - J(x,z) = Res(x,z).
+|# âˆ†*^2(Psi)/2piX - J(x,z) = Res(x,z).
 |#
 ***************************************************************/
 void          GetNewResidual(PSIGRID * pg)

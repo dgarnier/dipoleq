@@ -1,6 +1,6 @@
 /*
  *  Hello World for the CodeWarrior
- *  © 1997-1998 Metrowerks Corp.
+ *  Â© 1997-1998 Metrowerks Corp.
  *
  *  Questions and comments to:
  *       <mailto:support@metrowerks.com>
