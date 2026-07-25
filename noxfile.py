@@ -13,7 +13,7 @@ from nox_uv import session
 options.default_venv_backend = "uv"
 
 package = "dipoleq"
-python_versions = ["3.13", "3.12", "3.11", "3.10"]
+python_versions = ["3.14", "3.13", "3.12", "3.11", "3.10"]
 options.sessions = (
     "pre-commit",
     "mypy",
