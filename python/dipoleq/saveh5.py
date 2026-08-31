@@ -52,8 +52,9 @@ def _save_2D(
     arr = np.array(data)
     ds = loc.create_dataset(name, data=arr)
     ds.attrs["UNITS"] = units
-    ds.dims[0].attach_scale(scl_r)
-    ds.dims[1].attach_scale(scl_z)
+    # the core hands these back as [iz][ix], so Z is axis 0
+    ds.dims[0].attach_scale(scl_z)
+    ds.dims[1].attach_scale(scl_r)
     return ds
 
 

@@ -230,3 +230,21 @@ def test_h5_bpol_is_tesla(test_yaml_save: Path) -> None:
     # skip the R -> 0 edge where Bt diverges
     sl = np.s_[5:-5, 5:-5]
     assert br[sl] ** 2 + bz[sl] ** 2 + bt[sl] ** 2 == pytest.approx(b2[sl], rel=1e-6)
+
+
+def test_h5_2d_dimension_scales(test_yaml_save: Path) -> None:
+    # the 2D grid arrays are laid out [Z][R] (see saveh5), so the dimension
+    # scales have to be Z on axis 0 and R on axis 1
+    import h5py
+
+    with h5py.File(test_yaml_save, "r") as h5f:
+        grid = h5f["/Grid"]
+        for name, obj in grid.items():
+            if obj.ndim != 2:
+                continue
+            assert [s[0] for s in obj.dims[0].items()] == ["Z"], name
+            assert [s[0] for s in obj.dims[1].items()] == ["R"], name
+
+        # and the data really is [Z][R]: Psi -> 0 as R -> 0
+        psi = grid["Psi"][()]
+        assert np.abs(psi[:, 0]).max() < 1e-6 * np.abs(psi).max()
