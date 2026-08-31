@@ -141,3 +141,92 @@ def test_dipoleq_is_cocos_11() -> None:
 
 if __name__ == "__main__":
     test_yaml_save(pytest.TempPathFactory())
+
+
+# Expected UNITS attribute for every dataset written by saveh5.
+# Keep this exhaustive: test_h5_units fails on any dataset not listed here,
+# so a new dataset has to declare its units.
+H5_UNITS = {
+    "/Boundaries/FCFS": "m",
+    "/Boundaries/LCFS": "m",
+    "/Boundaries/ilim": "m",
+    "/Boundaries/olim": "m",
+    "/FluxFunctions/B2Ave": "T^2",
+    "/FluxFunctions/BBetaMax": "T",
+    "/FluxFunctions/BMax": "T",
+    "/FluxFunctions/BetaAve": "",
+    "/FluxFunctions/BetaMax": "",
+    "/FluxFunctions/G2prime": "1/Wb",  # d(G^2)/dPsi, G dimensionless
+    "/FluxFunctions/Gpsi": "1",  # G = F / (B0 R0)
+    "/FluxFunctions/JAve": "A/m^2",
+    "/FluxFunctions/PsiNorm": "1",
+    "/FluxFunctions/RBMax": "m",
+    "/FluxFunctions/RBetaMax": "m",
+    "/FluxFunctions/Shear": "",  # d(ln q)/d(PsiNorm)
+    "/FluxFunctions/Vprime": "m^3/Wb",
+    "/FluxFunctions/Vpsi": "m^3",
+    "/FluxFunctions/Well": "",  # differentiated wrt PsiNorm
+    "/FluxFunctions/ZBMax": "m",
+    "/FluxFunctions/ZBetaMax": "m",
+    "/FluxFunctions/pprime": "Pa/Wb",
+    "/FluxFunctions/ppsi": "Pa",
+    "/FluxFunctions/psi": "Wb",
+    "/FluxFunctions/qpsi": "",
+    "/Grid/B2": "T^2",
+    "/Grid/Beta": "",
+    "/Grid/Bp_R": "T",  # Wb/m/m = T
+    "/Grid/Bp_Z": "T",
+    "/Grid/Current": "A/m^2",
+    "/Grid/Pressure": "Pa",
+    "/Grid/Psi": "Wb",
+    "/Grid/R": "m",
+    "/Grid/Residuals": "A/m^2",  # scaled by 1/mu0, same as Current
+    "/Grid/ToroidalFlux": "1",  # G, dimensionless
+    "/Grid/Z": "m",
+    "/Scalars/B0": "T",
+    "/Scalars/Ip": "A",
+    "/Scalars/PsiFCFS": "Wb",
+    "/Scalars/PsiLCFS": "Wb",
+    "/Scalars/PsiMagX": "Wb",
+    "/Scalars/R0": "m",
+    "/Scalars/R0Z0": "T m",  # B0 * R0, the G -> F scale factor
+    "/Scalars/RMagX": "m",
+    "/Scalars/Z0": "m",
+    "/Scalars/ZMagX": "m",
+}
+
+
+def test_h5_units(test_yaml_save: Path) -> None:
+    # every dataset carries UNITS, and they are the expected ones
+    import h5py
+
+    found: dict[str, str] = {}
+
+    def visit(name: str, obj: Any) -> None:
+        if isinstance(obj, h5py.Dataset):
+            units = obj.attrs["UNITS"]
+            found["/" + name] = (
+                units if isinstance(units, str) else units.decode("utf-8")
+            )
+
+    with h5py.File(test_yaml_save, "r") as h5f:
+        h5f.visititems(visit)
+
+    assert found == H5_UNITS
+
+
+def test_h5_bpol_is_tesla(test_yaml_save: Path) -> None:
+    # Bp_R and Bp_Z are fields, not gradients: Bp^2 + Bt^2 must equal B2 [T^2]
+    import h5py
+
+    with h5py.File(test_yaml_save, "r") as h5f:
+        grid = h5f["/Grid"]
+        R = grid["R"][()]
+        br = grid["Bp_R"][()]
+        bz = grid["Bp_Z"][()]
+        bt = grid["ToroidalFlux"][()] * h5f["/Scalars/R0Z0"][()] / R
+        b2 = grid["B2"][()]
+
+    # skip the R -> 0 edge where Bt diverges
+    sl = np.s_[5:-5, 5:-5]
+    assert br[sl] ** 2 + bz[sl] ** 2 + bt[sl] ** 2 == pytest.approx(b2[sl], rel=1e-6)
