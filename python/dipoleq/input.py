@@ -304,9 +304,9 @@ class PlasmaIn(BaseModel):
         pl.B0 = self.B0
         pl.R0 = self.R0
         if self.R0B0:
-            pl.B0R0 = self.R0B0
+            pl.R0B0 = self.R0B0
         else:
-            pl.B0R0 = self.R0 * self.B0
+            pl.R0B0 = self.R0 * self.B0
         if self.Ip0:
             pl.Ip0 = self.Ip0
         if self.NumBndMomts:

@@ -181,8 +181,7 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None) -> None:
         # write 0d plasma data
         _save_0D(scal, DS_NAME.R0_0D, "m", pl.R0)
         _save_0D(scal, DS_NAME.Z0_0D, "m", pl.Z0)
-        # R0B0 to match the input key; pl.B0R0 is the C struct's spelling
-        _save_0D(scal, DS_NAME.R0B0_0D, "m T", pl.B0R0)
+        _save_0D(scal, DS_NAME.R0B0_0D, "m T", pl.R0B0)
         _save_0D(scal, DS_NAME.BT_0D, "T", pl.B0)
         _save_0D(scal, DS_NAME.IP_0D, "A", pl.Ip)
         _save_0D(scal, DS_NAME.PSIAXIS_0D, "Wb", pl.PsiMagAxis)

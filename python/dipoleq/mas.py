@@ -279,9 +279,9 @@ def fill_ds(m: Machine, eq: DS, wall: DS, time_index: int | None, time: float) -
     # 1D quantities
     eq1d = eqt["profiles_1d"]
     eq1d["psi"] = psi
-    eq1d["f"] = np.asarray(pl.G_pr) * pl.B0R0
+    eq1d["f"] = np.asarray(pl.G_pr) * pl.R0B0
     # G2p_pr is d(G^2)/dPsi, so F dF/dPsi picks up a factor of 1/2
-    eq1d["f_df_dpsi"] = np.asarray(pl.G2p_pr) * (pl.B0R0) ** 2 / 2
+    eq1d["f_df_dpsi"] = np.asarray(pl.G2p_pr) * (pl.R0B0) ** 2 / 2
     eq1d["pressure"] = np.array(pl.P_pr)
     eq1d["dpressure_dpsi"] = np.array(pl.Pp_pr)
     eq1d["q"] = np.array(pl.q_pr)
