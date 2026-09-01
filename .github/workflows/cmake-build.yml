@@ -9,10 +9,21 @@ jobs:
   cmake_build_on_ubuntu:
     runs-on: ubuntu-latest
     steps:
+      # The runner image ships an apt index that is stale but younger than the
+      # 5 minutes cache-apt-pkgs-action uses to decide whether to refresh, so
+      # it will not do this for us.  Without it the index names package
+      # versions the mirrors have already dropped and the install 404s.
+      - name: Refresh apt indexes
+        run: sudo apt-get update
       - name: Dependencies
-        uses: daaku/gh-action-apt-install@v4
+        uses: awalsh128/cache-apt-pkgs-action@v1.6.3
         with:
           packages: zlib1g-dev libjpeg-dev libhdf5-dev
+          version: 1.0 # bump to invalidate the package cache
+      # cache-apt-pkgs-action logs install failures but still exits 0, which
+      # turns a missing dependency into a confusing CPM fallback later on.
+      - name: Check dependencies landed
+        run: test -f /usr/include/jpeglib.h && test -f /usr/include/zlib.h
       - name: Checkout on Ubuntu
         uses: actions/checkout@v7
         with:
