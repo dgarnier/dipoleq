@@ -92,7 +92,8 @@ def dipoleq_h5f_to_freeqdsk(
     gdata["sibdry"] = psi[-1]
     gdata["fpol"] = regrid(Flux["Gpsi"][()] * Fscale)
     gdata["pres"] = regrid(Flux["ppsi"][()])  # codespell:ignore pres
-    gdata["ffprime"] = regrid(Flux["G2prime"][()] * Fscale / scale_psi)
+    # G2prime is d(G^2)/dPsi, so FF' picks up a factor of Fscale^2 / 2
+    gdata["ffprime"] = regrid(Flux["G2prime"][()] * Fscale**2 / 2 / scale_psi)
     gdata["pprime"] = regrid(Flux["pprime"][()] / scale_psi)
     gdata["qpsi"] = regrid(Flux["qpsi"][()])
 
