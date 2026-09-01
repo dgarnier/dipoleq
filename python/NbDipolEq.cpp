@@ -364,7 +364,12 @@ NB_MODULE(core, m) {
         .def_rw("Z0",           &PLASMA::Z0,           "Reference vertical position")
         .def_rw("B0",           &PLASMA::B0,           "Vacuum magnetic field at R0, Z0")
         .def_rw("Ip0",          &PLASMA::Ip0,          "initial plasma current")
-        .def_rw("B0R0",         &PLASMA::B0R0,         ":math:`B_0 * R_0`")
+        .def_rw("R0B0",         &PLASMA::B0R0,         ":math:`R_0 * B_0`, the G -> F scale factor")
+        .def_rw("B0R0",         &PLASMA::B0R0,
+            "Deprecated alias for :attr:`R0B0`.\n"
+            "\n"
+            ".. deprecated:: 0.11.2\n"
+            "   Use :attr:`R0B0` instead.")
         .def_rw("Jedge",        &PLASMA::Jedge,        "Edge current density")
         .def_rw("NumBndMomts",  &PLASMA::NumBndMomts,  "Number of moments of boundary to calculate")
         .def_rw("NumPsiPts",    &PLASMA::NumPsiPts,    "Number of normalized psi points to calculate")
