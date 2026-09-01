@@ -173,12 +173,15 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None) -> None:
             grid, DS_NAME.CUR_NAME, "A/m^2", dimr, dimz, np.array(pg.Current) / MU0
         )
         _save_2D(grid, DS_NAME.PSI_NAME, "Wb", dimr, dimz, pg.Psi)
-        _save_2D(grid, DS_NAME.RES_NAME, "Wb", dimr, dimz, np.array(pg.Residual) / MU0)
+        _save_2D(
+            grid, DS_NAME.RES_NAME, "A/m^2", dimr, dimz, np.array(pg.Residual) / MU0
+        )
 
         # write 0d plasma data
         _save_0D(scal, DS_NAME.R0_0D, "m", pl.R0)
         _save_0D(scal, DS_NAME.Z0_0D, "m", pl.Z0)
-        _save_0D(scal, DS_NAME.R0Z0_0D, "m", pl.R0 * pl.Z0)
+        # R0B0 to match the input key; pl.B0R0 is the C struct's spelling
+        _save_0D(scal, DS_NAME.R0B0_0D, "m T", pl.B0R0)
         _save_0D(scal, DS_NAME.BT_0D, "T", pl.B0)
         _save_0D(scal, DS_NAME.IP_0D, "A", pl.Ip)
         _save_0D(scal, DS_NAME.PSIAXIS_0D, "Wb", pl.PsiMagAxis)
@@ -189,9 +192,9 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None) -> None:
         _save_2D(grid, DS_NAME.MODB_NAME, "T^2", dimr, dimz, pl.B2)
         Br = np.array(pl.GradPsiZ) / (2 * np.pi * R)
         Bz = -np.array(pl.GradPsiR) / (2 * np.pi * R)
-        _save_2D(grid, DS_NAME.BpX_NAME, "T/m", dimr, dimz, Br)
-        _save_2D(grid, DS_NAME.BpZ_NAME, "T/m", dimr, dimz, Bz)
-        _save_2D(grid, DS_NAME.TFLUX_NAME, "Wb/R0B0", dimr, dimz, pl.G)
+        _save_2D(grid, DS_NAME.BpX_NAME, "T", dimr, dimz, Br)
+        _save_2D(grid, DS_NAME.BpZ_NAME, "T", dimr, dimz, Bz)
+        _save_2D(grid, DS_NAME.NPOLCUR_NAME, "1", dimr, dimz, pl.G)
 
         match pl.ModelType:
             case MT.Std | MT.DipoleIntStable | MT.DipoleStd | MT.DipoleStablePsiN:
