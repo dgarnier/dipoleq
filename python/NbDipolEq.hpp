@@ -64,8 +64,8 @@ enum class CircleType {
 // ── Array view helpers ────────────────────────────────────────────────────────
 //
 // These return numpy-compatible ndarray views into C-managed memory.
-// The data layout matches the pybind11 version (nrutil "Fortran-order" strides:
-// first index varies fastest).
+// f_contig transposes: nrutil is C row-major, so a C [ix][iz] matrix arrives as
+// numpy [iz][ix].  Deliberate -- saveh5 and h5togeqdsk assume [Z][R].
 //
 // IMPORTANT: The returned array is only valid while the parent C object is alive.
 // The caller is responsible for lifetime management.

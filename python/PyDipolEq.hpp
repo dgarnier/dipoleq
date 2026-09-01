@@ -67,7 +67,7 @@ public:
             2,                                      /* Number of dimensions */
             { m_size, m_size },                 /* Buffer dimensions */
             { sizeof(double) ,            /* Strides (in bytes) for each index */
-              sizeof(double) * m_size }   /* nrutil is fortran order */
+              sizeof(double) * m_size }   /* transposes; see NbDipolEq.hpp */
         );
     }
 
