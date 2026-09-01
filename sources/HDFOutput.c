@@ -424,12 +424,12 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 
 	/* G */
 	MULTI;
-	sds_id = SDcreate(sd_id,TFLUX_NAME,DFNT_FLOAT32,2,dims);
+	sds_id = SDcreate(sd_id,NPOLCUR_NAME,DFNT_FLOAT32,2,dims);
 	SDCHK(sds_id);
 
 	COMPRESS(sds_id);
 
-	status = SDsetdatastrs(sds_id,TFLUX_NAME," ", "F7.4", "cartesian");
+	status = SDsetdatastrs(sds_id,NPOLCUR_NAME," ", "F7.4", "cartesian");
 	SDCHK(status);
 
 	a = AryToFloat32(pl->G, nmax, 1.0);
@@ -604,7 +604,7 @@ void	HDFFluxFuncs(char *Oname, int npts, double *PsiX,
 	SDCHK( sds_id = SDcreate(sd_id,G_1D,DFNT_FLOAT32,1,dim) );
 	SDCHK( dim_id = SDgetdimid(sds_id, 0) );
 	SDCHK( SDsetdimname(dim_id,PSIX_NAME) ); /* use the same psix */
-	SDCHK( SDsetdatastrs(sds_id,"ToroidalFlux","T-m^2","E10.3", "poloidal flux") );
+	SDCHK( SDsetdatastrs(sds_id,"NormPolCurrent","1","E10.3", "poloidal flux") );
 	TO_FLOAT32(G,a,npts);
 	SDCHK( SDwritedata(sds_id,start,NULL,dim,(VOIDP) a) );
 	SDCHK( SDendaccess(sds_id) );

@@ -280,7 +280,7 @@ void          HDFPlasma(PLASMA * pl, PSIGRID * pg, char *Oname)
 	/* G */
 	MULTI;
 	ScaleArray(a, pl->G, nmax, 1.0);
-	HDFWrite2D(a, TFLUX_NAME, "1", g2d, dsp2d, dsc1, dsc2);
+	HDFWrite2D(a, NPOLCUR_NAME, "1", g2d, dsp2d, dsc1, dsc2);
 
 		/* P R E S S U R E */
 	MULTI;

@@ -30,7 +30,7 @@ class DS_NAME(StrEnum):
     MODB_NAME = "B2"
     BpX_NAME = "Bp_R"
     BpZ_NAME = "Bp_Z"
-    TFLUX_NAME = "ToroidalFlux"
+    NPOLCUR_NAME = "NormPolCurrent"  # G = F/(R0 B0)
     PRESS_NAME = "Pressure"
     BETA_NAME = "Beta"
     LCFS_NAME = "LCFS"

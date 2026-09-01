@@ -194,7 +194,7 @@ def save_to_hdf5(m: Machine, filename: str | Path | None = None) -> None:
         Bz = -np.array(pl.GradPsiR) / (2 * np.pi * R)
         _save_2D(grid, DS_NAME.BpX_NAME, "T", dimr, dimz, Br)
         _save_2D(grid, DS_NAME.BpZ_NAME, "T", dimr, dimz, Bz)
-        _save_2D(grid, DS_NAME.TFLUX_NAME, "1", dimr, dimz, pl.G)
+        _save_2D(grid, DS_NAME.NPOLCUR_NAME, "1", dimr, dimz, pl.G)
 
         match pl.ModelType:
             case MT.Std | MT.DipoleIntStable | MT.DipoleStd | MT.DipoleStablePsiN:

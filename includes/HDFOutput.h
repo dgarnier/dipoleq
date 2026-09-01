@@ -40,7 +40,7 @@
 #define MODB_NAME 	"B2"
 #define BpX_NAME  	"Bp_R"
 #define BpZ_NAME  	"Bp_Z"
-#define TFLUX_NAME 	"ToroidalFlux"
+#define NPOLCUR_NAME 	"NormPolCurrent" // G = F/(R0 B0)
 #define PRESS_NAME 	"Pressure"
 #define BETA_NAME 	"Beta"
 #define LCFS_NAME	"LCFS"

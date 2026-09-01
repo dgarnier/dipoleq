@@ -380,7 +380,7 @@ PLASMA *     HDFPlasmaIn( PSIGRID * pg, char *Oname)
 
 	/* G */
 
-	sds_index = SDnametoindex(sd_id, TFLUX_NAME);
+	sds_index = SDnametoindex(sd_id, NPOLCUR_NAME);
 	SDCHK(sds_index);
 
 	sds_id = SDselect(sd_id,sds_index);
