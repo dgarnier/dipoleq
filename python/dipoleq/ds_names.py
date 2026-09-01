@@ -60,7 +60,7 @@ class DS_NAME(StrEnum):
     BT_0D = "B0"
     R0_0D = "R0"
     Z0_0D = "Z0"
-    R0Z0_0D = "R0Z0"
+    R0B0_0D = "R0B0"  # R0 * B0, the G -> F scale factor
     PSIAXIS_0D = "PsiMagX"
     PSIFCFS_0D = "PsiFCFS"
     PSILCFS_0D = "PsiLCFS"

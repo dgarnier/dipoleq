@@ -71,7 +71,7 @@
 #define BT_0D 		"B0"      // EFIT name for toroidal field
 #define R0_0D 		"R0"      // EFIT name for reference radius
 #define Z0_0D 		"Z0"      // EFIT name for reference radius
-#define R0Z0_0D 	"R0Z0"    // Scale factor for G -> F conversion
+#define R0B0_0D 	"R0B0"    // Scale factor for G -> F conversion
 #define PSIAXIS_0D 	"PsiMagX" // psi on magnetic axis
 #define PSIFCFS_0D 	"PsiFCFS" // psi at boundary near or at magnetic axis
 #define PSILCFS_0D  "PsiLCFS" // psi at boundary at outer limiter or separatrix

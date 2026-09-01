@@ -184,12 +184,12 @@ H5_UNITS = {
     "/Grid/ToroidalFlux": "1",  # G, dimensionless
     "/Grid/Z": "m",
     "/Scalars/B0": "T",
+    "/Scalars/R0B0": "m T",  # R0 * B0, the G -> F scale factor
     "/Scalars/Ip": "A",
     "/Scalars/PsiFCFS": "Wb",
     "/Scalars/PsiLCFS": "Wb",
     "/Scalars/PsiMagX": "Wb",
     "/Scalars/R0": "m",
-    "/Scalars/R0Z0": "T m",  # B0 * R0, the G -> F scale factor
     "/Scalars/RMagX": "m",
     "/Scalars/Z0": "m",
     "/Scalars/ZMagX": "m",
@@ -224,7 +224,7 @@ def test_h5_bpol_is_tesla(test_yaml_save: Path) -> None:
         R = grid["R"][()]
         br = grid["Bp_R"][()]
         bz = grid["Bp_Z"][()]
-        bt = grid["ToroidalFlux"][()] * h5f["/Scalars/R0Z0"][()] / R
+        bt = grid["ToroidalFlux"][()] * h5f["/Scalars/R0B0"][()] / R
         b2 = grid["B2"][()]
 
     # skip the R -> 0 edge where Bt diverges
