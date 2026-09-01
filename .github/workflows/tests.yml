@@ -1,8 +1,16 @@
 name: Tests
 
+# push and pull_request both fire for a branch pushed in this repo, so an
+# unfiltered "on: [push, pull_request]" ran every job twice on every PR.
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tests:
