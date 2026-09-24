@@ -145,6 +145,9 @@ void          free_PsiGrid(PSIGRID * pg)
 {
 	int           n;
 
+	if (!pg)
+		return;
+
 	n = pg->Nsize;
 
 	/* arrays are NULL until init_PsiGrid is called */

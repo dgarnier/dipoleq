@@ -154,9 +154,14 @@ void          init_Tokamak(TOKAMAK * td)
 void          free_Tokamak(TOKAMAK * td, int full)
 {
 	int           i, num_subshells = 0;
-	int           nmax = td->PsiGrid->Nsize;
-	int           ncoils = td->NumCoils;
-	int           nshells = td->NumShells;
+	int           nmax, ncoils, nshells;
+
+	if (!td)
+		return;
+	/* read the grid size only once PsiGrid is known to exist */
+	nmax = td->PsiGrid ? td->PsiGrid->Nsize : 0;
+	ncoils = td->NumCoils;
+	nshells = td->NumShells;
 
 	if (td->PsiGrid)
 		free_PsiGrid(td->PsiGrid);
@@ -213,7 +218,7 @@ void          free_Tokamak(TOKAMAK * td, int full)
 	if (td->SValues)
 		free_dvector(td->SValues, 1, td->NumUnkns);
 
-	if (full && td)
+	if (full)
 		free(td);
 }
 
