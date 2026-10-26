@@ -1,8 +1,9 @@
+# conf.py patches sphinx-autodoc-typehints internals; recheck it when bumping.
 .
-autodoc-pydantic
-myst-parser
-omas
-sphinx
-sphinx-autodoc-typehints
-sphinx-copybutton
-sphinx-rtd-theme
+autodoc-pydantic==2.2.0
+myst-parser==5.1.0
+omas==0.95.2
+sphinx==9.2.0
+sphinx-autodoc-typehints==3.17.2
+sphinx-copybutton==0.5.2
+sphinx-rtd-theme==3.1.0
