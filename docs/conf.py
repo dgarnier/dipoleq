@@ -12,6 +12,8 @@ import importlib.metadata
 import os
 from pathlib import Path
 
+from sphinx_autodoc_typehints._documented import hints as _sat_hints
+
 # Define the canonical URL if you are using a custom domain on Read the Docs
 html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
 
@@ -77,6 +79,19 @@ with Path("nitpick-exceptions").open("r", encoding="utf-8") as f:
 
 print(nitpick_ignore)
 always_document_param_types = True
+
+# sphinx-autodoc-typehints >= 3.14 crashes on nanobind property getters,
+# whose __qualname__ is None. Drop the getter so it reads as "no type params".
+_declared_type_params = _sat_hints.declared_type_params
+
+
+def _nb_safe_declared_type_params(documented, function, documenting):
+    if getattr(function, "__qualname__", "") is None:
+        function = None
+    return _declared_type_params(documented, function, documenting)
+
+
+_sat_hints.declared_type_params = _nb_safe_declared_type_params
 
 intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
