@@ -117,8 +117,8 @@ Python usage is still in development. More on this soon.
 [pypi-link]:                https://pypi.org/project/dipoleq/
 [pypi-platforms]:           https://img.shields.io/pypi/pyversions/dipoleq
 [pypi-version]:             https://badge.fury.io/py/dipoleq.svg
-[rtd-badge]:                https://readthedocs.org/projects/dipoleq/badge/?version=latest
-[rtd-link]:                 https://dipoleq.readthedocs.io/en/latest/?badge=latest
+[rtd-badge]:                https://img.shields.io/readthedocs/dipoleq/stable
+[rtd-link]:                 https://dipoleq.readthedocs.io/en/stable/
 [ruff-badge]:               https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
 [ruff-link]:                https://github.com/astral-sh/ruff
 <!-- prettier-ignore-end -->
