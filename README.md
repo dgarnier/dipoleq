@@ -22,6 +22,17 @@ If you use this code, please reference this paper as source.
 
 > D. T. Garnier, J. Kesner, and M. E. Mauel, “Magnetohydrodynamic  stability in a levitated dipole,” Phys. Plasmas, vol. 6, no. 9, pp. 3431–3434, Jan. 1999, doi: 10.1063/1.873601.
 
+## Conventions
+
+DipolEq follows [COCOS 11](https://doi.org/10.1016/j.cpc.2012.09.010). `Psi` is the total poloidal flux through a toroidal loop at (R, Z), in webers -- **not** webers per radian:
+
+```
+B_R =  1/(2 pi R) dPsi/dZ
+B_Z = -1/(2 pi R) dPsi/dR
+```
+
+This holds for the Python interface and the HDF5 output. Codes using COCOS 1-8, such as g-eqdsk files, use flux per radian, `Psi / (2 pi)` (and some, e.g. COCOS 3, also flip the sign); `h5togeqdsk` handles both.
+
 ## C Code - Command Line Version
 ### Compilation
 
